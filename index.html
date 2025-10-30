@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rumah Nenek</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
@@ -20,11 +20,18 @@
     }
 
     * {margin:0; padding:0; box-sizing:border-box;}
-    body {font-family:'Playfair Display', serif; background-color: var(--cream); color: var(--brown); text-align:center; overflow-x:hidden; padding:0 10px;}
+    body {
+      font-family:'Playfair Display', serif;
+      background-color: var(--cream);
+      color: var(--brown);
+      text-align:center;
+      overflow-x:hidden;
+      padding:0 10px;
+    }
 
     header {
       position:relative;
-      background: linear-gradient(160deg, var(--blue-start) 0%, var(--blue-end) 100%);
+      background: linear-gradient(160deg, var(--blue-start), var(--blue-end));
       border:6px solid #b9987d;
       border-radius:18px;
       padding:20px 15px;
@@ -33,70 +40,118 @@
       box-shadow:0 0 20px rgba(204,231,240,0.6), inset 0 0 12px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.2);
     }
 
-    h1 {font-family:'Great Vibes', cursive; font-size:2.8em; color: var(--text-dark); text-shadow:0 0 10px rgba(255,255,255,0.7),2px 2px 4px rgba(0,0,0,0.25);}
-    .tagline {font-size:1.1em; font-style:italic; margin-bottom:8px;}
-    .info {font-size:0.95em; line-height:1.5em; background: rgba(255,255,255,0.6); display:inline-block; padding:6px 12px; border-radius:10px; word-wrap:break-word;}
+    h1 {
+      font-family:'Great Vibes', cursive;
+      font-size:2.8em;
+      color: var(--text-dark);
+      text-shadow:0 0 10px rgba(255,255,255,0.7),2px 2px 4px rgba(0,0,0,0.25);
+    }
 
-    .banner-about-column {
+    .tagline {font-size:1.1em; font-style:italic; margin-bottom:8px;}
+    .info {
+      font-size:0.95em;
+      line-height:1.5em;
+      background: rgba(255,255,255,0.6);
+      display:inline-block;
+      padding:6px 12px;
+      border-radius:10px;
+    }
+
+    .banner-about {
       width:100%;
       max-width:900px;
       margin:20px auto;
       border-radius:15px;
       overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
       background: #cce7f0;
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
     }
-    .banner-about-column .banner img {width:100%; height:auto; display:block; border-radius:15px 15px 0 0;}
-    .about {background: rgba(230,244,249,0.6); padding:20px 15px; border-radius:0 0 15px 15px; text-align:left;}
+    .banner-about img {width:100%; display:block;}
+    .about {padding:20px; text-align:left; background: rgba(255,255,255,0.6);}
     .about h2 {font-size:1.8em; margin-bottom:10px; color: var(--text-dark);}
     .about p {font-size:1em; line-height:1.6em; color: var(--text-dark);}
 
-    .brosur {width:100%; max-width:900px; background: var(--beige); border:2px solid var(--rose); margin:20px auto; padding:0; box-shadow:0 4px 12px rgba(0,0,0,0.15);}
-    .brosur-title {font-size:1.5em; font-weight:600; color: var(--text-dark); margin-bottom:10px; padding-top:10px; text-shadow:1px 1px 2px rgba(0,0,0,0.2);}
+    .brosur {
+      width:100%;
+      max-width:900px;
+      background: var(--beige);
+      border:2px solid var(--rose);
+      margin:20px auto;
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    }
+    .brosur-title {
+      font-size:1.5em;
+      font-weight:600;
+      color: var(--text-dark);
+      padding:10px;
+      text-shadow:1px 1px 2px rgba(0,0,0,0.2);
+    }
     .brosur img {width:100%; height:auto; display:block;}
 
-    .map-box {width:100%; max-width:900px; margin:20px auto; border-radius:15px; overflow:hidden; background: #cce7f0; padding:15px;}
-    .map-box h2 {font-size:1.5em; margin-bottom:10px; color: var(--text-dark); text-align:left;}
-    .map-container {position:relative; aspect-ratio:16/9; cursor:pointer; transition:transform 0.2s ease;}
-    .map-container:hover {transform:scale(1.02);}
-    .map-container iframe {width:100%; height:100%; border:0; border-radius:10px;}
-
-    /* ✅ YouTube Channel */
-    .yt-box {width:100%; max-width:900px; margin:20px auto; border-radius:15px; overflow:hidden; background:#cce7f0; padding:15px;}
-    .yt-box h2 {font-size:1.5em; margin-bottom:10px; color: var(--text-dark); text-align:left;}
-    .yt-box iframe {width:100%; height:500px; border:0; border-radius:10px;}
-
-    footer {font-size:0.9em; color:#876; margin:30px 0 10px;}
-
-    .floating-wa {position:fixed; bottom:18px; right:18px; background-color: var(--green); color:white; border-radius:10px; padding:10px 18px; text-decoration:none; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.25); z-index:999;}
-
-    @media(max-width:768px){
-      header {padding:18px 12px;}
-      h1 {font-size:2.4em;}
-      .tagline {font-size:1em;}
-      .info {font-size:0.9em;}
-      .brosur-title {font-size:1.3em;}
-      .about h2 {font-size:1.5em;}
-      .about p {font-size:0.95em;}
-      .map-box h2 {font-size:1.3em;}
-      .yt-box h2 {font-size:1.3em;}
+    .map-box, .yt-box {
+      width:100%;
+      max-width:900px;
+      margin:20px auto;
+      border-radius:15px;
+      overflow:hidden;
+      background: #cce7f0;
+      padding:15px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
     }
 
-    @media(max-width:480px){
-      header {padding:14px 10px; border-width:4px;}
-      h1 {font-size:2em;}
-      .tagline {font-size:0.95em;}
-      .info {font-size:0.85em;}
-      .brosur-title {font-size:1.15em;}
-      .about h2 {font-size:1.3em;}
-      .about p {font-size:0.9em;}
-      .map-box h2 {font-size:1.2em;}
-      .yt-box h2 {font-size:1.2em;}
+    .map-box h2, .yt-box h2 {
+      font-size:1.5em;
+      margin-bottom:10px;
+      color: var(--text-dark);
+      text-align:left;
+    }
+
+    .map-container {
+      position:relative;
+      aspect-ratio:16/9;
+      cursor:pointer;
+      transition:transform 0.2s ease;
+    }
+    .map-container:hover {transform:scale(1.02);}
+    .map-container iframe {
+      width:100%; height:100%;
+      border:0; border-radius:10px;
+    }
+
+    .yt-box iframe {
+      width:100%; height:500px;
+      border:0; border-radius:10px;
+    }
+
+    footer {
+      font-size:0.9em;
+      color:#876;
+      margin:30px 0 10px;
+    }
+
+    .floating-wa {
+      position:fixed;
+      bottom:18px; right:18px;
+      background-color: var(--green);
+      color:white;
+      border-radius:10px;
+      padding:10px 18px;
+      text-decoration:none;
+      font-weight:600;
+      box-shadow:0 4px 10px rgba(0,0,0,0.25);
+      z-index:999;
+      transition: background 0.3s ease;
+    }
+    .floating-wa:hover {background:#2e6d4a;}
+
+    @media(max-width:768px){
+      h1 {font-size:2.4em;}
+      .about h2, .map-box h2, .yt-box h2 {font-size:1.4em;}
+      .about p {font-size:0.95em;}
     }
   </style>
 </head>
+
 <body>
 
   <header>
@@ -109,10 +164,8 @@
     </div>
   </header>
 
-  <div class="banner-about-column">
-    <div class="banner">
-      <img src="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w2000" alt="Banner Rumah Nenek">
-    </div>
+  <div class="banner-about">
+    <img src="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w2000" alt="Banner Rumah Nenek">
     <div class="about">
       <h2>Tentang Kami</h2>
       <p>Di Rumah Nenek, kami merawat pakaian Anda dengan cinta, cepat, dan rapi – seperti pelukan hangat nenek. Layanan laundry kami memastikan pakaian selalu bersih, wangi, dan nyaman dipakai, membuat hari Anda lebih ringan dan menyenangkan.</p>
@@ -131,11 +184,10 @@
     </div>
   </div>
 
-  <!-- ✅ YouTube Channel (Sudah Diperbaiki) -->
   <div class="yt-box">
-    <h2>Daftar Video Kami</h2>
+    <h2>Channel YouTube Kami</h2>
     <iframe 
-      src="https://www.youtube.com/embed?listType=playlist&list=UUWA3yKLLwjwx02nPJjD_oxg"
+      src="https://www.youtube.com/embed/live_stream?channel=UCWA3yKLLwjwx02nPJjD_oxg"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowfullscreen>
     </iframe>
@@ -143,7 +195,7 @@
 
   <footer>© 2025 Rumah Nenek • Laundry Vintage dengan Cinta</footer>
 
-  <a href="https://wa.me/62895622309251" class="floating-wa" target="_blank">Hubungi Kami</a>
+  <a href="https://wa.me/62895622309251" class="floating-wa" target="_blank">💬 Hubungi Kami</a>
 
 </body>
 </html>
