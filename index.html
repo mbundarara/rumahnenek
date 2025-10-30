@@ -58,7 +58,7 @@
     .brosur-title {font-size:1.5em; font-weight:600; color: var(--text-dark); margin-bottom:10px; padding-top:10px; text-shadow:1px 1px 2px rgba(0,0,0,0.2);}
     .brosur img {width:100%; height:auto; display:block;}
 
-    /* Maps dengan judul Temukan Kami */
+    /* Temukan Kami + Map dengan bingkai & background seperti brosur */
     .map-column {
       width:100%;
       max-width:900px;
@@ -68,9 +68,13 @@
       display:flex;
       flex-direction:column;
       gap:10px;
+      background: var(--beige);
+      border:2px solid var(--rose);
+      padding:15px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
     }
-    .map-title {font-size:1.5em; font-weight:600; margin:10px 0; color: var(--text-dark);}
-    .map-container {position:relative; aspect-ratio:16/9; cursor:pointer; transition:transform 0.2s ease;}
+    .map-title {font-size:1.5em; font-weight:600; margin-bottom:10px; color: var(--text-dark);}
+    .map-container {position:relative; aspect-ratio:16/9; cursor:pointer; transition:transform 0.2s ease; border-radius:12px; overflow:hidden;}
     .map-container:hover {transform:scale(1.02);}
     .map-container iframe {width:100%; height:100%; border:0;}
 
@@ -145,7 +149,7 @@
     <img src="https://drive.google.com/thumbnail?id=1AXSSlhYJn3JzXwHSZE-Z_TuxLTCMYeLG&sz=w2000" alt="Brosur Promo Laundry">
   </div>
 
-  <!-- Temukan Kami + Map -->
+  <!-- Temukan Kami + Map dengan bingkai -->
   <div class="map-column">
     <div class="map-title">Temukan Kami</div>
     <div class="map-container" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-6.400373,107.48995','_blank')">
