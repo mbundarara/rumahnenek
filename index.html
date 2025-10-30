@@ -37,7 +37,6 @@
     .tagline {font-size:1.1em; font-style:italic; margin-bottom:8px;}
     .info {font-size:0.95em; line-height:1.5em; background: rgba(255,255,255,0.6); display:inline-block; padding:6px 12px; border-radius:10px; word-wrap:break-word;}
 
-    /* Banner + Tentang Kami */
     .banner-about-column {
       width:100%;
       max-width:900px;
@@ -54,19 +53,17 @@
     .about h2 {font-size:1.8em; margin-bottom:10px; color: var(--text-dark);}
     .about p {font-size:1em; line-height:1.6em; color: var(--text-dark);}
 
-    /* Brosur */
     .brosur {width:100%; max-width:900px; background: var(--beige); border:2px solid var(--rose); margin:20px auto; padding:0; box-shadow:0 4px 12px rgba(0,0,0,0.15);}
     .brosur-title {font-size:1.5em; font-weight:600; color: var(--text-dark); margin-bottom:10px; padding-top:10px; text-shadow:1px 1px 2px rgba(0,0,0,0.2);}
     .brosur img {width:100%; height:auto; display:block;}
 
-    /* Temukan Kami + Maps */
     .map-box {width:100%; max-width:900px; margin:20px auto; border-radius:15px; overflow:hidden; background: #cce7f0; padding:15px;}
     .map-box h2 {font-size:1.5em; margin-bottom:10px; color: var(--text-dark); text-align:left;}
     .map-container {position:relative; aspect-ratio:16/9; cursor:pointer; transition:transform 0.2s ease;}
     .map-container:hover {transform:scale(1.02);}
     .map-container iframe {width:100%; height:100%; border:0; border-radius:10px;}
 
-    /* YouTube Channel */
+    /* ✅ YouTube Channel */
     .yt-box {width:100%; max-width:900px; margin:20px auto; border-radius:15px; overflow:hidden; background:#cce7f0; padding:15px;}
     .yt-box h2 {font-size:1.5em; margin-bottom:10px; color: var(--text-dark); text-align:left;}
     .yt-box iframe {width:100%; height:500px; border:0; border-radius:10px;}
@@ -112,7 +109,6 @@
     </div>
   </header>
 
-  <!-- Banner + Tentang Kami satu kolom -->
   <div class="banner-about-column">
     <div class="banner">
       <img src="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w2000" alt="Banner Rumah Nenek">
@@ -123,13 +119,11 @@
     </div>
   </div>
 
-  <!-- Brosur -->
   <div class="brosur">
     <div class="brosur-title">Promosi Bulan Ini</div>
     <img src="https://drive.google.com/thumbnail?id=1AXSSlhYJn3JzXwHSZE-Z_TuxLTCMYeLG&sz=w2000" alt="Brosur Promo Laundry">
   </div>
 
-  <!-- Temukan Kami + Maps -->
   <div class="map-box">
     <h2>Temukan Kami</h2>
     <div class="map-container" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-6.400373,107.48995','_blank')">
@@ -137,10 +131,14 @@
     </div>
   </div>
 
-  <!-- YouTube Channel -->
+  <!-- ✅ YouTube Channel (Sudah Diperbaiki) -->
   <div class="yt-box">
     <h2>Daftar Video Kami</h2>
-    <iframe src="https://www.youtube.com/embed?listType=user_uploads&list=muhamadfarrenrizafirmansya5066" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe 
+      src="https://www.youtube.com/embed?listType=playlist&list=UUWA3yKLLwjwx02nPJjD_oxg"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
   </div>
 
   <footer>© 2025 Rumah Nenek • Laundry Vintage dengan Cinta</footer>
