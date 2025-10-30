@@ -47,6 +47,7 @@
       display:flex;
       flex-direction:column;
       gap:10px;
+      background: #cce7f0;
     }
     .banner-about-column .banner img {width:100%; height:auto; display:block; border-radius:15px 15px 0 0;}
     .about {background: rgba(230,244,249,0.6); padding:20px 15px; border-radius:0 0 15px 15px; text-align:left;}
@@ -58,22 +59,22 @@
     .brosur-title {font-size:1.5em; font-weight:600; color: var(--text-dark); margin-bottom:10px; padding-top:10px; text-shadow:1px 1px 2px rgba(0,0,0,0.2);}
     .brosur img {width:100%; height:auto; display:block;}
 
-    /* Temukan Kami / Maps */
-    .map-column {width:100%; max-width:900px; margin:20px auto; border-radius:15px; overflow:hidden; background:#cce7f0; border:2px solid #b3d9e6; display:flex; flex-direction:column; gap:10px; padding:10px;}
-    .map-column h2 {color:var(--text-dark); font-size:1.5em; margin-bottom:10px;}
+    /* Temukan Kami + Maps */
+    .map-box {width:100%; max-width:900px; margin:20px auto; border-radius:15px; overflow:hidden; background: #cce7f0; padding:15px;}
+    .map-box h2 {font-size:1.5em; margin-bottom:10px; color: var(--text-dark); text-align:left;}
     .map-container {position:relative; aspect-ratio:16/9; cursor:pointer; transition:transform 0.2s ease;}
     .map-container:hover {transform:scale(1.02);}
     .map-container iframe {width:100%; height:100%; border:0; border-radius:10px;}
 
-    /* YouTube Videos */
-    .youtube-section {width:100%; max-width:900px; margin:20px auto; border-radius:15px; overflow:hidden; background:#cce7f0; border:2px solid #b3d9e6; padding:15px;}
-    .youtube-section h2 {color:var(--text-dark); font-size:1.5em; margin-bottom:10px;}
-    .youtube-section iframe {width:100%; height:500px; border:0; border-radius:10px;}
+    /* YouTube Channel */
+    .yt-box {width:100%; max-width:900px; margin:20px auto; border-radius:15px; overflow:hidden; background:#cce7f0; padding:15px;}
+    .yt-box h2 {font-size:1.5em; margin-bottom:10px; color: var(--text-dark); text-align:left;}
+    .yt-box iframe {width:100%; height:500px; border:0; border-radius:10px;}
 
     footer {font-size:0.9em; color:#876; margin:30px 0 10px;}
 
-    .floating-wa {position:fixed; bottom:18px; right:18px; background-color: var(--green); color:white; border-radius:10px; padding:15px 20px; text-decoration:none; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.25); z-index:999;}
-    
+    .floating-wa {position:fixed; bottom:18px; right:18px; background-color: var(--green); color:white; border-radius:10px; padding:10px 18px; text-decoration:none; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.25); z-index:999;}
+
     @media(max-width:768px){
       header {padding:18px 12px;}
       h1 {font-size:2.4em;}
@@ -82,7 +83,8 @@
       .brosur-title {font-size:1.3em;}
       .about h2 {font-size:1.5em;}
       .about p {font-size:0.95em;}
-      .map-column h2, .youtube-section h2 {font-size:1.3em;}
+      .map-box h2 {font-size:1.3em;}
+      .yt-box h2 {font-size:1.3em;}
     }
 
     @media(max-width:480px){
@@ -93,8 +95,8 @@
       .brosur-title {font-size:1.15em;}
       .about h2 {font-size:1.3em;}
       .about p {font-size:0.9em;}
-      .map-column h2, .youtube-section h2 {font-size:1.15em;}
-      .youtube-section iframe {height:300px;}
+      .map-box h2 {font-size:1.2em;}
+      .yt-box h2 {font-size:1.2em;}
     }
   </style>
 </head>
@@ -110,7 +112,7 @@
     </div>
   </header>
 
-  <!-- Banner + Tentang Kami -->
+  <!-- Banner + Tentang Kami satu kolom -->
   <div class="banner-about-column">
     <div class="banner">
       <img src="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w2000" alt="Banner Rumah Nenek">
@@ -128,26 +130,22 @@
   </div>
 
   <!-- Temukan Kami + Maps -->
-  <div class="map-column">
+  <div class="map-box">
     <h2>Temukan Kami</h2>
     <div class="map-container" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-6.400373,107.48995','_blank')">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.4568323886547!2d107.4882!3d-6.4003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMjQnMDEuMyJTIDEwN8KwMjknMjMuOCJF!5e0!3m2!1sid!2sid!4v1730300000000!5m2!1sid!2sid" allowfullscreen="" loading="lazy"></iframe>
     </div>
   </div>
 
-  <!-- Daftar Video Kami -->
-  <div class="youtube-section">
+  <!-- YouTube Channel -->
+  <div class="yt-box">
     <h2>Daftar Video Kami</h2>
-    <iframe src="https://www.youtube.com/embed?listType=user_uploads&list=muhamadfarrenrizafirmansya5066" 
-      title="YouTube Channel Videos" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-    </iframe>
+    <iframe src="https://www.youtube.com/embed?listType=user_uploads&list=muhamadfarrenrizafirmansya5066" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   </div>
 
   <footer>© 2025 Rumah Nenek • Laundry Vintage dengan Cinta</footer>
 
-  <a href="https://wa.me/62895622309251" class="floating-wa" target="_blank">
-    Hubungi Kami
-  </a>
+  <a href="https://wa.me/62895622309251" class="floating-wa" target="_blank">Hubungi Kami</a>
 
 </body>
 </html>
