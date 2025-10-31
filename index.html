@@ -32,47 +32,47 @@
       scroll-behavior:smooth;
     }
 
-    header {
-      position:relative;
+    /* Top Column */
+    .top-column {
       background: linear-gradient(160deg, var(--blue-start), var(--blue-end));
-      border:6px solid #b9987d;
       border-radius:18px;
       padding:20px 15px;
       margin:20px auto 25px;
       max-width:900px;
       box-shadow:0 0 20px rgba(204,231,240,0.6), inset 0 0 12px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.2);
+      text-align:center;
     }
 
-    h1 {
+    .top-column img {width:100%; border-radius:15px; margin-bottom:15px; display:block;}
+    .top-column h1 {
       font-family:'Great Vibes', cursive;
-      font-size:2.8em;
+      font-size:2.3em;
       color: var(--text-dark);
       text-shadow:0 0 10px rgba(255,255,255,0.7),2px 2px 4px rgba(0,0,0,0.25);
+      margin-bottom:5px;
     }
-
-    .tagline {font-size:1.1em; font-style:italic; margin-bottom:8px;}
-    .info {
+    .top-column .tagline {font-size:1.1em; font-style:italic; margin-bottom:8px;}
+    .top-column .info {
       font-size:0.95em;
       line-height:1.5em;
       background: rgba(255,255,255,0.6);
       display:inline-block;
       padding:6px 12px;
       border-radius:10px;
+      margin-bottom:10px;
     }
-
-    .banner-about {
-      width:100%;
-      max-width:900px;
-      margin:20px auto;
-      border-radius:15px;
-      overflow:hidden;
-      background: #cce7f0;
-      box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    .top-column .info div {line-height:1.5em;} /* untuk alamat 2 baris */
+    .top-column .about {
+      padding:15px 0;
+      font-size:1em;
+      line-height:1.6em;
+      color: var(--text-dark);
+      text-align:justify;
     }
-    .banner-about img {width:100%; display:block;}
-    .about {padding:20px; text-align:left; background: rgba(255,255,255,0.6);}
-    .about h2 {font-size:1.8em; margin-bottom:10px; color: var(--text-dark);}
-    .about p {font-size:1em; line-height:1.6em; color: var(--text-dark);}
+    .top-column .cta {
+      margin-top:10px;
+      font-weight:bold;
+    }
 
     .brosur {
       width:100%;
@@ -83,11 +83,12 @@
       box-shadow:0 4px 12px rgba(0,0,0,0.15);
     }
     .brosur-title {
-      font-size:1.5em;
+      font-size:1.35em;
       font-weight:600;
       color: var(--text-dark);
       padding:10px;
       text-shadow:1px 1px 2px rgba(0,0,0,0.2);
+      text-align:center;
     }
     .brosur img {width:100%; height:auto; display:block;}
 
@@ -103,10 +104,10 @@
     }
 
     .map-box h2, .yt-box h2 {
-      font-size:1.5em;
+      font-size:1.55em;
       margin-bottom:10px;
       color: var(--text-dark);
-      text-align:left;
+      text-align:center;
     }
 
     .map-container {
@@ -156,7 +157,6 @@
       margin:30px 0 10px;
     }
 
-    /* 💬 Tombol WA + ikon */
     .floating-wa {
       position:fixed;
       bottom:18px; right:18px;
@@ -181,7 +181,6 @@
       fill:white;
     }
 
-    /* 🔴 Bubble merah kedap-kedip */
     .wa-bubble {
       position:fixed;
       bottom:70px;
@@ -210,21 +209,20 @@
 
 <body>
 
-  <header>
+  <div class="top-column">
+    <img src="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w2000" alt="Banner Rumah Nenek">
     <h1>Rumah Nenek</h1>
     <div class="tagline">Bersihnya Sehangat Pelukan Nenek 💕<br>Gratis Jemput & Antar ke Rumah Anda!</div>
     <div class="info">
-      Jl. Mashudi No.10, Pangulah Utara<br>
-      Kec. Kota Baru, Karawang, Jawa Barat 41374<br>
+      <div>Jl. Mashudi No.10, Pangulah Utara</div>
+      <div>Kec. Kota Baru, Karawang, Jawa Barat 41374</div>
       📞 0895-6223-09251
     </div>
-  </header>
-
-  <div class="banner-about">
-    <img src="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w2000" alt="Banner Rumah Nenek">
     <div class="about">
-      <h2>Tentang Kami</h2>
-      <p>Di Rumah Nenek, kami merawat pakaian Anda dengan cinta, cepat, dan rapi – seperti pelukan hangat nenek. Layanan laundry kami memastikan pakaian selalu bersih, wangi, dan nyaman dipakai, membuat hari Anda lebih ringan dan menyenangkan. <strong>Hubungi kami sekarang, dan biarkan kami jemput cucian Anda hari ini juga!</strong></p>
+      Di Rumah Nenek, kami merawat pakaian Anda dengan cinta, cepat, dan rapi – seperti pelukan hangat nenek. Layanan laundry kami memastikan pakaian selalu bersih, wangi, dan nyaman dipakai, membuat hari Anda lebih ringan dan menyenangkan.
+    </div>
+    <div class="cta">
+      Hubungi kami sekarang, dan biarkan kami jemput cucian Anda hari ini juga!
     </div>
   </div>
 
@@ -236,7 +234,7 @@
 
   <div class="map-box">
     <h2>Temukan Kami</h2>
-    <p style="margin-bottom:10px;">Dekat dari rumah Anda! Kami siap menjemput cucian di area Karawang & sekitarnya.</p>
+    <p style="margin-bottom:10px;">Dekat dari rumah Anda! Kami siap menjemput cucian di area Cariu & sekitarnya.</p>
     <div class="map-container" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-6.400373,107.48995','_blank')">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.4568323886547!2d107.4882!3d-6.4003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMjQnMDEuMyJTIDEwN8KwMjknMjMuOCJF!5e0!3m2!1sid!2sid!4v1730300000000!5m2!1sid!2sid" allowfullscreen="" loading="lazy"></iframe>
     </div>
@@ -260,7 +258,6 @@
 
   <div class="wa-bubble">Gratis Antar Jemput</div>
 
-  <!-- 💬 Tombol WhatsApp dengan ikon -->
   <a href="https://wa.me/62895622309251" class="floating-wa" target="_blank">
     <svg viewBox="0 0 32 32">
       <path d="M16 2.6c-7.4 0-13.4 6-13.4 13.4 0 2.4.6 4.7 1.8 6.7L2 30l7.6-2c1.9 1 4 1.5 6.3 1.5 7.4 0 13.4-6 13.4-13.4S23.4 2.6 16 2.6zm0 24.4c-2 0-4-.5-5.7-1.4l-.4-.2-4.5 1.2 1.2-4.4-.3-.4c-1.1-1.8-1.6-3.9-1.6-6 0-6.3 5.1-11.4 11.4-11.4s11.4 5.1 11.4 11.4S22.3 27 16 27zm6.2-8.3c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.3-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1s0-.5.2-.7.3-.4.5-.7.2-.4.3-.6.1-.3 0-.5c0-.2-.7-1.7-1-2.3-.3-.5-.5-.4-.7-.4h-.6c-.2 0-.5.1-.8.3-.3.2-1 .9-1 2.2s1 2.6 1.2 2.8c.2.2 1.9 2.9 4.6 4 .6.3 1.1.5 1.4.6.6.2 1.1.2 1.5.1.5-.1 1.9-.8 2.1-1.6.3-.8.3-1.5.2-1.6z"/>
