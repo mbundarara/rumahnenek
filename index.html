@@ -1,299 +1,131 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rumah Nenek</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laundry Cariu • Rumah Nenek</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+--cream: #fdf6ee;
+--beige: #f5e8d0;
+--brown: #5c4633;
+--rose: #e7c7a5;
+--green: #3c8d60;
+--cta-green: #38b000;
+--blue-start: #cce7f0;
+--blue-end: #e6f4f9;
+--blue-light: #7cc7e0;
+--blue-hover: #5bb4d1;
+--text-dark: #3d2b1f;
+}
+* {margin:0;padding:0;box-sizing:border-box;}
+body {font-family:'Playfair Display', serif;background-color: var(--cream);color: var(--brown);text-align:center;overflow-x:hidden;padding:0 10px;scroll-behavior:smooth;}
+a{text-decoration:none;}
 
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+/* TOP SECTION */
+.top-section {background: linear-gradient(160deg, var(--blue-start), var(--blue-end));border-radius:18px;max-width:900px;margin:20px auto;box-shadow:0 0 20px rgba(204,231,240,0.6), inset 0 0 12px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.2);overflow:hidden;}
+.top-section img{width:100%; display:block;}
+.top-section .header-content{padding:20px 15px;}
+.top-section h1{font-family:'Great Vibes', cursive;font-size:2em;color: var(--text-dark);text-shadow:0 0 8px rgba(255,255,255,0.7),1.5px 1.5px 3px rgba(0,0,0,0.25);margin-bottom:5px;}
+.top-section .tagline{font-size:1em;font-style:italic;margin-bottom:10px;}
+.top-section .info{font-size:0.9em;line-height:1.4em;background: rgba(255,255,255,0.6);display:inline-block;padding:6px 12px;border-radius:10px;margin-bottom:10px;text-align:center;}
+.top-section .about p{font-size:0.95em;line-height:1.5em;text-align:justify;margin-top:10px;}
+.cta-paragraph{margin-top:12px;font-weight:600;font-size:1em;color:#fff;background: var(--cta-green);padding:10px 14px;border-radius:10px;display:inline-flex;align-items:center;gap:10px;cursor:pointer;transition: background 0.3s ease;max-width:280px;text-align:justify;}
+.cta-paragraph:hover{background:#2e6d4a;color:#fff;}
+.cta-paragraph svg{width:32px;height:32px;} /* ikon diperbesar */
+.cta-text{display:inline-block;line-height:1.3em;text-align:justify;}
 
-  <style>
-    :root {
-      --cream: #fdf6ee;
-      --beige: #f5e8d0;
-      --brown: #5c4633;
-      --rose: #e7c7a5;
-      --green: #3c8d60;
-      --blue-start: #cce7f0;
-      --blue-end: #e6f4f9;
-      --blue-light: #7cc7e0;
-      --blue-hover: #5bb4d1;
-      --text-dark: #3d2b1f;
-    }
+/* PROMO BROSUR */
+.brosur {width:100%;max-width:900px;background: var(--beige);border:2px solid var(--rose);margin:20px auto;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+.brosur-title{font-size:1.2em;font-weight:600;color: var(--text-dark);padding:10px;text-align:center;}
+.brosur img{width:100%; height:auto; display:block;}
+.brosur p{padding:10px;font-size:0.95em;color:var(--text-dark);}
 
-    * {margin:0; padding:0; box-sizing:border-box;}
-    body {
-      font-family:'Playfair Display', serif;
-      background-color: var(--cream);
-      color: var(--brown);
-      text-align:center;
-      overflow-x:hidden;
-      padding:0 10px;
-      scroll-behavior:smooth;
-    }
+/* MAP */
+.map-box {width:100%;max-width:900px;margin:20px auto;border-radius:15px;overflow:hidden;background: #cce7f0;padding:15px;box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+.map-box h2{text-align:center;font-size:1.3em;margin-bottom:8px;color: var(--text-dark);}
+.map-box p{margin-bottom:10px;font-size:0.9em;}
+.map-container{position:relative;aspect-ratio:16/9;cursor:pointer;transition:transform 0.2s ease;}
+.map-container:hover{transform:scale(1.02);}
+.map-container iframe{width:100%;height:100%;border:0;border-radius:10px;}
 
-    /* Top Column */
-    .top-column {
-      background: linear-gradient(160deg, var(--blue-start), var(--blue-end));
-      border-radius:18px;
-      padding:20px 15px;
-      margin:20px auto 25px;
-      max-width:900px;
-      box-shadow:0 0 20px rgba(204,231,240,0.6), inset 0 0 12px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.2);
-      text-align:center;
-    }
+/* YOUTUBE SHORTS */
+.yt-box{width:100%;max-width:900px;margin:20px auto;border-radius:15px;overflow:hidden;background: #cce7f0;padding:15px;box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+.yt-box h2{text-align:center;font-size:1.3em;margin-bottom:8px;color: var(--text-dark);}
+.yt-box p{margin-bottom:10px;font-size:0.9em;}
+.yt-container{position:relative;width:100%;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;}
+.yt-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+.yt-button{margin-top:10px;display:inline-block;background:var(--blue-light);color:#000;padding:8px 14px;border-radius:8px;font-weight:600;transition:background 0.3s ease;}
+.yt-button:hover{background:var(--blue-hover);color:#fff;}
 
-    .top-column img {width:100%; border-radius:15px; margin-bottom:15px; display:block;}
-    .top-column h1 {
-      font-family:'Great Vibes', cursive;
-      font-size:2.3em;
-      color: var(--text-dark);
-      text-shadow:0 0 10px rgba(255,255,255,0.7),2px 2px 4px rgba(0,0,0,0.25);
-      margin-bottom:5px;
-    }
-    .top-column .tagline {font-size:1.1em; font-style:italic; margin-bottom:8px;}
-    .top-column .info {
-      font-size:0.95em;
-      line-height:1.5em;
-      background: rgba(255,255,255,0.6);
-      display:inline-block;
-      padding:6px 12px;
-      border-radius:10px;
-      margin-bottom:10px;
-    }
-    .top-column .info div {line-height:1.5em;} /* untuk alamat 2 baris */
-    .top-column .about {
-      padding:15px 0;
-      font-size:1em;
-      line-height:1.6em;
-      color: var(--text-dark);
-      text-align:justify;
-    }
-    .top-column .cta {
-      margin-top:10px;
-      font-weight:bold;
-    }
+/* FOOTER */
+footer{font-size:0.85em;color:#876;margin:30px 0 10px;text-align:center;}
 
-    .brosur {
-      width:100%;
-      max-width:900px;
-      background: var(--beige);
-      border:2px solid var(--rose);
-      margin:20px auto;
-      box-shadow:0 4px 12px rgba(0,0,0,0.15);
-    }
-    .brosur-title {
-      font-size:1.35em;
-      font-weight:600;
-      color: var(--text-dark);
-      padding:10px;
-      text-shadow:1px 1px 2px rgba(0,0,0,0.2);
-      text-align:center;
-    }
-    .brosur img {width:100%; height:auto; display:block;}
+/* FLOATING WA */
+.floating-wa{position:fixed;bottom:18px;right:18px;background-color: var(--green);color:white;border-radius:10px;padding:10px 18px;font-weight:600;box-shadow:0 4px 10px rgba(0,0,0,0.25);z-index:9999;display:flex;align-items:center;gap:8px;transition: background 0.3s ease, transform 0.2s ease;cursor:pointer;}
+.floating-wa:hover{background:#2e6d4a;transform:scale(1.05);}
+.floating-wa svg{width:24px;height:24px;fill:white;}
+.wa-bubble{position:fixed;bottom:70px;right:25px;background:#e63946;color:white;padding:6px 12px;border-radius:20px;font-size:0.85em;font-weight:600;animation: blink 1.5s infinite;box-shadow:0 2px 6px rgba(0,0,0,0.25);z-index:9999;}
 
-    .map-box, .yt-box {
-      width:100%;
-      max-width:900px;
-      margin:20px auto;
-      border-radius:15px;
-      overflow:hidden;
-      background: #cce7f0;
-      padding:15px;
-      box-shadow:0 4px 10px rgba(0,0,0,0.1);
-    }
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
 
-    .map-box h2, .yt-box h2 {
-      font-size:1.55em;
-      margin-bottom:10px;
-      color: var(--text-dark);
-      text-align:center;
-    }
-
-    .map-container {
-      position:relative;
-      aspect-ratio:16/9;
-      cursor:pointer;
-      transition:transform 0.2s ease;
-    }
-    .map-container:hover {transform:scale(1.02);}
-    .map-container iframe {
-      width:100%; height:100%;
-      border:0; border-radius:10px;
-    }
-
-    .yt-container {
-      position:relative;
-      width:100%;
-      padding-bottom:56.25%;
-      height:0;
-      overflow:hidden;
-      border-radius:10px;
-      background:#000;
-    }
-    .yt-container iframe {
-      position:absolute;
-      top:0; left:0;
-      width:100%; height:100%;
-      border:0;
-    }
-
-    .yt-button {
-      margin-top:10px;
-      display:inline-block;
-      background:var(--blue-light);
-      color:#000;
-      padding:8px 14px;
-      border-radius:8px;
-      text-decoration:none;
-      font-weight:600;
-      transition:background 0.3s ease;
-    }
-    .yt-button:hover {background:var(--blue-hover); color:#fff;}
-
-    footer {
-      font-size:0.9em;
-      color:#876;
-      margin:30px 0 10px;
-    }
-
-    .floating-wa {
-      position:fixed;
-      bottom:18px; right:18px;
-      background-color: var(--green);
-      color:white;
-      border-radius:10px;
-      padding:10px 18px;
-      text-decoration:none;
-      font-weight:600;
-      box-shadow:0 4px 10px rgba(0,0,0,0.25);
-      z-index:999;
-      transition: background 0.3s ease, transform 0.2s ease;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      animation: pulse 2s infinite ease-in-out;
-    }
-    .floating-wa:hover {background:#2e6d4a; transform:scale(1.05);}
-    .floating-wa svg {
-      width:20px;
-      height:20px;
-      fill:white;
-    }
-
-    .wa-bubble {
-      position:fixed;
-      bottom:70px;
-      right:25px;
-      background:#e63946;
-      color:white;
-      padding:6px 12px;
-      border-radius:20px;
-      font-size:0.85em;
-      font-weight:600;
-      animation: blink 1.5s infinite;
-      box-shadow:0 2px 6px rgba(0,0,0,0.25);
-    }
-
-    @keyframes blink {
-      0%, 100% {opacity:1;}
-      50% {opacity:0.4;}
-    }
-
-    @keyframes pulse {
-      0%, 100% {transform:scale(1);}
-      50% {transform:scale(1.05);}
-    }
-  </style>
+@media(max-width:600px){h1{font-size:1.7em;}.top-section h1{font-size:1.7em;}.top-section .tagline{font-size:0.9em;}.about p{font-size:0.9em;}.brosur-title{font-size:1.1em;}.map-box h2,.yt-box h2{font-size:1.1em;}.cta-paragraph{font-size:0.95em;}}
+</style>
 </head>
-
 <body>
 
-  <div class="top-column">
-    <img src="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w2000" alt="Banner Rumah Nenek">
-    <h1>Rumah Nenek</h1>
-    <div class="tagline">Bersihnya Sehangat Pelukan Nenek 💕<br>Gratis Jemput & Antar ke Rumah Anda!</div>
-    <div class="info">
-      <div>Jl. Mashudi No.10, Pangulah Utara</div>
-      <div>Kec. Kota Baru, Karawang, Jawa Barat 41374</div>
-      📞 0895-6223-09251
-    </div>
-    <div class="about">
-      Di Rumah Nenek, kami merawat pakaian Anda dengan cinta, cepat, dan rapi – seperti pelukan hangat nenek. Layanan laundry kami memastikan pakaian selalu bersih, wangi, dan nyaman dipakai, membuat hari Anda lebih ringan dan menyenangkan.
-    </div>
-    <div class="cta">
-      Hubungi kami sekarang, dan biarkan kami jemput cucian Anda hari ini juga!
-    </div>
-  </div>
+<div class="top-section">
+<img src="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w2000" alt="Banner Rumah Nenek">
+<div class="header-content">
+<h1>Rumah Nenek</h1>
+<div class="tagline">Bersihnya Sehangat Pelukan Nenek 💕<br>Gratis Jemput & Antar ke Rumah Anda!</div>
+<div class="info">
+Jl. Mashudi No.10, Pangulah Utara<br>
+Kec. Kota Baru, Karawang, Jawa Barat 41374
+</div>
+<div class="about">
+<p>Di Rumah Nenek, kami merawat pakaian Anda dengan cinta, cepat, dan rapi – seperti pelukan hangat nenek. Layanan laundry kami memastikan pakaian selalu bersih, wangi, dan nyaman dipakai, membuat hari Anda lebih ringan dan menyenangkan.</p>
+<div class="cta-paragraph" onclick="window.open('https://wa.me/62895622309251','_blank')">
+<svg viewBox="0 0 32 32"><path d="M16 2.6c-7.4 0-13.4 6-13.4 13.4 0 2.4.6 4.7 1.8 6.7L2 30l7.6-2c1.9 1 4 1.5 6.3 1.5 7.4 0 13.4-6 13.4-13.4S23.4 2.6 16 2.6zm0 24.4c-2 0-4-.5-5.7-1.4l-.4-.2-4.5 1.2 1.2-4.4-.3-.4c-1.1-1.8-1.6-3.9-1.6-6 0-6.3 5.1-11.4 11.4-11.4s11.4 5.1 11.4 11.4S22.3 27 16 27zm6.2-8.3c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.3-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1s0-.5.2-.7.3-.4.5-.7.2-.4.3-.6.1-.3 0-.5c0-.2-.7-1.7-1-2.3-.3-.5-.5-.4-.7-.4h-.6c-.2 0-.5.1-.8.3-.3.2-1 .9-1 2.2s1 2.6 1.2 2.8c.2.2 1.9 2.9 4.6 4 .6.3 1.1.5 1.4.6.6.2 1.1.2 1.5.1.5-.1 1.9-.8 2.1-1.6.3-.8.3-1.5.2-1.6z"/></svg>
+<span class="cta-text">Order Sekarang &<br>Jemput Cucian Hari Ini!</span>
+</div>
+</div>
+</div>
+</div>
 
-  <div class="brosur">
-    <div class="brosur-title">Promosi Bulan Ini</div>
-    <img src="https://drive.google.com/thumbnail?id=1AXSSlhYJn3JzXwHSZE-Z_TuxLTCMYeLG&sz=w2000" alt="Brosur Promo Laundry">
-    <p style="padding:10px; font-size:1em; color:var(--text-dark);"><strong>Nikmati diskon hingga 20% untuk pelanggan baru!</strong><br>Klik tombol WhatsApp di bawah untuk order sebelum promo berakhir!</p>
-  </div>
+<!-- Sisanya tidak diubah -->
+<div class="brosur">
+<div class="brosur-title">Promosi Bulan Ini</div>
+<img src="https://drive.google.com/thumbnail?id=1AXSSlhYJn3JzXwHSZE-Z_TuxLTCMYeLG&sz=w2000" alt="Brosur Promo Laundry">
+<p><strong>Nikmati diskon hingga 20% untuk pelanggan baru!</strong><br>Klik tombol WhatsApp di bawah untuk order sebelum promo berakhir!</p>
+</div>
 
-  <div class="map-box">
-    <h2>Temukan Kami</h2>
-    <p style="margin-bottom:10px;">Dekat dari rumah Anda! Kami siap menjemput cucian di area Cariu & sekitarnya.</p>
-    <div class="map-container" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-6.400373,107.48995','_blank')">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.4568323886547!2d107.4882!3d-6.4003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMjQnMDEuMyJTIDEwN8KwMjknMjMuOCJF!5e0!3m2!1sid!2sid!4v1730300000000!5m2!1sid!2sid" allowfullscreen="" loading="lazy"></iframe>
-    </div>
-  </div>
+<div class="map-box">
+<h2>Temukan Kami</h2>
+<p>Dekat dari rumah Anda! Kami siap menjemput cucian di area Cariu & sekitarnya.</p>
+<div class="map-container" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-6.400373,107.48995','_blank')">
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.4568323886547!2d107.4882!3d-6.4003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMjQnMDEuMyJTIDEwN8KwMjknMjMuOCJF!5e0!3m2!1sid!2sid!4v1730300000000!5m2!1sid!2sid" allowfullscreen="" loading="lazy"></iframe>
+</div>
+</div>
 
-  <div class="yt-box">
-    <h2>Shorts Terbaru Kami</h2>
-    <p>Lihat hasil cucian kami yang kinclong dan wangi langsung di video berikut 👇</p>
-    <div class="yt-container" id="ytShortContainer">
-      <iframe 
-        src="https://www.youtube.com/embed/VAfL1_HDXcY"
-        title="Shorts Rumah Nenek"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-      </iframe>
-    </div>
-    <a href="https://www.youtube.com/@mbundarara3888" class="yt-button" target="_blank">🔗 Lihat Channel Lengkap</a>
-  </div>
+<div class="yt-box">
+<h2>Shorts Terbaru Kami</h2>
+<p>Lihat hasil cucian kami yang kinclong dan wangi langsung di video berikut 👇</p>
+<div class="yt-container" id="ytShortContainer">
+<iframe src="https://www.youtube.com/embed/VAfL1_HDXcY" title="Shorts Rumah Nenek" allowfullscreen></iframe>
+</div>
+<a href="https://www.youtube.com/@mbundarara3888" class="yt-button" target="_blank">🔗 Lihat Channel Lengkap</a>
+</div>
 
-  <footer>© 2025 Rumah Nenek • Laundry Vintage dengan Cinta 💕<br>Siap menjemput cucian Anda hari ini!</footer>
+<footer>© 2025 Rumah Nenek • Laundry Vintage dengan Cinta 💕<br>Siap menjemput cucian Anda hari ini!</footer>
 
-  <div class="wa-bubble">Gratis Antar Jemput</div>
+<div class="wa-bubble">Gratis Antar Jemput</div>
 
-  <a href="https://wa.me/62895622309251" class="floating-wa" target="_blank">
-    <svg viewBox="0 0 32 32">
-      <path d="M16 2.6c-7.4 0-13.4 6-13.4 13.4 0 2.4.6 4.7 1.8 6.7L2 30l7.6-2c1.9 1 4 1.5 6.3 1.5 7.4 0 13.4-6 13.4-13.4S23.4 2.6 16 2.6zm0 24.4c-2 0-4-.5-5.7-1.4l-.4-.2-4.5 1.2 1.2-4.4-.3-.4c-1.1-1.8-1.6-3.9-1.6-6 0-6.3 5.1-11.4 11.4-11.4s11.4 5.1 11.4 11.4S22.3 27 16 27zm6.2-8.3c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.3-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1s0-.5.2-.7.3-.4.5-.7.2-.4.3-.6.1-.3 0-.5c0-.2-.7-1.7-1-2.3-.3-.5-.5-.4-.7-.4h-.6c-.2 0-.5.1-.8.3-.3.2-1 .9-1 2.2s1 2.6 1.2 2.8c.2.2 1.9 2.9 4.6 4 .6.3 1.1.5 1.4.6.6.2 1.1.2 1.5.1.5-.1 1.9-.8 2.1-1.6.3-.8.3-1.5.2-1.6z"/>
-    </svg>
-    Order Sekarang
-  </a>
-
-  <script>
-    const apiKey = "AIzaSyCTdP7YEqhfZTTVwTOuLQICKbwd_L67ibo";
-    const channelId = "UCly-5Z3KxKjKuM0bfkPgLRQ";
-    const ytShortContainer = document.getElementById("ytShortContainer");
-
-    async function loadLatestShort() {
-      try {
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=5`);
-        const data = await res.json();
-        if (data.items) {
-          const short = data.items.find(v => v.id.videoId && v.id.kind === "youtube#video");
-          if (short) {
-            const videoId = short.id.videoId;
-            ytShortContainer.innerHTML = `
-              <iframe src="https://www.youtube.com/embed/${videoId}" 
-                title="Shorts Terbaru"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen>
-              </iframe>`;
-          }
-        }
-      } catch (err) {
-        console.error("Gagal memuat video:", err);
-      }
-    }
-
-    loadLatestShort();
-    setInterval(loadLatestShort, 21600000);
-  </script>
+<a href="https://wa.me/62895622309251" class="floating-wa" target="_blank">
+<svg viewBox="0 0 32 32"><path d="M16 2.6c-7.4 0-13.4 6-13.4 13.4 0 2.4.6 4.7 1.8 6.7L2 30l7.6-2c1.9 1 4 1.5 6.3 1.5 7.4 0 13.4-6 13.4-13.4S23.4 2.6 16 2.6zm0 24.4c-2 0-4-.5-5.7-1.4l-.4-.2-4.5 1.2 1.2-4.4-.3-.4c-1.1-1.8-1.6-3.9-1.6-6 0-6.3 5.1-11.4 11.4-11.4s11.4 5.1 11.4 11.4S22.3 27 16 27zm6.2-8.3c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.3-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1s0-.5.2-.7.3-.4.5-.7.2-.4.3-.6.1-.3 0-.5c0-.2-.7-1.7-1-2.3-.3-.5-.5-.4-.7-.4h-.6c-.2 0-.5.1-.8.3-.3.2-1 .9-1 2.2s1 2.6 1.2 2.8c.2.2 1.9 2.9 4.6 4 .6.3 1.1.5 1.4.6.6.2 1.1.2 1.5.1.5-.1 1.9-.8 2.1-1.6.3-.8.3-1.5.2-1.6z"/></svg>
+Order Sekarang
+</a>
 
 </body>
 </html>
