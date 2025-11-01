@@ -4,14 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Laundry Cariu • Rumah Nenek</title>
+
+<!-- Preconnect & Preload fonts (performance) -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&display=swap" as="style" onload="this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet"></noscript>
+
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 
-<!-- 🔍 SEO & Bisnis Lokal Enhancement -->
+<!-- SEO & Bisnis Lokal Enhancement -->
 <meta name="description" content="Rumah Nenek Laundry melayani cuci setrika cepat, bersih, dan wangi. Gratis jemput antar area Cariu, Karawang.">
 <meta name="keywords" content="Laundry Cariu, Rumah Nenek Laundry, Laundry Karawang, Laundry Jemput Antar, Cuci Setrika Karawang">
 <meta name="author" content="Rumah Nenek Laundry">
+<meta name="theme-color" content="#fdf6ee">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 <meta property="og:title" content="Rumah Nenek Laundry - Cuci Setrika Cepat & Wangi">
-<meta property="og:description" content="Gratis jemput antar area Cariu, Karawang. Laundry rumahan yang bersih dan wangi seperti pelukan nenek 💕">
+<meta property="og:description" content="Gratis jemput antar area Cariu, Karawang. Laundry rumahan yang bersih dan wangi seperti pelukan nenek 💖">
 <meta property="og:image" content="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w1200">
 <meta property="og:url" content="https://mbundarara.github.io/rumahnenek/">
 <meta property="og:type" content="business.business">
@@ -23,7 +32,7 @@
 <meta property="business:contact_data:phone_number" content="+62895622309251">
 <meta property="business:contact_data:website" content="https://mbundarara.github.io/rumahnenek/">
 
-<!-- 📍 Schema Markup (Structured Data for Google Maps) -->
+<!-- Schema Markup -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -109,6 +118,62 @@ a{text-decoration:none;}
 .yt-button{margin-top:10px;display:inline-block;background:var(--blue-light);color:#000;padding:8px 14px;border-radius:8px;font-weight:600;transition:background 0.3s ease;}
 .yt-button:hover{background:var(--blue-hover);color:#fff;}
 
+/* INSTAGRAM FEED (styling harmonized with yt-box theme) */
+.ig-box{
+  /* keep separate class but harmonize background & spacing with yt-box */
+  width:100%;
+  max-width:900px;
+  margin:20px auto;
+  border-radius:15px;
+  overflow:hidden;
+  background: #cce7f0; /* same as yt-box */
+  padding:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+.ig-box h2{
+  text-align:center;
+  font-size:1.3em;
+  margin-bottom:8px;
+  color:var(--text-dark);
+}
+.ig-box p{
+  margin-bottom:10px;
+  font-size:0.9em;
+}
+.ig-container{
+  /* use same aspect ratio container as YouTube for visual harmony */
+  position:relative;
+  width:100%;
+  padding-bottom:56.25%; /* 16:9 like yt-container */
+  height:0;
+  overflow:hidden;
+  border-radius:10px;
+  background:#000; /* mimic yt-container */
+}
+.ig-container iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  border:0;
+}
+.ig-button{
+  margin-top:10px;
+  display:inline-block;
+  background:var(--blue-light); /* same CTA color family as yt-button */
+  color:#000;
+  padding:8px 14px;
+  border-radius:8px;
+  font-weight:600;
+  transition:background 0.3s ease;
+  text-decoration:none;
+}
+.ig-button:hover{
+  background:var(--blue-hover);
+  color:#fff;
+}
+
 /* FOOTER */
 footer{font-size:0.85em;color:#876;margin:30px 0 10px;text-align:center;}
 
@@ -117,59 +182,83 @@ footer{font-size:0.85em;color:#876;margin:30px 0 10px;text-align:center;}
 .floating-wa:hover{background:#2e6d4a;transform:scale(1.05);}
 .floating-wa svg{width:24px;height:24px;fill:white;}
 .wa-bubble{position:fixed;bottom:70px;right:25px;background:#e63946;color:white;padding:6px 12px;border-radius:20px;font-size:0.85em;font-weight:600;animation: blink 1.5s infinite;box-shadow:0 2px 6px rgba(0,0,0,0.25);z-index:9999;}
-
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
-
-@media(max-width:600px){h1{font-size:1.7em;}.top-section h1{font-size:1.7em;}.top-section .tagline{font-size:0.9em;}.about p{font-size:0.9em;}.brosur-title{font-size:1.1em;}.map-box h2,.yt-box h2{font-size:1.1em;}.cta-paragraph{font-size:0.95em;}}
+@media(max-width:600px){h1{font-size:1.7em;}.top-section h1{font-size:1.7em;}.top-section .tagline{font-size:0.9em;}.about p{font-size:0.9em;}.brosur-title{font-size:1.1em;}.map-box h2,.yt-box h2,.ig-box h2{font-size:1.1em;}.cta-paragraph{font-size:0.95em;}}
 </style>
 </head>
 <body>
 
 <div class="top-section">
-<img src="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w2000" alt="Banner Rumah Nenek">
-<div class="header-content">
-<h1>Rumah Nenek</h1>
-<div class="tagline">Bersihnya Sehangat Pelukan Nenek 💕<br>Gratis Jemput & Antar ke Rumah Anda!</div>
-<div class="info">
-Jl. Mashudi No.10, Pangulah Utara<br>
-Kec. Kota Baru, Karawang, Jawa Barat 41374
-</div>
-<div class="about">
-<p>Di Rumah Nenek, kami merawat pakaian Anda dengan cinta, cepat, dan rapi – seperti pelukan hangat nenek. Layanan laundry kami memastikan pakaian selalu bersih, wangi, dan nyaman dipakai, membuat hari Anda lebih ringan dan menyenangkan.</p>
-<div class="cta-paragraph" onclick="window.open('https://wa.me/62895622309251?text=Halo%20Rumah%20Nenek%20Laundry!%20Saya%20mau%20order%20jemput%20cucian%20dong%20🙏','_blank')">
-<svg viewBox="0 0 32 32"><path d="M16 2.6c-7.4 0-13.4 6-13.4 13.4 0 2.4.6 4.7 1.8 6.7L2 30l7.6-2c1.9 1 4 1.5 6.3 1.5 7.4 0 13.4-6 13.4-13.4S23.4 2.6 16 2.6zm0 24.4c-2 0-4-.5-5.7-1.4l-.4-.2-4.5 1.2 1.2-4.4-.3-.4c-1.1-1.8-1.6-3.9-1.6-6 0-6.3 5.1-11.4 11.4-11.4s11.4 5.1 11.4 11.4S22.3 27 16 27zm6.2-8.3c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.3-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1s0-.5.2-.7.3-.4.5-.7.2-.4.3-.6.1-.3 0-.5c0-.2-.7-1.7-1-2.3-.3-.5-.5-.4-.7-.4h-.6c-.2 0-.5.1-.8.3-.3.2-1 .9-1 2.2s1 2.6 1.2 2.8c.2.2 1.9 2.9 4.6 4 .6.3 1.1.5 1.4.6.6.2 1.1.2 1.5.1.5-.1 1.9-.8 2.1-1.6.3-.8.3-1.5.2-1.6z"/></svg>
-<span class="cta-text">Order Sekarang &<br>Jemput Cucian Hari Ini!</span>
-</div>
-</div>
-</div>
+  <img src="https://drive.google.com/thumbnail?id=1fRlqd40AIgNZOc0YANzlAnsSM-rXOjQs&sz=w2000" alt="Banner Rumah Nenek" loading="lazy">
+  <div class="header-content">
+    <h1>Rumah Nenek</h1>
+    <div class="tagline">Bersihnya Sehangat Pelukan Nenek 💖<br>Gratis Jemput & Antar ke Rumah Anda!</div>
+    <div class="info">
+      Jl. Mashudi No.10, Pangulah Utara<br>
+      Kec. Kota Baru, Karawang, Jawa Barat 41374
+    </div>
+    <div class="about">
+      <p>Di Rumah Nenek, kami merawat pakaian Anda dengan cinta, cepat, dan rapi – seperti pelukan hangat nenek. Layanan laundry kami memastikan pakaian selalu bersih, wangi, dan nyaman dipakai, membuat hari Anda lebih ringan dan menyenangkan.</p>
+      <div class="cta-paragraph" onclick="window.open('https://wa.me/62895622309251?text=Halo%20Rumah%20Nenek%20Laundry!%20Saya%20mau%20order%20jemput%20cucian%20dong%20%F0%9F%92%96','_blank')" role="button" aria-label="Order sekarang via WhatsApp">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.6c-7.4 0-13.4 6-13.4 13.4 0 2.4.6 4.7 1.8 6.7L2 30l7.6-2c1.9 1 4 1.5 6.3 1.5 7.4 0 13.4-6 13.4-13.4S23.4 2.6 16 2.6zm0 24.4c-2 0-4-.5-5.7-1.4l-.4-.2-4.5 1.2 1.2-4.4-.3-.4c-1.1-1.8-1.6-3.9-1.6-6 0-6.3 5.1-11.4 11.4-11.4s11.4 5.1 11.4 11.4S22.3 27 16 27z"/></svg>
+        <span class="cta-text">Order Sekarang &<br>Jemput Cucian Hari Ini!</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="brosur">
-<div class="brosur-title">Promosi Bulan Ini</div>
-<img src="https://drive.google.com/thumbnail?id=1AXSSlhYJn3JzXwHSZE-Z_TuxLTCMYeLG&sz=w2000" alt="Brosur Promo Laundry">
-<p><strong>Nikmati diskon hingga 20% untuk pelanggan baru!</strong><br>Klik tombol WhatsApp di bawah untuk order sebelum promo berakhir!</p>
+  <div class="brosur-title">Promosi Bulan Ini</div>
+  <img src="https://drive.google.com/thumbnail?id=1AXSSlhYJn3JzXwHSZE-Z_TuxLTCMYeLG&sz=w2000" alt="Brosur Promo Laundry" loading="lazy">
+  <p><strong>Nikmati diskon hingga 20% untuk pelanggan baru!</strong><br>Klik tombol WhatsApp di bawah untuk order sebelum promo berakhir!</p>
 </div>
 
 <div class="map-box">
-<h2>Temukan Kami</h2>
-<p>Dekat dari rumah Anda! Kami siap menjemput cucian di area Cariu & sekitarnya.</p>
-<div class="map-container" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-6.400373,107.48995','_blank')">
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.4568323886547!2d107.4882!3d-6.4003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMjQnMDEuMyJTIDEwN8KwMjknMjMuOCJF!5e0!3m2!1sid!2sid!4v1730300000000!5m2!1sid!2sid" allowfullscreen="" loading="lazy"></iframe>
-</div>
+  <h2>Temukan Kami</h2>
+  <p>Dekat dari rumah Anda! Kami siap menjemput cucian di area Cariu & sekitarnya.</p>
+  <div class="map-container" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-6.400373,107.48995','_blank')">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.4568323886547!2d107.4882!3d-6.4003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMjQnMDEuMyJTIDEwN8KwMjknMjMuOCJF!5e0!3m2!1sid!2sid!4v1730300000000!5m2!1sid!2sid" allowfullscreen="" loading="lazy"></iframe>
+  </div>
 </div>
 
 <div class="yt-box">
-<h2>Shorts Terbaru Kami</h2>
-<p>Lihat hasil cucian kami yang kinclong dan wangi langsung di video berikut 👇</p>
-<div class="yt-container" id="ytShortContainer">
-<iframe src="https://www.youtube.com/embed/VAfL1_HDXcY" title="Shorts Rumah Nenek" allowfullscreen></iframe>
-</div>
-<a href="https://www.youtube.com/@mbundarara3888" class="yt-button" target="_blank">🔗 Lihat Channel Lengkap</a>
+  <h2>Shorts Terbaru Kami</h2>
+  <p>Lihat hasil cucian kami yang kinclong dan wangi langsung di video berikut 💦</p>
+  <div class="yt-container">
+    <iframe src="https://www.youtube.com/embed/VAfL1_HDXcY" title="Shorts Rumah Nenek" allowfullscreen></iframe>
+  </div>
+  <a href="https://www.youtube.com/@mbundarara3888" class="yt-button" target="_blank" rel="noopener noreferrer">🎥 Lihat Channel Lengkap</a>
 </div>
 
-<footer>© 2025 Rumah Nenek • Laundry Vintage dengan Cinta 💕<br>Siap menjemput cucian Anda hari ini!</footer>
+<!-- INSTAGRAM FEED (harmonized style - color & theme like YouTube) -->
+<div class="ig-box">
+  <h2>📸 Galeri Rumah Nenek Laundry</h2>
+  <p>Lihat keseharian kami, hasil cucian wangi, dan promo terbaru langsung dari Instagram!</p>
+  <div class="ig-container">
+    <!-- Instagram embed: official embed requires script. 
+         If profile/post is public and available, this iframe may show; otherwise Instagram script below handles blockquote embeds.
+         Keputusan: kita siapkan iframe fallback + script. -->
+    <iframe src="https://www.instagram.com/rumahnenekadmin/embed" allowtransparency="true" frameborder="0" scrolling="no" allowfullscreen title="Instagram Rumah Nenek"></iframe>
+  </div>
+  <a href="https://www.instagram.com/rumahnenekadmin" class="ig-button" target="_blank" rel="noopener noreferrer">🌸 Kunjungi Instagram Kami</a>
+</div>
+
+<footer>© 2025 Rumah Nenek • Laundry Vintage dengan Cinta 💖<br>Siap menjemput cucian Anda hari ini!</footer>
 
 <div class="wa-bubble">Gratis Antar Jemput</div>
 
-<a href="https://wa.me/62895622309251?text=Halo%20Rumah%20Nenek%20Laundry!%20Saya%20mau%20order%20jemput%20cucian%20dong%20🙏" class="floating-wa" target="_blank">
-<svg viewBox="0 0 32 32"><path d="M16 2.6c-7.4 0-13.4 6-13.4 13.4 0 2.4.6 4.7 1.8 6.7L2 30l7.6-2c1.9 1 4 1.5 6.3 1.5 7.4 0 13.4-6 13.4-13.4S23.4 2.6 16 2.6zm0 24.4c-2 0-4-.5-5.7-1.4l-.4-.2-4.5 1.2 1.2-4.4-.3-.4c-1.1-1.8-1.6-3.9-1.6-6 0-6.3
+<a href="https://wa.me/62895622309251?text=Halo%20Rumah%20Nenek%20Laundry!%20Saya%20mau%20order%20jemput%20cucian%20dong%20%F0%9F%92%96" class="floating-wa" target="_blank" rel="noopener noreferrer" aria-label="Hubungi Rumah Nenek via WhatsApp">
+  <!-- Lengkapkan SVG ikon WhatsApp yang aman -->
+  <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+    <path d="M20.5 3.5A11.9 11.9 0 0012 .1 11.9 11.9 0 003.5 3.5 11.9 11.9 0 00.1 12c0 2.1.6 4 1.8 5.7L.1 24l5-1.6A11.9 11.9 0 0012 23.9c6.6 0 12-5.4 12-12 0-3.2-1.3-6.1-3.5-8.4zM12 21.5c-1.6 0-3.1-.4-4.5-1.2l-.3-.2-3 .8.8-3.1-.2-.3A9.5 9.5 0 012.5 12 9.5 9.5 0 0112 2.5 9.5 9.5 0 0121.5 12 9.5 9.5 0 0112 21.5z"/>
+    <path d="M16.2 14.3c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.3-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1s0-.5.2-.7.3-.4.5-.7.2-.4.3-.6.1-.3 0-.5c0-.2-.7-1.7-1-2.3-.3-.5-.5-.4-.7-.4h-.6c-.2 0-.5.1-.8.3-.3.2-1 .9-1 2.2s1 2.6 1.2 2.8c.2.2 1.9 2.9 4.6 4 .6.3 1.1.5 1.4.6.6.2 1.1.2 1.5.1.5-.1 1.9-.8 2.1-1.6.3-.8.3-1.5.2-1.6z"/>
+  </svg>
+  <span>Hubungi via WhatsApp</span>
+</a>
+
+<!-- Instagram embed script (official). If blockquote embeds are used, this parses them.
+     Included to improve chances embed content loads properly when available. -->
+<script async src="//www.instagram.com/embed.js"></script>
+
+</body>
+</html>
