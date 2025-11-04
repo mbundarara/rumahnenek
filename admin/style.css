@@ -1,9 +1,57 @@
-body{font-family:sans-serif;background:#fdf6ee;color:#333;padding:15px;}
-h1{text-align:center;}
-button{padding:10px 15px;background:#38b000;color:#fff;border:none;border-radius:5px;cursor:pointer;}
-button:hover{background:#2e6d4a;}
-table{width:100%;border-collapse:collapse;margin-top:20px;}
-th,td{border:1px solid #ccc;padding:8px;text-align:center;font-size:0.9em;}
-th{background:#cce7f0;}
-.print-btn{padding:5px 8px;background:#5bb4d1;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.8em;}
-.print-btn:hover{background:#2e6d4a;}
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fdf6ee;
+  color: #3d2b1f;
+  padding: 10px;
+}
+.admin-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+#loadOrders {
+  display: block;
+  margin: 0 auto 20px auto;
+  padding: 10px 20px;
+  background-color: #38b000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#loadOrders:hover { background-color: #2e6d4a; }
+
+#ordersTableWrapper {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+th {
+  background-color: #cce7f0;
+}
+tr:nth-child(even) {
+  background-color: #f5e8d0;
+}
+button.printBtn {
+  padding: 4px 8px;
+  background-color: #7cc7e0;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button.printBtn:hover {
+  background-color: #5bb4d1;
+  color: #fff;
+}
