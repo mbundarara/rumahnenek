@@ -4,45 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin • Rumah Nenek Laundry</title>
-
-<style>
-body {font-family: Arial, sans-serif; background:#fdf6ee; color:#333; padding:20px;}
-h1,h2,h3{color:#3d2b1f;}
-button{padding:6px 12px; margin:5px; cursor:pointer; border-radius:6px; border:none; background:#38b000; color:#fff;}
-button:hover{background:#2e6d4a;}
-table{width:100%; border-collapse:collapse; margin-top:10px;}
-th, td{border:1px solid #ccc; padding:6px; text-align:center;}
-input, select{padding:6px; margin:3px; border-radius:5px; border:1px solid #ccc;}
-form {margin-top:10px;}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h1>📦 Data Order Laundry</h1>
 
-<h1>Admin • Rumah Nenek Laundry</h1>
+  <button id="loadOrders">Muat Orderan</button>
+  <table id="orderTable" border="1" cellpadding="6">
+    <thead>
+      <tr>
+        <th>No</th><th>Tanggal</th><th>Nama</th><th>Nomor WA</th>
+        <th>Jenis Cucian</th><th>Berat (kg)</th><th>Harga / Kg</th>
+        <th>Total</th><th>Catatan</th><th>Struk ID</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-<h2>📦 Data Order Laundry</h2>
-<button id="loadOrders">Muat Orderan</button>
-<table id="orderTable">
-  <thead>
-    <tr>
-      <th>No</th><th>Tanggal</th><th>Nama</th><th>Nomor WA</th>
-      <th>Jenis Cucian</th><th>Berat (kg)</th><th>Harga / Kg</th>
-      <th>Total</th><th>Catatan</th><th>Struk ID</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
-<h3>🧾 Tambah Order Baru</h3>
-<form id="orderForm">
-  <input type="text" id="nama" placeholder="Nama" required>
-  <input type="text" id="wa" placeholder="Nomor WA" required>
-  <input type="text" id="jenis" placeholder="Jenis Cucian" required>
-  <input type="number" id="berat" placeholder="Berat (kg)" required>
-  <input type="number" id="harga" placeholder="Harga / Kg" required>
-  <input type="text" id="catatan" placeholder="Catatan">
-  <button type="submit">Simpan</button>
-</form>
+  <h2>🧾 Tambah Order Baru</h2>
+  <form id="orderForm">
+    <input type="text" id="nama" placeholder="Nama" required>
+    <input type="text" id="wa" placeholder="Nomor WA" required>
+    <input type="text" id="jenis" placeholder="Jenis Cucian" required>
+    <input type="number" id="berat" placeholder="Berat (kg)" required>
+    <input type="number" id="harga" placeholder="Harga / Kg" required>
+    <input type="text" id="catatan" placeholder="Catatan">
+    <button type="submit">Simpan</button>
+  </form>
 
 <script src="script.js"></script>
 </body>
