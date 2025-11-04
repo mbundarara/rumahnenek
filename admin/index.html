@@ -3,34 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Rumah Nenek Laundry</title>
+<title>Admin • Rumah Nenek Laundry</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<h1>Admin Rumah Nenek Laundry</h1>
-<button id="loadOrders">Muat Orderan</button>
-
-<table id="ordersTable">
-  <thead>
-    <tr>
-      <th>No</th>
-      <th>Tanggal</th>
-      <th>Nama</th>
-      <th>No WA</th>
-      <th>Jenis Cucian</th>
-      <th>Berat (kg)</th>
-      <th>Harga / Kg</th>
-      <th>Total</th>
-      <th>Catatan</th>
-      <th>Struk ID</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
-
+<div class="admin-container">
+  <h1>Admin Rumah Nenek Laundry</h1>
+  <button id="loadOrders">📥 Muat Orderan</button>
+  <div id="ordersTableWrapper">
+    <table id="ordersTable">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Tanggal</th>
+          <th>Nama</th>
+          <th>No WA</th>
+          <th>Jenis Cucian</th>
+          <th>Berat (kg)</th>
+          <th>Harga / Kg</th>
+          <th>Total</th>
+          <th>Catatan</th>
+          <th>Struk ID</th>
+          <th>Cetak</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
 <script src="script.js"></script>
 </body>
 </html>
