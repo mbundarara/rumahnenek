@@ -3,37 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Rumah Nenek Laundry</title>
+<title>Admin • Rumah Nenek Laundry</title>
+
 <style>
-body {font-family: sans-serif; background:#fdf6ee; color:#3d2b1f; margin:20px;}
-h1, h2, h3 {text-align:center;}
-button {padding:6px 12px; margin:5px; border-radius:6px; border:none; cursor:pointer;}
-#orderTable {width:100%; border-collapse: collapse; margin-top:10px;}
-#orderTable th, #orderTable td {border:1px solid #5c4633; padding:6px; text-align:center;}
-#orderForm {display:flex; flex-wrap: wrap; gap:8px; justify-content:center; margin-top:10px;}
-#orderForm input {padding:6px; border-radius:6px; border:1px solid #5c4633;}
+body {font-family: Arial, sans-serif; background:#fdf6ee; color:#333; padding:20px;}
+h1,h2,h3{color:#3d2b1f;}
+button{padding:6px 12px; margin:5px; cursor:pointer; border-radius:6px; border:none; background:#38b000; color:#fff;}
+button:hover{background:#2e6d4a;}
+table{width:100%; border-collapse:collapse; margin-top:10px;}
+th, td{border:1px solid #ccc; padding:6px; text-align:center;}
+input, select{padding:6px; margin:3px; border-radius:5px; border:1px solid #ccc;}
+form {margin-top:10px;}
 </style>
 </head>
 <body>
 
-<h1>Admin Rumah Nenek Laundry</h1>
+<h1>Admin • Rumah Nenek Laundry</h1>
 
 <h2>📦 Data Order Laundry</h2>
 <button id="loadOrders">Muat Orderan</button>
-
 <table id="orderTable">
   <thead>
     <tr>
-      <th>No</th>
-      <th>Tanggal</th>
-      <th>Nama</th>
-      <th>Nomor WA</th>
-      <th>Jenis Cucian</th>
-      <th>Berat (kg)</th>
-      <th>Harga / Kg</th>
-      <th>Total</th>
-      <th>Catatan</th>
-      <th>Struk ID</th>
+      <th>No</th><th>Tanggal</th><th>Nama</th><th>Nomor WA</th>
+      <th>Jenis Cucian</th><th>Berat (kg)</th><th>Harga / Kg</th>
+      <th>Total</th><th>Catatan</th><th>Struk ID</th>
     </tr>
   </thead>
   <tbody></tbody>
@@ -50,85 +44,6 @@ button {padding:6px 12px; margin:5px; border-radius:6px; border:none; cursor:poi
   <button type="submit">Simpan</button>
 </form>
 
-<script>
-// Masukkan URL Google Apps Script
-const scriptURL = 'https://script.google.com/macros/s/AKfycbzAXJg4eg6LLyQo6erAh6vg1bntkB3-fVHKcbDu39rGYddxtSdBf2eFFjCaNs8uFRFRmQ/exec';
-const sheetName = 'base1'; // Nama sheet yang sudah diganti
-
-const loadOrdersBtn = document.getElementById('loadOrders');
-const orderTableBody = document.querySelector('#orderTable tbody');
-const orderForm = document.getElementById('orderForm');
-
-function formatDate(date){
-  const d = new Date(date);
-  return d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID');
-}
-
-function loadOrders(){
-  orderTableBody.innerHTML = 'Loading...';
-  fetch(`${scriptURL}?sheet=${sheetName}`)
-    .then(response => response.json())
-    .then(data => {
-      orderTableBody.innerHTML = '';
-      if(data.length === 0){
-        orderTableBody.innerHTML = '<tr><td colspan="10">Belum ada data</td></tr>';
-        return;
-      }
-      data.forEach((row, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${index+1}</td>
-          <td>${formatDate(row.Tanggal)}</td>
-          <td>${row.Nama}</td>
-          <td>${row['Nomor WA']}</td>
-          <td>${row['Jenis Cucian']}</td>
-          <td>${row['Berat (kg)']}</td>
-          <td>${row['Harga / Kg']}</td>
-          <td>${row.Total}</td>
-          <td>${row.Catatan}</td>
-          <td>${row['Struk ID']}</td>
-        `;
-        orderTableBody.appendChild(tr);
-      });
-    })
-    .catch(err => {
-      orderTableBody.innerHTML = '<tr><td colspan="10">Gagal memuat data</td></tr>';
-      console.error(err);
-    });
-}
-
-orderForm.addEventListener('submit', e=>{
-  e.preventDefault();
-  const formData = {
-    sheet: sheetName,
-    Nama: document.getElementById('nama').value,
-    'Nomor WA': document.getElementById('wa').value,
-    'Jenis Cucian': document.getElementById('jenis').value,
-    'Berat (kg)': document.getElementById('berat').value,
-    'Harga / Kg': document.getElementById('harga').value,
-    Total: Number(document.getElementById('berat').value) * Number(document.getElementById('harga').value),
-    Catatan: document.getElementById('catatan').value
-  };
-  
-  fetch(scriptURL, {
-    method: 'POST',
-    body: JSON.stringify(formData),
-    headers: {'Content-Type':'application/json'}
-  })
-  .then(response=>response.json())
-  .then(data=>{
-    alert('Order berhasil disimpan!');
-    orderForm.reset();
-    loadOrders();
-  })
-  .catch(err=>{
-    console.error(err);
-    alert('Gagal menyimpan order!');
-  });
-});
-
-loadOrdersBtn.addEventListener('click', loadOrders);
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
