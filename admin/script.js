@@ -1,43 +1,54 @@
-document.getElementById("loadData").addEventListener("click", () => {
-  fetch(SHEETS_API_URL)
-    .then(response => response.json())
-    .then(data => {
-      const orderList = document.getElementById("orderList");
-      orderList.innerHTML = ""; // clear previous
+const loadBtn = document.getElementById('loadOrders');
+const tableBody = document.querySelector('#ordersTable tbody');
 
-      if (!data || data.length === 0) {
-        orderList.innerHTML = "<p>Tidak ada data orderan.</p>";
-        return;
-      }
+loadBtn.addEventListener('click', async () => {
+  tableBody.innerHTML = "<tr><td colspan='11'>Memuat...</td></tr>";
+  try {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbzAXJg4eg6LLyQo6erAh6vg1bntkB3-fVHKcbDu39rGYddxtSdBf2eFFjCaNs8uFRFRmQ/exec');
+    const data = await res.json();
 
-      const table = document.createElement("table");
-      table.style.width = "100%";
-      table.style.borderCollapse = "collapse";
+    tableBody.innerHTML = "";
+    data.forEach((row, index) => {
+      // hitung total
+      const berat = parseFloat(row['Berat (kg)'] || 0);
+      const harga = parseFloat(row['Harga / Kg'] || 0);
+      const total = (berat * harga).toFixed(0);
 
-      const header = table.insertRow();
-      ["No", "Nama", "Alamat", "WA", "Jenis Cucian", "Jumlah", "Tanggal"].forEach(text => {
-        const th = document.createElement("th");
-        th.textContent = text;
-        th.style.border = "1px solid #5c4633";
-        th.style.padding = "6px";
-        th.style.backgroundColor = "#e7c7a5";
-        header.appendChild(th);
-      });
-
-      data.forEach((row, i) => {
-        const tr = table.insertRow();
-        [i + 1, row.nama, row.alamat, row.wa, row.jenis, row.jumlah, row.tanggal].forEach(text => {
-          const td = tr.insertCell();
-          td.textContent = text;
-          td.style.border = "1px solid #5c4633";
-          td.style.padding = "6px";
-        });
-      });
-
-      orderList.appendChild(table);
-    })
-    .catch(err => {
-      document.getElementById("orderList").innerHTML = "<p>Gagal memuat data.</p>";
-      console.error(err);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.No || index+1}</td>
+        <td>${row.Tanggal || ''}</td>
+        <td>${row.Nama || ''}</td>
+        <td>${row['Nomor WA'] || ''}</td>
+        <td>${row['Jenis Cucian'] || ''}</td>
+        <td>${row['Berat (kg)'] || ''}</td>
+        <td>${row['Harga / Kg'] || ''}</td>
+        <td>${total}</td>
+        <td>${row.Catatan || ''}</td>
+        <td>${row['Struk ID'] || ''}</td>
+        <td><button class="print-btn" onclick='printStruk(${JSON.stringify(row)})'>Cetak Struk</button></td>
+      `;
+      tableBody.appendChild(tr);
     });
+  } catch (err) {
+    tableBody.innerHTML = "<tr><td colspan='11'>Error memuat data</td></tr>";
+    console.error(err);
+  }
 });
+
+function printStruk(order){
+  const win = window.open('', 'Print Struk', 'width=400,height=600');
+  const berat = parseFloat(order['Berat (kg)'] || 0);
+  const harga = parseFloat(order['Harga / Kg'] || 0);
+  const total = (berat * harga).toFixed(0);
+
+  win.document.write(`<html><head><title>Struk ${order['Struk ID'] || ''}</title></head><body style="font-family:sans-serif;text-align:left;padding:10px;">`);
+  win.document.write(`<h2>Rumah Nenek Laundry</h2>`);
+  win.document.write(`<p>No: ${order.No || ''}<br>Tanggal: ${order.Tanggal || ''}<br>Struk ID: ${order['Struk ID'] || ''}</p>`);
+  win.document.write(`<p>Nama: ${order.Nama || ''}<br>No WA: ${order['Nomor WA'] || ''}<br>Jenis Cucian: ${order['Jenis Cucian'] || ''}<br>Berat: ${order['Berat (kg)'] || ''} kg<br>Harga/Kg: ${order['Harga / Kg'] || ''}<br><strong>Total: ${total}</strong></p>`);
+  if(order.Catatan) win.document.write(`<p>Catatan: ${order.Catatan}</p>`);
+  win.document.write(`<p>Terima kasih!</p>`);
+  win.document.write('</body></html>');
+  win.document.close();
+  win.print();
+}
