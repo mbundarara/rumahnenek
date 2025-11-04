@@ -54,8 +54,8 @@
   "description": "Laundry rumahan dengan layanan cuci setrika cepat, bersih, wangi, dan gratis antar jemput area Cariu & sekitarnya.",
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": -6.400373,
-    "longitude": 107.48995
+    "latitude": -6.400419,
+    "longitude": 107.490030
   },
   "sameAs": [
     "https://wa.me/62895622309251",
@@ -81,6 +81,8 @@
 * {margin:0;padding:0;box-sizing:border-box;}
 body {font-family:'Playfair Display', serif;background-color: var(--cream);color: var(--brown);text-align:center;overflow-x:hidden;padding:0 10px;scroll-behavior:smooth;}
 a{text-decoration:none;}
+
+/* TOP SECTION */
 .top-section {background: linear-gradient(160deg, var(--blue-start), var(--blue-end));border-radius:18px;max-width:900px;margin:20px auto;box-shadow:0 0 20px rgba(204,231,240,0.6), inset 0 0 12px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.2);overflow:hidden;}
 .top-section img{width:100%; display:block;}
 .top-section .header-content{padding:20px 15px;}
@@ -92,16 +94,22 @@ a{text-decoration:none;}
 .cta-paragraph:hover{background:#2e6d4a;color:#fff;}
 .cta-paragraph svg{width:32px;height:32px;}
 .cta-text{display:inline-block;line-height:1.3em;text-align:justify;}
+
+/* PROMO BROSUR */
 .brosur {width:100%;max-width:900px;background: var(--beige);border:2px solid var(--rose);margin:20px auto;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
 .brosur-title{font-size:1.2em;font-weight:600;color: var(--text-dark);padding:10px;text-align:center;}
 .brosur img{width:100%; height:auto; display:block;}
 .brosur p{padding:10px;font-size:0.95em;color:var(--text-dark);}
+
+/* MAP */
 .map-box {width:100%;max-width:900px;margin:20px auto;border-radius:15px;overflow:hidden;background: #cce7f0;padding:15px;box-shadow:0 4px 10px rgba(0,0,0,0.1);}
 .map-box h2{text-align:center;font-size:1.3em;margin-bottom:8px;color: var(--text-dark);}
 .map-box p{margin-bottom:10px;font-size:0.9em;}
 .map-container{position:relative;aspect-ratio:16/9;cursor:pointer;transition:transform 0.2s ease;}
 .map-container:hover{transform:scale(1.02);}
 .map-container iframe{width:100%;height:100%;border:0;border-radius:10px;}
+
+/* YOUTUBE SHORTS */
 .yt-box{width:100%;max-width:900px;margin:20px auto;border-radius:15px;overflow:hidden;background: #cce7f0;padding:15px;box-shadow:0 4px 10px rgba(0,0,0,0.1);}
 .yt-box h2{text-align:center;font-size:1.3em;margin-bottom:8px;color: var(--text-dark);}
 .yt-box p{margin-bottom:10px;font-size:0.9em;}
@@ -109,14 +117,65 @@ a{text-decoration:none;}
 .yt-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
 .yt-button{margin-top:10px;display:inline-block;background:var(--blue-light);color:#000;padding:8px 14px;border-radius:8px;font-weight:600;transition:background 0.3s ease;}
 .yt-button:hover{background:var(--blue-hover);color:#fff;}
-.ig-box{width:100%;max-width:900px;margin:20px auto;border-radius:15px;overflow:hidden;background:#cce7f0;padding:15px;box-shadow:0 4px 10px rgba(0,0,0,0.1);}
-.ig-box h2{text-align:center;font-size:1.3em;margin-bottom:8px;color:var(--text-dark);}
-.ig-box p{margin-bottom:10px;font-size:0.9em;}
-.ig-container{position:relative;width:100%;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;}
-.ig-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
-.ig-button{margin-top:10px;display:inline-block;background:var(--blue-light);color:#000;padding:8px 14px;border-radius:8px;font-weight:600;transition:background 0.3s ease;text-decoration:none;}
-.ig-button:hover{background:var(--blue-hover);color:#fff;}
+
+/* INSTAGRAM FEED (styling harmonized with yt-box theme) */
+.ig-box{
+  width:100%;
+  max-width:900px;
+  margin:20px auto;
+  border-radius:15px;
+  overflow:hidden;
+  background: #cce7f0;
+  padding:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+.ig-box h2{
+  text-align:center;
+  font-size:1.3em;
+  margin-bottom:8px;
+  color:var(--text-dark);
+}
+.ig-box p{
+  margin-bottom:10px;
+  font-size:0.9em;
+}
+.ig-container{
+  position:relative;
+  width:100%;
+  padding-bottom:56.25%;
+  height:0;
+  overflow:hidden;
+  border-radius:10px;
+  background:#000;
+}
+.ig-container iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  border:0;
+}
+.ig-button{
+  margin-top:10px;
+  display:inline-block;
+  background:var(--blue-light);
+  color:#000;
+  padding:8px 14px;
+  border-radius:8px;
+  font-weight:600;
+  transition:background 0.3s ease;
+  text-decoration:none;
+}
+.ig-button:hover{
+  background:var(--blue-hover);
+  color:#fff;
+}
+
+/* FOOTER */
 footer{font-size:0.85em;color:#876;margin:30px 0 10px;text-align:center;}
+
+/* FLOATING WA */
 .floating-wa{position:fixed;bottom:18px;right:18px;background-color: var(--green);color:white;border-radius:10px;padding:10px 18px;font-weight:600;box-shadow:0 4px 10px rgba(0,0,0,0.25);z-index:9999;display:flex;align-items:center;gap:8px;transition: background 0.3s ease, transform 0.2s ease;cursor:pointer;}
 .floating-wa:hover{background:#2e6d4a;transform:scale(1.05);}
 .floating-wa svg{width:24px;height:24px;fill:white;}
@@ -156,7 +215,15 @@ footer{font-size:0.85em;color:#876;margin:30px 0 10px;text-align:center;}
   <h2>Temukan Kami</h2>
   <p>Dekat dari rumah Anda! Kami siap menjemput cucian di area Cariu & sekitarnya.</p>
   <div class="map-container">
-    <iframe src="https://script.google.com/macros/s/AKfycbzAXJg4eg6LLyQo6erAh6vg1bntkB3-fVHKcbDu39rGYddxtSdBf2eFFjCaNs8uFRFRmQ/exec" allowfullscreen="" loading="lazy"></iframe>
+    <!-- Google Maps standar dengan pin & foto -->
+    <iframe 
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.4568323886547!2d107.4882!3d-6.400419!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sLaundry%20Rumah%20Nenek!5e0!3m2!1sid!2sid!4v1762247548641!5m2!1sid!2sid" 
+      width="100%" 
+      height="450" 
+      style="border:0;" 
+      allowfullscreen="" 
+      loading="lazy">
+    </iframe>
   </div>
 </div>
 
@@ -173,15 +240,4 @@ footer{font-size:0.85em;color:#876;margin:30px 0 10px;text-align:center;}
   <h2>📸 Galeri Rumah Nenek Laundry</h2>
   <p>Lihat keseharian kami, hasil cucian wangi, dan promo terbaru langsung dari Instagram!</p>
   <div class="ig-container">
-    <iframe src="https://www.instagram.com/rumahnenekadmin/embed" allowtransparency="true" frameborder="0" scrolling="no" allowfullscreen title="Instagram Rumah Nenek"></iframe>
-  </div>
-  <a href="https://www.instagram.com/rumahnenekadmin" class="ig-button" target="_blank" rel="noopener noreferrer">🌸 Kunjungi Instagram Kami</a>
-</div>
-
-<footer>© 2025 Rumah Nenek • Laundry Vintage dengan Cinta 💖<br>Siap menjemput cucian Anda hari ini!</footer>
-
-<div class="wa-bubble">Gratis Antar Jemput</div>
-
-<a href="https://wa.me/62895622309251?text=Halo%20Rumah%20Nenek%20Laundry!%20Saya%20mau%20order%20jemput%20cucian%20dong%20%F0%9F%92%96" class="floating-wa" target="_blank" rel="noopener noreferrer" aria-label="Hubungi Rumah Nenek via WhatsApp">
-  <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-    <path d="M20.5 3.5A11.9 11.
+    <iframe src="https://www.instagram.com/rumahnenekadmin/embed" allowtransparency="true" frame
