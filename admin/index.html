@@ -3,34 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin • Rumah Nenek Laundry</title>
-<link rel="stylesheet" href="style.css">
+<title>Admin Laundry Rumah Nenek</title>
+<style>
+body {font-family:sans-serif; background:#fdf6ee; color:#333; padding:20px;}
+h1,h2,h3{color:#5c4633;}
+table {border-collapse: collapse; width:100%; margin-top:15px;}
+table, th, td {border:1px solid #aaa;}
+th, td {padding:8px; text-align:center;}
+input, button {padding:6px; margin:4px; font-size:1em;}
+button {cursor:pointer;}
+.success {color:green;}
+.error {color:red;}
+</style>
 </head>
 <body>
-  <h1>📦 Data Order Laundry</h1>
+<h1>📦 Data Order Laundry</h1>
+<button id="loadOrders">Muat Orderan</button>
+<div id="status"></div>
+<table id="orderTable">
+<thead>
+<tr>
+<th>No</th><th>Tanggal</th><th>Nama</th><th>Nomor WA</th>
+<th>Jenis Cucian</th><th>Berat (kg)</th><th>Harga / Kg</th>
+<th>Total</th><th>Catatan</th><th>Struk ID</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
 
-  <button id="loadOrders">Muat Orderan</button>
-  <table id="orderTable" border="1" cellpadding="6">
-    <thead>
-      <tr>
-        <th>No</th><th>Tanggal</th><th>Nama</th><th>Nomor WA</th>
-        <th>Jenis Cucian</th><th>Berat (kg)</th><th>Harga / Kg</th>
-        <th>Total</th><th>Catatan</th><th>Struk ID</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <h2>🧾 Tambah Order Baru</h2>
-  <form id="orderForm">
-    <input type="text" id="nama" placeholder="Nama" required>
-    <input type="text" id="wa" placeholder="Nomor WA" required>
-    <input type="text" id="jenis" placeholder="Jenis Cucian" required>
-    <input type="number" id="berat" placeholder="Berat (kg)" required>
-    <input type="number" id="harga" placeholder="Harga / Kg" required>
-    <input type="text" id="catatan" placeholder="Catatan">
-    <button type="submit">Simpan</button>
-  </form>
+<h3>🧾 Tambah Order Baru</h3>
+<form id="orderForm">
+<input type="text" id="nama" placeholder="Nama" required>
+<input type="text" id="wa" placeholder="Nomor WA" required>
+<input type="text" id="jenis" placeholder="Jenis Cucian" required>
+<input type="number" id="berat" placeholder="Berat (kg)" required>
+<input type="number" id="harga" placeholder="Harga / Kg" required>
+<input type="text" id="catatan" placeholder="Catatan">
+<button type="submit">Simpan</button>
+</form>
 
 <script src="script.js"></script>
 </body>
