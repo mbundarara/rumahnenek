@@ -4,14 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Rumah Nenek Laundry</title>
+
+<!-- CSS -->
 <link rel="stylesheet" href="style.css">
+
+<!-- Google Sheets API URL -->
+<script>
+const SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbzAXJg4eg6LLyQo6erAh6vg1bntkB3-fVHKcbDu39rGYddxtSdBf2eFFjCaNs8uFRFRmQ/exec";
+</script>
+
 </head>
 <body>
-<h1>Admin Rumah Nenek Laundry</h1>
-<p>Ini halaman basic admin. Gunakan script.js untuk fungsionalitas.</p>
-<!-- Contoh tombol untuk tes API Google Sheets -->
-<button id="fetchData">Cek Data Sheets</button>
-<div id="output"></div>
+
+<div class="admin-header">
+  <h1>Admin Rumah Nenek Laundry</h1>
+  <p>Kelola data orderan dan laporan bulanan.</p>
+</div>
+
+<div class="admin-section">
+  <button id="loadData">Muat Data Orderan</button>
+  <div id="orderList"></div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
