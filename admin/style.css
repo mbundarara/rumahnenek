@@ -1,9 +1,0 @@
-body { font-family: Arial, sans-serif; background:#fdf6ee; color:#333; padding:20px; }
-h1,h2 { text-align:center; }
-table { width:100%; border-collapse: collapse; margin-top:15px; }
-th, td { border:1px solid #aaa; padding:6px; text-align:center; }
-thead { background:#cce7f0; }
-form { margin-top:20px; display:flex; flex-direction:column; max-width:400px; margin-left:auto; margin-right:auto; gap:6px; }
-input { padding:6px; font-size:1em; }
-button { padding:8px; background:#3c8d60; color:white; border:none; cursor:pointer; transition:0.3s; }
-button:hover { background:#38b000; }
