@@ -5,208 +5,178 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Struk • Rumah Nenek Laundry</title>
 <style>
-  body{margin:0;padding:12px;font-family:Arial;background:#f6f6f6;}
-  .card{max-width:720px;margin:0 auto;background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,0.06);}
-  h2{text-align:center;font-size:18px;margin:6px 0 12px 0;}
-  label{display:block;margin-top:8px;font-size:13px;}
-  input, textarea, select{width:100%;padding:8px;margin-top:4px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;font-size:15px;}
-  textarea{resize:vertical;}
-  .row{display:flex;gap:8px;}
-  .row>*{flex:1;}
-  button{width:100%;padding:10px;border:none;border-radius:6px;font-size:15px;margin-top:12px;color:#fff;}
-  button.primary{background:#1f8f8f;}
-  button.secondary{background:#4a5568;}
-  .muted{font-size:13px;color:#666;margin-top:6px;}
-  .preview{margin-top:12px;padding:10px;background:#fff;white-space:pre-wrap;font-family:monospace;border:1px dashed #222;}
-  .controls{display:flex;gap:8px;margin-top:6px;}
-  .controls button{flex:1;width:auto;}
-  @media print{body *{visibility:hidden}.preview, .preview *{visibility:visible}.preview{position:absolute;top:0;left:0;width:100%;}}
+body{margin:0;padding:12px;font-family:Arial;background:#f6f6f6;}
+.card{max-width:720px;margin:0 auto;background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,0.06);}
+h2{text-align:center;font-size:18px;margin:6px 0 12px 0;}
+label{display:block;margin-top:8px;font-size:13px;}
+input,textarea,select{width:100%;padding:8px;margin-top:4px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;font-size:15px;}
+textarea{resize:vertical;}
+.row{display:flex;gap:8px;}
+.row>*{flex:1;}
+button{width:100%;padding:10px;border:none;border-radius:6px;font-size:15px;margin-top:12px;color:#fff;}
+button.primary{background:#1f8f8f;}
+button.secondary{background:#4a5568;}
+.muted{font-size:13px;color:#666;margin-top:6px;}
+.preview{margin-top:12px;padding:10px;background:#fff;white-space:pre-wrap;font-family:monospace;border:1px dashed #222;}
+.controls{display:flex;gap:8px;margin-top:6px;}
+.controls button{flex:1;width:auto;}
+@media print{body *{visibility:hidden}.preview,.preview *{visibility:visible}.preview{position:absolute;top:0;left:0;width:100%;}}
 </style>
 </head>
 <body>
 <div class="card">
-  <h2>Struk • Rumah Nenek Laundry</h2>
+<h2>Struk • Rumah Nenek Laundry</h2>
 
-  <label>Masukkan PIN</label>
-  <input id="pinInput" type="text" placeholder="PIN" autocomplete="off">
-  <button class="primary" id="pinBtn">Masuk</button>
-  <div id="pinMsg" class="muted"></div>
+<label>Masukkan PIN</label>
+<input id="pinInput" type="text" placeholder="PIN">
+<button class="primary" id="pinBtn">Masuk</button>
+<div id="pinMsg" class="muted"></div>
 
-  <div id="mainScreen" style="display:none;">
-    <label>No Urut</label>
-    <input id="no" type="text" readonly>
+<div id="mainScreen" style="display:none;">
+<label>No Urut</label>
+<input id="no" type="text" readonly>
+<label>ID Struk</label>
+<input id="idStruk" type="text" readonly>
+<label>Nama</label>
+<input id="nama" type="text" placeholder="Nama pelanggan">
+<label>Alamat</label>
+<input id="alamat" type="text" placeholder="Alamat">
+<label>No WA</label>
+<input id="noWa" type="tel" placeholder="08xxxxxxxxxx">
+<label>Jenis Layanan</label>
+<select id="jenisLayanan">
+<option value="Cuci Kiloan">Cuci Kiloan</option>
+<option value="Cuci Satuan">Cuci Satuan</option>
+</select>
+<label>Keterangan</label>
+<textarea id="keterangan" rows="2"></textarea>
+<label>Jenis Pembayaran</label>
+<select id="jenisPembayaran">
+<option value="Cash">Cash</option>
+<option value="Transfer">Transfer</option>
+</select>
+<label>Total (Rp)</label>
+<input id="total" type="number" placeholder="0">
+<label>Validasi</label>
+<select id="validasi">
+<option value="Belum Lunas">Belum Lunas</option>
+<option value="Lunas">Lunas</option>
+</select>
 
-    <label>ID Struk</label>
-    <input id="idStruk" type="text" readonly>
+<div class="row">
+<button class="primary" id="saveBtn">Simpan</button>
+<button class="secondary" id="resetBtn">Reset</button>
+</div>
 
-    <label>Nama</label>
-    <input id="nama" type="text" placeholder="Nama pelanggan">
+<div id="saveMsg" class="muted"></div>
+<div class="preview" id="previewBox"></div>
 
-    <label>Alamat</label>
-    <input id="alamat" type="text" placeholder="Alamat">
-
-    <label>No WA</label>
-    <input id="noWa" type="tel" placeholder="08xxxxxxxxxx">
-
-    <label>Jenis Layanan</label>
-    <select id="jenisLayanan">
-      <option value="Cuci Kiloan">Cuci Kiloan</option>
-      <option value="Cuci Satuan">Cuci Satuan</option>
-    </select>
-
-    <label>Keterangan</label>
-    <textarea id="keterangan" rows="2" placeholder="Ket / berat"></textarea>
-
-    <label>Jenis Pembayaran</label>
-    <select id="jenisPembayaran">
-      <option value="Cash">Cash</option>
-      <option value="Transfer">Transfer</option>
-    </select>
-
-    <label>Total (Rp)</label>
-    <input id="total" type="number" placeholder="0">
-
-    <label>Validasi</label>
-    <select id="validasi">
-      <option value="Belum Lunas">Belum Lunas</option>
-      <option value="Lunas">Lunas</option>
-    </select>
-
-    <div class="row">
-      <button class="primary" id="saveBtn">Simpan</button>
-      <button class="secondary" id="resetBtn">Reset</button>
-    </div>
-
-    <div id="saveMsg" class="muted"></div>
-
-    <div class="preview" id="previewBox"></div>
-
-    <div class="controls">
-      <button id="printBtn" class="primary">Print</button>
-      <button id="waBtn" class="secondary">Share WA</button>
-    </div>
-  </div>
+<div class="controls">
+<button id="printBtn" class="primary">Print</button>
+<button id="waBtn" class="secondary">Share WA</button>
+</div>
+</div>
 </div>
 
 <script>
-const APPS_URL = "https://script.google.com/macros/s/AKfycbwKR6Okw-5ZquRNk4_ChVmhuEFVqeYMqu8UbBj9kHb5SSqKqbALvfrdehcqU-ei55GN/exec";
+const APPS_URL="URL_EXEC_TERBARU";
+const pinInput=document.getElementById('pinInput');
+const pinBtn=document.getElementById('pinBtn');
+const pinMsg=document.getElementById('pinMsg');
+const mainScreen=document.getElementById('mainScreen');
+const noEl=document.getElementById('no');
+const idStrukEl=document.getElementById('idStruk');
+const namaEl=document.getElementById('nama');
+const alamatEl=document.getElementById('alamat');
+const noWaEl=document.getElementById('noWa');
+const jenisLayananEl=document.getElementById('jenisLayanan');
+const keteranganEl=document.getElementById('keterangan');
+const jenisPembayaranEl=document.getElementById('jenisPembayaran');
+const totalEl=document.getElementById('total');
+const validasiEl=document.getElementById('validasi');
+const saveBtn=document.getElementById('saveBtn');
+const resetBtn=document.getElementById('resetBtn');
+const saveMsg=document.getElementById('saveMsg');
+const previewBox=document.getElementById('previewBox');
+const printBtn=document.getElementById('printBtn');
+const waBtn=document.getElementById('waBtn');
 
-const pinInput = document.getElementById('pinInput');
-const pinBtn = document.getElementById('pinBtn');
-const pinMsg = document.getElementById('pinMsg');
-
-const mainScreen = document.getElementById('mainScreen');
-const noEl = document.getElementById('no');
-const idStrukEl = document.getElementById('idStruk');
-const namaEl = document.getElementById('nama');
-const alamatEl = document.getElementById('alamat');
-const noWaEl = document.getElementById('noWa');
-const jenisLayananEl = document.getElementById('jenisLayanan');
-const keteranganEl = document.getElementById('keterangan');
-const jenisPembayaranEl = document.getElementById('jenisPembayaran');
-const totalEl = document.getElementById('total');
-const validasiEl = document.getElementById('validasi');
-
-const saveBtn = document.getElementById('saveBtn');
-const resetBtn = document.getElementById('resetBtn');
-const saveMsg = document.getElementById('saveMsg');
-
-const previewBox = document.getElementById('previewBox');
-const printBtn = document.getElementById('printBtn');
-const waBtn = document.getElementById('waBtn');
-
-function fmtCurrency(n){ return Number(n).toLocaleString('id-ID'); }
+function fmtCurrency(n){return Number(n).toLocaleString('id-ID');}
 
 async function checkPIN(pin){
-  pinMsg.textContent = "Memeriksa PIN...";
-  const res = await fetch(`${APPS_URL}?action=checkPIN&pin=${encodeURIComponent(pin)}`);
-  const txt = await res.text();
-  if(txt.trim() === "OK") return true;
-  pinMsg.textContent = "PIN salah.";
-  return false;
+pinMsg.textContent="Memeriksa PIN...";
+const res=await fetch(`${APPS_URL}?action=checkPIN&pin=${encodeURIComponent(pin)}`);
+const txt=await res.text();
+if(txt.trim()==="OK") return true;
+pinMsg.textContent="PIN salah.";
+return false;
 }
 
 async function getLast(){
-  const res = await fetch(`${APPS_URL}?action=getLast`);
-  return await res.json();
+const res=await fetch(`${APPS_URL}?action=getLast`);
+return await res.json();
 }
 
 function buildPreview(data){
-  const lines = [];
-  lines.push("    RUMAH NENEK LAUNDRY");
-  lines.push("Jl. Mashudi No.10 - Cariu");
-  lines.push("------------------------------");
-  lines.push("No Struk : "+data.idStruk);
-  lines.push("No Urut  : "+data.no);
-  lines.push("Nama     : "+data.nama);
-  if(data.alamat) lines.push("Alamat   : "+data.alamat);
-  lines.push("No WA    : "+data.no_wa);
-  lines.push("Layanan  : "+data.jenisLayanan);
-  lines.push("Ket      : "+data.keterangan);
-  lines.push("Bayar    : "+data.jenisPembayaran);
-  lines.push("Total    : Rp "+fmtCurrency(data.total));
-  lines.push("Validasi : "+data.validasi);
-  lines.push("------------------------------");
-  lines.push("WA/DANA 0895 6223 09251 an Tita Juarsih");
-  return lines.join("\n");
+const lines=[];
+lines.push("RUMAH NENEK LAUNDRY");
+lines.push("Jl. Mashudi No. 10 - Cariu");
+lines.push("------------------------------");
+lines.push("No Struk : "+data.idStruk);
+lines.push("No Urut  : "+data.no);
+lines.push("Nama     : "+data.nama);
+if(data.alamat) lines.push("Alamat   : "+data.alamat);
+lines.push("No WA    : "+data.no_wa);
+lines.push("Layanan  : "+data.jenisLayanan);
+lines.push("Ket      : "+data.keterangan);
+lines.push("Bayar    : "+data.jenisPembayaran);
+lines.push("Total    : Rp "+fmtCurrency(data.total));
+lines.push("Validasi : "+data.validasi);
+lines.push("------------------------------");
+lines.push("WA/DANA 0895 6223 09251 an Tita Juarsih");
+return lines.join("\n");
 }
 
-function showPreview(data){
-  previewBox.textContent = buildPreview(data);
-}
+function showPreview(data){previewBox.textContent=buildPreview(data);}
+function resetForm(){namaEl.value="";alamatEl.value="";noWaEl.value="";keteranganEl.value="";totalEl.value="";validasiEl.value="Belum Lunas";jenisLayananEl.value="Cuci Kiloan";jenisPembayaranEl.value="Cash";previewBox.textContent="";saveMsg.textContent="";}
 
-function resetForm(){
-  namaEl.value=""; alamatEl.value=""; noWaEl.value=""; keteranganEl.value="";
-  totalEl.value=""; validasiEl.value="Belum Lunas"; jenisLayananEl.value="Cuci Kiloan"; jenisPembayaranEl.value="Cash";
-  previewBox.textContent=""; saveMsg.textContent="";
+pinBtn.addEventListener('click',async ()=>{
+const pin=pinInput.value.trim();
+if(!pin){pinMsg.textContent="Masukkan PIN";return;}
+pinBtn.disabled=true;
+const ok=await checkPIN(pin);
+pinBtn.disabled=false;
+if(ok){
+pinInput.style.display="none";pinBtn.style.display="none";pinMsg.style.display="none";
+mainScreen.style.display="block";
+const last=await getLast();
+noEl.value=last.no;idStrukEl.value=last.idStruk;
 }
-
-pinBtn.addEventListener('click', async ()=>{
-  const pin = pinInput.value.trim();
-  if(!pin){pinMsg.textContent="Masukkan PIN"; return;}
-  pinBtn.disabled=true;
-  const ok = await checkPIN(pin);
-  pinBtn.disabled=false;
-  if(ok){
-    pinInput.style.display="none"; pinBtn.style.display="none"; pinMsg.style.display="none";
-    mainScreen.style.display="block";
-    const last = await getLast();
-    noEl.value=last.no; idStrukEl.value=last.idStruk;
-  }
 });
 
-saveBtn.addEventListener('click', async ()=>{
-  const data = {
-    action:"saveData",
-    no:noEl.value, idStruk:idStrukEl.value,
-    nama:namaEl.value, alamat:alamatEl.value, no_wa:noWaEl.value,
-    jenisLayanan:jenisLayananEl.value, keterangan:keteranganEl.value,
-    jenisPembayaran:jenisPembayaranEl.value, total:totalEl.value,
-    validasi:validasiEl.value
-  };
-  if(!data.nama){saveMsg.textContent="Nama harus diisi"; return;}
-  if(!data.total){saveMsg.textContent="Total harus diisi"; return;}
-  saveBtn.disabled=true;
-  const res = await fetch(APPS_URL+"?"+new URLSearchParams(data));
-  const txt = await res.text();
-  saveBtn.disabled=false;
-  saveMsg.textContent = txt;
-  if(txt.trim().toUpperCase()==="OK"){
-    showPreview(data);
-    resetForm();
-    const nxt = await getLast();
-    noEl.value = nxt.no; idStrukEl.value = nxt.idStruk;
-  }
+saveBtn.addEventListener('click',async ()=>{
+const data={action:"saveData",no:noEl.value,idStruk:idStrukEl.value,nama:namaEl.value,alamat:alamatEl.value,no_wa:noWaEl.value,jenisLayanan:jenisLayananEl.value,keterangan:keteranganEl.value,jenisPembayaran:jenisPembayaranEl.value,total:totalEl.value,validasi:validasiEl.value};
+if(!data.nama){saveMsg.textContent="Nama harus diisi";return;}
+if(!data.total){saveMsg.textContent="Total harus diisi";return;}
+saveBtn.disabled=true;
+const res=await fetch(APPS_URL+"?"+new URLSearchParams(data));
+const txt=await res.text();
+saveBtn.disabled=false;
+saveMsg.textContent=txt;
+if(txt.trim().toUpperCase()==="OK"){
+showPreview(data);resetForm();
+const nxt=await getLast();noEl.value=nxt.no;idStrukEl.value=nxt.idStruk;
+}
 });
 
-resetBtn.addEventListener('click', resetForm);
-printBtn.addEventListener('click', ()=>window.print());
-waBtn.addEventListener('click', ()=>{
-  const text = previewBox.textContent;
-  if(!noWaEl.value){alert("Nomor WA kosong"); return;}
-  let phone=noWaEl.value.replace(/\D/g,''); if(phone.startsWith("0")) phone="62"+phone.slice(1);
-  const url="https://wa.me/"+phone+"?text="+encodeURIComponent(text);
-  window.open(url,'_blank');
+resetBtn.addEventListener('click',resetForm);
+printBtn.addEventListener('click',()=>window.print());
+waBtn.addEventListener('click',()=>{
+const text=previewBox.textContent;
+if(!noWaEl.value){alert("Nomor WA kosong");return;}
+let phone=noWaEl.value.replace(/\D/g,'');if(phone.startsWith("0")) phone="62"+phone.slice(1);
+const url="https://wa.me/"+phone+"?text="+encodeURIComponent(text);
+window.open(url,'_blank');
 });
 </script>
 </body>
