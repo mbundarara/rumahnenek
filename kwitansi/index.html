@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Struk • Rumah Nenek Laundry</title>
+<title>Kwitansi • Rumah Nenek Laundry</title>
 <style>
 body{margin:0;padding:12px;font-family:Arial;background:#f6f6f6;}
 .card{max-width:720px;margin:0 auto;background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,0.06);}
@@ -25,7 +25,7 @@ button.secondary{background:#4a5568;}
 </head>
 <body>
 <div class="card">
-<h2>Struk • Rumah Nenek Laundry</h2>
+<h2>Kwitansi • Rumah Nenek Laundry</h2>
 
 <label>Masukkan PIN</label>
 <input id="pinInput" type="text" placeholder="PIN">
@@ -35,7 +35,7 @@ button.secondary{background:#4a5568;}
 <div id="mainScreen" style="display:none;">
 <label>No Urut</label>
 <input id="no" type="text" readonly>
-<label>ID Struk</label>
+<label>ID Kwitansi</label>
 <input id="idStruk" type="text" readonly>
 <label>Nama</label>
 <input id="nama" type="text" placeholder="Nama pelanggan">
@@ -79,7 +79,8 @@ button.secondary{background:#4a5568;}
 </div>
 
 <script>
-const APPS_URL="URL_EXEC_TERBARU";
+const APPS_URL="https://script.google.com/macros/s/AKfycbzYLVKPBT9DZiTZH1H2j0mKotO8_B8HmnBut0cblFT1vJG05-Rn9VdUIq6ZzqaPSI73/exec";
+
 const pinInput=document.getElementById('pinInput');
 const pinBtn=document.getElementById('pinBtn');
 const pinMsg=document.getElementById('pinMsg');
@@ -119,19 +120,19 @@ return await res.json();
 
 function buildPreview(data){
 const lines=[];
-lines.push("RUMAH NENEK LAUNDRY");
+lines.push("KWITANSI • RUMAH NENEK LAUNDRY");
 lines.push("Jl. Mashudi No. 10 - Cariu");
 lines.push("------------------------------");
-lines.push("No Struk : "+data.idStruk);
-lines.push("No Urut  : "+data.no);
-lines.push("Nama     : "+data.nama);
-if(data.alamat) lines.push("Alamat   : "+data.alamat);
-lines.push("No WA    : "+data.no_wa);
-lines.push("Layanan  : "+data.jenisLayanan);
-lines.push("Ket      : "+data.keterangan);
-lines.push("Bayar    : "+data.jenisPembayaran);
-lines.push("Total    : Rp "+fmtCurrency(data.total));
-lines.push("Validasi : "+data.validasi);
+lines.push("ID Kwitansi : "+data.idStruk);
+lines.push("No Urut     : "+data.no);
+lines.push("Nama        : "+data.nama);
+if(data.alamat) lines.push("Alamat      : "+data.alamat);
+lines.push("No WA       : "+data.no_wa);
+lines.push("Layanan     : "+data.jenisLayanan);
+lines.push("Ket         : "+data.keterangan);
+lines.push("Bayar       : "+data.jenisPembayaran);
+lines.push("Total       : Rp "+fmtCurrency(data.total));
+lines.push("Validasi    : "+data.validasi);
 lines.push("------------------------------");
 lines.push("WA/DANA 0895 6223 09251 an Tita Juarsih");
 return lines.join("\n");
