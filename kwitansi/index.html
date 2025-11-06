@@ -27,11 +27,15 @@ button.secondary{background:#4a5568;}
 <div class="card">
 <h2>Kwitansi • Rumah Nenek Laundry</h2>
 
+<!-- PIN screen -->
+<div id="pinScreen">
 <label>Masukkan PIN</label>
 <input id="pinInput" type="text" placeholder="PIN">
 <button class="primary" id="pinBtn">Masuk</button>
 <div id="pinMsg" class="muted"></div>
+</div>
 
+<!-- Main form -->
 <div id="mainScreen" style="display:none;">
 <label>No Urut</label>
 <input id="no" type="text" readonly>
@@ -57,15 +61,16 @@ button.secondary{background:#4a5568;}
 </select>
 <label>Total (Rp)</label>
 <input id="total" type="number" placeholder="0">
-<label>Validasi</label>
-<select id="validasi">
-<option value="Belum Lunas">Belum Lunas</option>
-<option value="Lunas">Lunas</option>
+<label>Status WA</label>
+<select id="statusWA" disabled>
+<option value="">-</option>
+<option value="Terkirim">Terkirim</option>
+<option value="Failed">Failed</option>
 </select>
 
 <div class="row">
-<button class="primary" id="saveBtn">Simpan</button>
-<button class="secondary" id="resetBtn">Reset</button>
+<button class="primary" id="saveBtn">Simpan & Preview</button>
+<button class="secondary" id="resetBtn">Reset Form</button>
 </div>
 
 <div id="saveMsg" class="muted"></div>
@@ -94,7 +99,7 @@ const jenisLayananEl=document.getElementById('jenisLayanan');
 const keteranganEl=document.getElementById('keterangan');
 const jenisPembayaranEl=document.getElementById('jenisPembayaran');
 const totalEl=document.getElementById('total');
-const validasiEl=document.getElementById('validasi');
+const statusWAEl=document.getElementById('statusWA');
 const saveBtn=document.getElementById('saveBtn');
 const resetBtn=document.getElementById('resetBtn');
 const saveMsg=document.getElementById('saveMsg');
@@ -106,11 +111,13 @@ function fmtCurrency(n){return Number(n).toLocaleString('id-ID');}
 
 async function checkPIN(pin){
 pinMsg.textContent="Memeriksa PIN...";
+try{
 const res=await fetch(`${APPS_URL}?action=checkPIN&pin=${encodeURIComponent(pin)}`);
 const txt=await res.text();
 if(txt.trim()==="OK") return true;
-pinMsg.textContent="PIN salah.";
+pinMsg.textContent="PIN salah";
 return false;
+}catch(e){pinMsg.textContent="Gagal koneksi ke server";console.error(e);return false;}
 }
 
 async function getLast(){
@@ -132,14 +139,14 @@ lines.push("Layanan     : "+data.jenisLayanan);
 lines.push("Ket         : "+data.keterangan);
 lines.push("Bayar       : "+data.jenisPembayaran);
 lines.push("Total       : Rp "+fmtCurrency(data.total));
-lines.push("Validasi    : "+data.validasi);
+lines.push("Status WA   : "+data.statusWA);
 lines.push("------------------------------");
 lines.push("WA/DANA 0895 6223 09251 an Tita Juarsih");
 return lines.join("\n");
 }
 
 function showPreview(data){previewBox.textContent=buildPreview(data);}
-function resetForm(){namaEl.value="";alamatEl.value="";noWaEl.value="";keteranganEl.value="";totalEl.value="";validasiEl.value="Belum Lunas";jenisLayananEl.value="Cuci Kiloan";jenisPembayaranEl.value="Cash";previewBox.textContent="";saveMsg.textContent="";}
+function resetForm(){namaEl.value="";alamatEl.value="";noWaEl.value="";keteranganEl.value="";totalEl.value="";statusWAEl.value="";jenisLayananEl.value="Cuci Kiloan";jenisPembayaranEl.value="Cash";previewBox.textContent="";saveMsg.textContent="";}
 
 pinBtn.addEventListener('click',async ()=>{
 const pin=pinInput.value.trim();
@@ -156,18 +163,20 @@ noEl.value=last.no;idStrukEl.value=last.idStruk;
 });
 
 saveBtn.addEventListener('click',async ()=>{
-const data={action:"saveData",no:noEl.value,idStruk:idStrukEl.value,nama:namaEl.value,alamat:alamatEl.value,no_wa:noWaEl.value,jenisLayanan:jenisLayananEl.value,keterangan:keteranganEl.value,jenisPembayaran:jenisPembayaranEl.value,total:totalEl.value,validasi:validasiEl.value};
+const data={action:"saveData",no:noEl.value,idStruk:idStrukEl.value,nama:namaEl.value,alamat:alamatEl.value,no_wa:noWaEl.value,jenisLayanan:jenisLayananEl.value,keterangan:keteranganEl.value,jenisPembayaran:jenisPembayaranEl.value,total:totalEl.value,statusWA:""};
 if(!data.nama){saveMsg.textContent="Nama harus diisi";return;}
 if(!data.total){saveMsg.textContent="Total harus diisi";return;}
 saveBtn.disabled=true;
+try{
 const res=await fetch(APPS_URL+"?"+new URLSearchParams(data));
 const txt=await res.text();
 saveBtn.disabled=false;
 saveMsg.textContent=txt;
 if(txt.trim().toUpperCase()==="OK"){
-showPreview(data);resetForm();
+data.statusWA="";showPreview(data);resetForm();
 const nxt=await getLast();noEl.value=nxt.no;idStrukEl.value=nxt.idStruk;
 }
+}catch(e){saveBtn.disabled=false;saveMsg.textContent="Gagal simpan";console.error(e);}
 });
 
 resetBtn.addEventListener('click',resetForm);
@@ -178,6 +187,7 @@ if(!noWaEl.value){alert("Nomor WA kosong");return;}
 let phone=noWaEl.value.replace(/\D/g,'');if(phone.startsWith("0")) phone="62"+phone.slice(1);
 const url="https://wa.me/"+phone+"?text="+encodeURIComponent(text);
 window.open(url,'_blank');
+statusWAEl.value="Terkirim";
 });
 </script>
 </body>
