@@ -1,317 +1,112 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Struk • Rumah Nenek Laundry</title>
-<style>
-  /* Minimal, fungsional & mobile-first */
-  :root { font-family: Arial, Helvetica, sans-serif; color:#111; }
-  body{ margin:0; padding:12px; background:#f6f6f6; }
-  .card{ max-width:720px; margin:0 auto; background:#fff; padding:12px; border-radius:6px; box-shadow:0 1px 6px rgba(0,0,0,0.06);}
-  h2{ margin:6px 0 12px 0; font-size:18px; text-align:center;}
-  label{ display:block; font-size:13px; margin-top:8px; }
-  input[type=text], input[type=tel], input[type=number], textarea {
-    width:100%; padding:8px; font-size:15px; box-sizing:border-box; margin-top:4px; border:1px solid #ddd; border-radius:6px;
-  }
-  textarea { resize:vertical; }
-  .row{ display:flex; gap:8px; }
-  .row > * { flex:1; }
-  button{ padding:10px 12px; border:none; border-radius:6px; background:#1f8f8f; color:#fff; font-size:15px; margin-top:12px; width:100%; }
-  button.secondary{ background:#4a5568; }
-  .muted{ color:#666; font-size:13px; margin-top:6px; }
-  .preview{ margin-top:12px; padding:10px; border:1px dashed #222; font-family:monospace; white-space:pre-wrap; background:#fff; }
-  .controls{ display:flex; gap:8px; }
-  .controls button{ flex:1; width:auto; }
-  /* thermal preview width ~58mm -> ~280px on many devices */
-  .thermal { width:280px; max-width:100%; margin:10px auto; font-size:12px; line-height:1.2; padding:8px; border-radius:4px; }
-  @media print {
-    body * { visibility:hidden; }
-    .thermal, .thermal * { visibility:visible; }
-    .thermal { position: absolute; left:0; top:0; width:100%; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kwitansi Rumah Nenek Laundry</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #f8f8f8;
+      padding: 16px;
+    }
+    .card {
+      background: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-width: 380px;
+      margin: auto;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 8px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    button {
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      margin-top: 12px;
+    }
+  </style>
 </head>
 <body>
   <div class="card">
-    <h2>Struk • Rumah Nenek Laundry</h2>
+    <h3>Kwitansi Rumah Nenek Laundry</h3>
+    <label>No Struk</label>
+    <input type="text" id="nostruk" placeholder="Contoh: 001" />
 
-    <!-- PIN screen -->
-    <div id="pinScreen">
-      <label>Masukkan PIN (online)</label>
-      <input id="pinInput" type="text" placeholder="PIN" autocomplete="off" />
-      <button id="pinBtn">Masuk</button>
-      <div id="pinMsg" class="muted"></div>
-    </div>
+    <label>Nama</label>
+    <input type="text" id="nama" placeholder="Nama pelanggan" />
 
-    <!-- Main form (hidden until PIN OK) -->
-    <div id="mainScreen" style="display:none;">
-      <label>No</label>
-      <input id="no" type="text" readonly />
+    <label>Catatan</label>
+    <textarea id="catatan" placeholder="Catatan tambahan..."></textarea>
 
-      <label>No Struk</label>
-      <input id="noStruk" type="text" readonly />
+    <label>Total (Rp)</label>
+    <input type="number" id="total" placeholder="0" />
 
-      <label>Nama</label>
-      <input id="nama" type="text" placeholder="Nama pelanggan" />
+    <button onclick="copyKwitansi()">📋 Salin Kwitansi</button>
+    <button onclick="shareWA()">📤 Bagikan via WhatsApp</button>
 
-      <label>Alamat</label>
-      <input id="alamat" type="text" placeholder="Alamat (opsional)" />
-
-      <label>No. WhatsApp</label>
-      <input id="nowa" type="tel" placeholder="08xxxxxxxxxx" />
-
-      <label>Keterangan</label>
-      <textarea id="ket" rows="2" placeholder="Jenis/berat/ket"></textarea>
-
-      <label>Total (Rp)</label>
-      <input id="total" type="number" placeholder="0" />
-
-      <div class="row">
-        <button id="saveBtn">Simpan ke Sheets</button>
-        <button id="resetBtn" class="secondary">Reset Form</button>
-      </div>
-
-      <div id="saveMsg" class="muted"></div>
-
-      <div id="previewArea" style="display:none;">
-        <div class="preview thermal" id="previewBox"></div>
-
-        <div class="controls">
-          <button id="printBtn">Print</button>
-          <button id="waBtn" class="secondary">Share via WhatsApp</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="muted" style="margin-top:10px; font-size:12px;">
-      Note: Sistem full online. Pastikan koneksi Internet. PIN & data disimpan di Google Sheets pusat.
-    </div>
+    <pre id="preview"></pre>
   </div>
 
-<script>
-(() => {
-  const APPS_URL = "https://script.google.com/macros/s/AKfycbxVWDTGgYeFLYXJS8xXIE88m0tBvBU0JDFK_nsKRxns-Ti2CDW3S_n9BZMVSEvFJC8h9Q/exec";
-  // Elements
-  const pinScreen = document.getElementById('pinScreen');
-  const pinInput = document.getElementById('pinInput');
-  const pinBtn = document.getElementById('pinBtn');
-  const pinMsg = document.getElementById('pinMsg');
+  <script>
+    function buildKwitansi() {
+      const no = document.getElementById("nostruk").value || "-";
+      const nama = document.getElementById("nama").value || "-";
+      const catatan = document.getElementById("catatan").value || "-";
+      const total = document.getElementById("total").value || "0";
 
-  const mainScreen = document.getElementById('mainScreen');
-  const noEl = document.getElementById('no');
-  const noStrukEl = document.getElementById('noStruk');
-  const namaEl = document.getElementById('nama');
-  const alamatEl = document.getElementById('alamat');
-  const noWaEl = document.getElementById('nowa');
-  const ketEl = document.getElementById('ket');
-  const totalEl = document.getElementById('total');
+      const teks = 
+`Rumah Nenek Laundry Cariu
+Jl. Mashudi No 10
+Samping Klinik Holistik
+--------------------------------
+No Struk : ${no}
+Nama     : ${nama}
+Catatan  : ${catatan}
+Total    : Rp ${total}
+--------------------------------
+wa/dana 0895-6223-09251
+a.n. Tita Juarsih`;
 
-  const saveBtn = document.getElementById('saveBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const saveMsg = document.getElementById('saveMsg');
-
-  const previewArea = document.getElementById('previewArea');
-  const previewBox = document.getElementById('previewBox');
-  const printBtn = document.getElementById('printBtn');
-  const waBtn = document.getElementById('waBtn');
-
-  // helpers
-  function qs(url) {
-    return fetch(url).then(r => r.text());
-  }
-  function jsonGet(url) {
-    return fetch(url).then(r => r.json());
-  }
-  function fmtCurrency(n) {
-    try { return Number(n).toLocaleString('id-ID'); } catch { return n; }
-  }
-  function sanitizePhone(input){
-    let s = String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');
-    if(s.startsWith('0')) s = '62' + s.slice(1);
-    if(!s.startsWith('62') && !s.startsWith('+')) {
-      // assume local
-      s = '62' + s;
+      document.getElementById("preview").textContent = teks;
+      return teks;
     }
-    return s.replace(/^\+/, '');
-  }
 
-  // build preview text (thermal)
-  function buildPreview(data) {
-    const lines = [];
-    lines.push('    RUMAH NENEK LAUNDRY');
-    lines.push('    WA: 0895622309251');
-    lines.push('------------------------------');
-    lines.push('No Struk : ' + data.noStruk);
-    lines.push('No      : ' + data.no);
-    lines.push('Nama    : ' + data.nama);
-    if(data.alamat) lines.push('Alamat  : ' + data.alamat);
-    if(data.no_wa) lines.push('WA      : ' + data.no_wa);
-    if(data.ket) lines.push('Ket     : ' + data.ket);
-    lines.push('------------------------------');
-    lines.push('Total   : Rp ' + fmtCurrency(data.total));
-    lines.push('------------------------------');
-    lines.push('Terima kasih sudah mencuci di Rumah Nenek 💖');
-    return lines.join('\n');
-  }
-
-  // show preview
-  function showPreview(data) {
-    previewBox.textContent = buildPreview(data);
-    previewArea.style.display = 'block';
-  }
-
-  // Reset form
-  function resetForm() {
-    namaEl.value = '';
-    alamatEl.value = '';
-    noWaEl.value = '';
-    ketEl.value = '';
-    totalEl.value = '';
-    previewArea.style.display = 'none';
-    saveMsg.textContent = '';
-  }
-
-  // Request checkPIN
-  async function checkPIN(pin) {
-    pinMsg.textContent = 'Memeriksa PIN...';
-    try {
-      const res = await qs(APPS_URL + '?action=checkPIN&pin=' + encodeURIComponent(pin));
-      if(res && res.trim() === 'OK') {
-        pinMsg.textContent = 'PIN OK. Memuat nomor...';
-        return true;
-      } else {
-        pinMsg.textContent = 'PIN salah.';
-        return false;
-      }
-    } catch (e) {
-      pinMsg.textContent = 'Gagal koneksi ke server.';
-      return false;
+    function copyKwitansi() {
+      const teks = buildKwitansi();
+      navigator.clipboard.writeText(teks).then(() => {
+        alert("✅ Kwitansi disalin ke clipboard!");
+      });
     }
-  }
 
-  // Request getLast
-  async function getLast() {
-    try {
-      const raw = await qs(APPS_URL + '?action=getLast');
-      // Apps Script might return plain JSON or string; try parse
-      try {
-        const o = JSON.parse(raw);
-        return o;
-      } catch {
-        // if raw is text like {"no":1,"noStruk":"..."}
-        return JSON.parse(raw);
-      }
-    } catch (e) {
-      console.error(e);
-      return null;
+    function shareWA() {
+      const teks = buildKwitansi();
+      const url = "https://wa.me/?text=" + encodeURIComponent(teks);
+      window.open(url, "_blank");
     }
-  }
 
-  // Request saveData (GET)
-  async function saveData(payload) {
-    saveMsg.textContent = 'Menyimpan...';
-    // build query string
-    const params = new URLSearchParams();
-    params.set('action', 'saveData');
-    params.set('no', payload.no);
-    params.set('noStruk', payload.noStruk);
-    params.set('nama', payload.nama || '');
-    params.set('alamat', payload.alamat || '');
-    params.set('no_wa', payload.no_wa || '');
-    params.set('ket', payload.ket || '');
-    params.set('total', payload.total || 0);
-    try {
-      const resText = await qs(APPS_URL + '?' + params.toString());
-      saveMsg.textContent = resText || 'SUKSES';
-      return (resText && resText.trim().toUpperCase().includes('OK')) || true;
-    } catch (e) {
-      saveMsg.textContent = 'Gagal simpan: ' + (e.message||e);
-      return false;
-    }
-  }
+    ["nostruk","nama","catatan","total"].forEach(id => {
+      document.getElementById(id).addEventListener("input", buildKwitansi);
+    });
 
-  // Events
-  pinBtn.addEventListener('click', async () => {
-    const pin = pinInput.value.trim();
-    if(!pin) { pinMsg.textContent = 'Masukkan PIN dulu.'; return; }
-    pinBtn.disabled = true;
-    const ok = await checkPIN(pin);
-    pinBtn.disabled = false;
-    if(ok) {
-      pinScreen.style.display = 'none';
-      mainScreen.style.display = 'block';
-      // fetch last no
-      const last = await getLast();
-      if(last) {
-        noEl.value = last.no || '';
-        noStrukEl.value = last.noStruk || '';
-      } else {
-        noEl.value = '1';
-        // build fallback noStruk as ddmmyy-001
-        const d = new Date();
-        const dd = String(d.getDate()).padStart(2,'0');
-        const mm = String(d.getMonth()+1).padStart(2,'0');
-        const yy = String(d.getFullYear()).slice(-2);
-        noStrukEl.value = dd + mm + yy + '-001';
-      }
-    }
-  });
-
-  // Save button
-  saveBtn.addEventListener('click', async () => {
-    const data = {
-      no: noEl.value || '',
-      noStruk: noStrukEl.value || '',
-      nama: namaEl.value.trim(),
-      alamat: alamatEl.value.trim(),
-      no_wa: noWaEl.value.trim(),
-      ket: ketEl.value.trim(),
-      total: totalEl.value || 0
-    };
-    if(!data.nama) { saveMsg.textContent = 'Nama harus diisi.'; return; }
-    if(!data.total) { saveMsg.textContent = 'Total harus diisi.'; return; }
-
-    saveBtn.disabled = true;
-    const ok = await saveData(data);
-    saveBtn.disabled = false;
-    if(ok) {
-      // Show preview and enable actions
-      showPreview(data);
-      // after save, fetch next number for form (so next record has increment)
-      const nxt = await getLast();
-      if(nxt) {
-        noEl.value = nxt.no || '';
-        noStrukEl.value = nxt.noStruk || '';
-      }
-    }
-  });
-
-  // Reset
-  resetBtn.addEventListener('click', () => {
-    resetForm();
-  });
-
-  // Print
-  printBtn.addEventListener('click', () => {
-    window.print();
-  });
-
-  // WhatsApp share
-  waBtn.addEventListener('click', () => {
-    const text = previewBox.textContent || '';
-    const phoneRaw = noWaEl.value.trim();
-    if(!phoneRaw) { alert('Nomor WA pelanggan kosong.'); return; }
-    const phone = sanitizePhone(phoneRaw);
-    const url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(text);
-    window.open(url, '_blank');
-  });
-
-  pinInput.addEventListener('keyup', (e) => { if(e.key === 'Enter') pinBtn.click(); });
-
-  pinInput.focus();
-
-})();
-</script>
+    buildKwitansi();
+  </script>
 </body>
 </html>
