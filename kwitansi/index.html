@@ -12,9 +12,10 @@ input,select,textarea,button{width:100%;margin:5px 0;padding:10px;font-size:16px
 button{background:#4CAF50;color:#fff;border:none;cursor:pointer;}
 button:hover{background:#45a049;}
 #status{margin-top:10px;color:#333;text-align:center;}
+#kwitansiDisplay{background:#fff;padding:10px;margin-top:10px;border-radius:5px;white-space:pre-line;font-family:monospace;}
 @media print {
   body{font-size:14px;margin:0;}
-  form, #status, #waBtn{display:none;}
+  form, #status, #waBtn, #copyBtn{display:none;}
 }
 </style>
 </head>
@@ -22,7 +23,7 @@ button:hover{background:#45a049;}
 
 <h2>Input Kwitansi Laundry</h2>
 
-<form action="https://script.google.com/macros/s/AKfycbxYI1iBRJTbHdPFUhcIg4BtGaCxAZnfzErX3hS0gThC4lH12lL1v8jsywK2axb_noybBA/exec" method="post" target="_blank">
+<form action="https://script.google.com/macros/s/AKfycbxYI1iBRJTbHdPFUhcIg4BtGaCxAZnfzErX3hS0gThC4lH12lL1v8jsywK2axb_noybBA/exec" method="post">
   <input type="text" name="Nama_Konsumen" placeholder="Nama Konsumen" required>
   <input type="text" name="Alamat" placeholder="Alamat Konsumen" required>
   <input type="text" name="No_WA" placeholder="No WA" required>
@@ -39,22 +40,57 @@ button:hover{background:#45a049;}
   <button type="submit">Kirim Kwitansi</button>
 </form>
 
+<div id="status"></div>
+
 <div style="margin-top:10px;text-align:center;">
   <button onclick="window.print()">Print Kwitansi</button>
   <button id="waBtn">Share WA</button>
+  <button id="copyBtn">Copy Kwitansi</button>
 </div>
 
+<div id="kwitansiDisplay"></div>
+
 <script>
+const form = document.forms[0];
+const display = document.getElementById('kwitansiDisplay');
+
+form.addEventListener('submit', function(){
+  // Tampilkan kwitansi sementara di page
+  const nama = form.Nama_Konsumen.value || '';
+  const alamat = form.Alamat.value || '';
+  const noWA = form.No_WA.value || '';
+  const jenis = form.Jenis_Layanan.value || '';
+  const catatan = form.Catatan.value || '';
+  const total = form.Total_Harga.value || '0';
+  const metode = form.Metode_Pembayaran.value || '';
+  const kwitansiText = `Kwitansi Laundry\nNama: ${nama}\nAlamat: ${alamat}\nWA: ${noWA}\nJenis: ${jenis}\nCatatan: ${catatan}\nTotal: Rp ${total}\nMetode: ${metode}`;
+  display.textContent = kwitansiText;
+  document.getElementById('status').innerText='Kwitansi tampil, submit akan masuk GSheet';
+});
+
+// Share WA
 document.getElementById('waBtn').addEventListener('click', function(){
-  const form = document.forms[0];
   let noWa = form.No_WA.value || '0';
-  // konversi nomor ke format internasional
   if(noWa.startsWith('0')) noWa = '62'+noWa.slice(1);
   const nama = form.Nama_Konsumen.value || '';
   const total = form.Total_Harga.value || '0';
   const msg = `Kwitansi Laundry:\nNama: ${nama}\nTotal: Rp ${total}`;
   const waUrl = `https://wa.me/${noWa}?text=${encodeURIComponent(msg)}`;
   window.open(waUrl,'_blank');
+});
+
+// Copy to clipboard
+document.getElementById('copyBtn').addEventListener('click', function(){
+  const text = display.textContent;
+  if(text){
+    navigator.clipboard.writeText(text).then(()=>{
+      alert('Kwitansi berhasil dicopy ke clipboard!');
+    }).catch(err=>{
+      alert('Gagal copy kwitansi: '+err);
+    });
+  } else {
+    alert('Tidak ada kwitansi untuk dicopy!');
+  }
 });
 </script>
 
