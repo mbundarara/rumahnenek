@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rumah Nenek Laundry</title>
+<style>
+body{font-family:sans-serif;padding:20px;background:#f7f7f7;}
+h2{text-align:center;color:#333;}
+form{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);}
+input,select,textarea,button{width:100%;margin:5px 0;padding:10px;font-size:16px;border-radius:5px;border:1px solid #ccc;}
+button{background:#4CAF50;color:#fff;border:none;cursor:pointer;}
+button:hover{background:#45a049;}
+#status{margin-top:10px;color:#333;text-align:center;}
+@media print {
+  body{font-size:14px;margin:0;}
+  form, #status, #waBtn{display:none;}
+}
+</style>
+</head>
+<body>
+
+<h2>Input Kwitansi Laundry</h2>
+
+<form action="https://script.google.com/macros/s/AKfycbxYI1iBRJTbHdPFUhcIg4BtGaCxAZnfzErX3hS0gThC4lH12lL1v8jsywK2axb_noybBA/exec" method="post" target="_blank">
+  <input type="text" name="Nama_Konsumen" placeholder="Nama Konsumen" required>
+  <input type="text" name="Alamat" placeholder="Alamat Konsumen" required>
+  <input type="text" name="No_WA" placeholder="No WA" required>
+  <select name="Jenis_Layanan">
+    <option value="Cuci Kiloan">Cuci Kiloan</option>
+    <option value="Cuci Satuan">Cuci Satuan</option>
+  </select>
+  <textarea name="Catatan" placeholder="Catatan"></textarea>
+  <input type="number" name="Total_Harga" placeholder="Total Harga" required>
+  <select name="Metode_Pembayaran">
+    <option value="Cash">Cash</option>
+    <option value="Transfer">Transfer</option>
+  </select>
+  <button type="submit">Kirim Kwitansi</button>
+</form>
+
+<div style="margin-top:10px;text-align:center;">
+  <button onclick="window.print()">Print Kwitansi</button>
+  <button id="waBtn">Share WA</button>
+</div>
+
+<script>
+document.getElementById('waBtn').addEventListener('click', function(){
+  const form = document.forms[0];
+  let noWa = form.No_WA.value || '0';
+  // konversi nomor ke format internasional
+  if(noWa.startsWith('0')) noWa = '62'+noWa.slice(1);
+  const nama = form.Nama_Konsumen.value || '';
+  const total = form.Total_Harga.value || '0';
+  const msg = `Kwitansi Laundry:\nNama: ${nama}\nTotal: Rp ${total}`;
+  const waUrl = `https://wa.me/${noWa}?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl,'_blank');
+});
+</script>
+
+</body>
+</html>
