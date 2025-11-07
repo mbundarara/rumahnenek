@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Struk • Rumah Nenek Laundry</title>
 <style>
+  /* Minimal, fungsional & mobile-first */
   :root { font-family: Arial, Helvetica, sans-serif; color:#111; }
   body{ margin:0; padding:12px; background:#f6f6f6; }
   .card{ max-width:720px; margin:0 auto; background:#fff; padding:12px; border-radius:6px; box-shadow:0 1px 6px rgba(0,0,0,0.06);}
@@ -22,7 +23,13 @@
   .preview{ margin-top:12px; padding:10px; border:1px dashed #222; font-family:monospace; white-space:pre-wrap; background:#fff; }
   .controls{ display:flex; gap:8px; }
   .controls button{ flex:1; width:auto; }
+  /* thermal preview width ~58mm -> ~280px on many devices */
   .thermal { width:280px; max-width:100%; margin:10px auto; font-size:12px; line-height:1.2; padding:8px; border-radius:4px; }
+  @media print {
+    body * { visibility:hidden; }
+    .thermal, .thermal * { visibility:visible; }
+    .thermal { position: absolute; left:0; top:0; width:100%; }
+  }
 </style>
 </head>
 <body>
@@ -37,16 +44,25 @@
       <div id="pinMsg" class="muted"></div>
     </div>
 
-    <!-- Main form -->
+    <!-- Main form (hidden until PIN OK) -->
     <div id="mainScreen" style="display:none;">
+      <label>No</label>
+      <input id="no" type="text" readonly />
+
       <label>No Struk</label>
       <input id="noStruk" type="text" readonly />
 
       <label>Nama</label>
       <input id="nama" type="text" placeholder="Nama pelanggan" />
 
-      <label>Catatan</label>
-      <textarea id="ket" rows="2" placeholder="Catatan/jenis/berat"></textarea>
+      <label>Alamat</label>
+      <input id="alamat" type="text" placeholder="Alamat (opsional)" />
+
+      <label>No. WhatsApp</label>
+      <input id="nowa" type="tel" placeholder="08xxxxxxxxxx" />
+
+      <label>Keterangan</label>
+      <textarea id="ket" rows="2" placeholder="Jenis/berat/ket"></textarea>
 
       <label>Total (Rp)</label>
       <input id="total" type="number" placeholder="0" />
@@ -60,6 +76,7 @@
 
       <div id="previewArea" style="display:none;">
         <div class="preview thermal" id="previewBox"></div>
+
         <div class="controls">
           <button id="printBtn">Print</button>
           <button id="waBtn" class="secondary">Share via WhatsApp</button>
@@ -74,14 +91,19 @@
 
 <script>
 (() => {
+  const APPS_URL = "https://script.google.com/macros/s/AKfycbxVWDTGgYeFLYXJS8xXIE88m0tBvBU0JDFK_nsKRxns-Ti2CDW3S_n9BZMVSEvFJC8h9Q/exec";
+  // Elements
   const pinScreen = document.getElementById('pinScreen');
   const pinInput = document.getElementById('pinInput');
   const pinBtn = document.getElementById('pinBtn');
   const pinMsg = document.getElementById('pinMsg');
 
   const mainScreen = document.getElementById('mainScreen');
+  const noEl = document.getElementById('no');
   const noStrukEl = document.getElementById('noStruk');
   const namaEl = document.getElementById('nama');
+  const alamatEl = document.getElementById('alamat');
+  const noWaEl = document.getElementById('nowa');
   const ketEl = document.getElementById('ket');
   const totalEl = document.getElementById('total');
 
@@ -94,54 +116,181 @@
   const printBtn = document.getElementById('printBtn');
   const waBtn = document.getElementById('waBtn');
 
-  function fmtCurrency(n){ return Number(n||0).toLocaleString('id-ID'); }
+  // helpers
+  function qs(url) {
+    return fetch(url).then(r => r.text());
+  }
+  function jsonGet(url) {
+    return fetch(url).then(r => r.json());
+  }
+  function fmtCurrency(n) {
+    try { return Number(n).toLocaleString('id-ID'); } catch { return n; }
+  }
+  function sanitizePhone(input){
+    let s = String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');
+    if(s.startsWith('0')) s = '62' + s.slice(1);
+    if(!s.startsWith('62') && !s.startsWith('+')) {
+      s = '62' + s;
+    }
+    return s.replace(/^\+/, '');
+  }
 
-  function buildPreview() {
+  // build preview text (thermal)
+  function buildPreview(data) {
     const lines = [];
-    lines.push('Rumah Nenek Laundry Cariu');
-    lines.push('Jl. Mashudi No 10');
-    lines.push('Samping Klinik Holistik');
-    lines.push('--------------------------------');
-    lines.push('No Struk : ' + (noStrukEl.value || '-'));
-    lines.push('Nama     : ' + (namaEl.value || '-'));
-    lines.push('Catatan  : ' + (ketEl.value || '-'));
-    lines.push('Total    : Rp ' + fmtCurrency(totalEl.value));
-    lines.push('--------------------------------');
-    lines.push('wa/dana 0895-6223-09251');
-    lines.push('a.n. Tita Juarsih');
+    lines.push('    RUMAH NENEK LAUNDRY');
+    lines.push('    WA: 0895622309251');
+    lines.push('------------------------------');
+    lines.push('No Struk : ' + data.noStruk);
+    lines.push('No      : ' + data.no);
+    lines.push('Nama    : ' + data.nama);
+    if(data.alamat) lines.push('Alamat  : ' + data.alamat);
+    if(data.no_wa) lines.push('WA      : ' + data.no_wa);
+    if(data.ket) lines.push('Ket     : ' + data.ket);
+    lines.push('------------------------------');
+    lines.push('Total   : Rp ' + fmtCurrency(data.total));
+    lines.push('------------------------------');
+    lines.push('Terima kasih sudah mencuci di Rumah Nenek 💖');
     return lines.join('\n');
   }
 
-  function showPreview() {
-    previewBox.textContent = buildPreview();
+  // show preview
+  function showPreview(data) {
+    previewBox.textContent = buildPreview(data);
     previewArea.style.display = 'block';
   }
 
-  // tombol print -> copy teks kwitansi
-  printBtn.addEventListener('click', () => {
-    const teks = buildPreview();
-    navigator.clipboard.writeText(teks).then(() => {
-      alert('Teks kwitansi telah disalin ke clipboard. Buka Raw BT lalu paste untuk cetak.');
-    });
+  // Reset form
+  function resetForm() {
+    namaEl.value = '';
+    alamatEl.value = '';
+    noWaEl.value = '';
+    ketEl.value = '';
+    totalEl.value = '';
+    previewArea.style.display = 'none';
+    saveMsg.textContent = '';
+  }
+
+  // Request checkPIN
+  async function checkPIN(pin) {
+    pinMsg.textContent = 'Memeriksa PIN...';
+    try {
+      const res = await qs(APPS_URL + '?action=checkPIN&pin=' + encodeURIComponent(pin));
+      if(res && res.trim() === 'OK') {
+        pinMsg.textContent = 'PIN OK. Memuat nomor...';
+        return true;
+      } else {
+        pinMsg.textContent = 'PIN salah.';
+        return false;
+      }
+    } catch (e) {
+      pinMsg.textContent = 'Gagal koneksi ke server.';
+      return false;
+    }
+  }
+
+  // Request getLast
+  async function getLast() {
+    try {
+      const raw = await qs(APPS_URL + '?action=getLast');
+      try {
+        const o = JSON.parse(raw);
+        return o;
+      } catch {
+        return JSON.parse(raw);
+      }
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  // Request saveData (GET)
+  async function saveData(payload) {
+    saveMsg.textContent = 'Menyimpan...';
+    const params = new URLSearchParams();
+    params.set('action', 'saveData');
+    params.set('no', payload.no);
+    params.set('noStruk', payload.noStruk);
+    params.set('nama', payload.nama || '');
+    params.set('alamat', payload.alamat || '');
+    params.set('no_wa', payload.no_wa || '');
+    params.set('ket', payload.ket || '');
+    params.set('total', payload.total || 0);
+    try {
+      const resText = await qs(APPS_URL + '?' + params.toString());
+      saveMsg.textContent = resText || 'SUKSES';
+      return (resText && resText.trim().toUpperCase().includes('OK')) || true;
+    } catch (e) {
+      saveMsg.textContent = 'Gagal simpan: ' + (e.message||e);
+      return false;
+    }
+  }
+
+  // Events
+  pinBtn.addEventListener('click', async () => {
+    const pin = pinInput.value.trim();
+    if(!pin) { pinMsg.textContent = 'Masukkan PIN dulu.'; return; }
+    pinBtn.disabled = true;
+    const ok = await checkPIN(pin);
+    pinBtn.disabled = false;
+    if(ok) {
+      pinScreen.style.display = 'none';
+      mainScreen.style.display = 'block';
+      const last = await getLast();
+      if(last) {
+        noEl.value = last.no || '';
+        noStrukEl.value = last.noStruk || '';
+      } else {
+        noEl.value = '1';
+        const d = new Date();
+        const dd = String(d.getDate()).padStart(2,'0');
+        const mm = String(d.getMonth()+1).padStart(2,'0');
+        const yy = String(d.getFullYear()).slice(-2);
+        noStrukEl.value = dd + mm + yy + '-001';
+      }
+    }
   });
 
-  // tombol share WA
+  saveBtn.addEventListener('click', async () => {
+    const data = {
+      no: noEl.value || '',
+      noStruk: noStrukEl.value || '',
+      nama: namaEl.value.trim(),
+      alamat: alamatEl.value.trim(),
+      no_wa: noWaEl.value.trim(),
+      ket: ketEl.value.trim(),
+      total: totalEl.value || 0
+    };
+    if(!data.nama) { saveMsg.textContent = 'Nama harus diisi.'; return; }
+    if(!data.total) { saveMsg.textContent = 'Total harus diisi.'; return; }
+
+    saveBtn.disabled = true;
+    const ok = await saveData(data);
+    saveBtn.disabled = false;
+    if(ok) {
+      showPreview(data);
+      const nxt = await getLast();
+      if(nxt) {
+        noEl.value = nxt.no || '';
+        noStrukEl.value = nxt.noStruk || '';
+      }
+    }
+  });
+
+  resetBtn.addEventListener('click', () => { resetForm(); });
+  printBtn.addEventListener('click', () => { window.print(); });
   waBtn.addEventListener('click', () => {
-    const teks = buildPreview();
-    const url = 'https://wa.me/?text=' + encodeURIComponent(teks);
-    window.open(url,'_blank');
+    const text = previewBox.textContent || '';
+    const phoneRaw = noWaEl.value.trim();
+    if(!phoneRaw) { alert('Nomor WA pelanggan kosong.'); return; }
+    const phone = sanitizePhone(phoneRaw);
+    const url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(text);
+    window.open(url, '_blank');
   });
 
-  resetBtn.addEventListener('click', () => {
-    namaEl.value=''; ketEl.value=''; totalEl.value=''; previewArea.style.display='none'; saveMsg.textContent='';
-  });
-
-  pinBtn.addEventListener('click', () => {
-    pinScreen.style.display='none';
-    mainScreen.style.display='block';
-    noStrukEl.value = '001'; // default simple number
-  });
-
+  pinInput.addEventListener('keyup', (e) => { if(e.key === 'Enter') pinBtn.click(); });
+  pinInput.focus();
 })();
 </script>
 </body>
