@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Struk • Rumah Nenek Laundry</title>
 <style>
-  /* Minimal, fungsional & mobile-first */
   :root { font-family: Arial, Helvetica, sans-serif; color:#111; }
   body{ margin:0; padding:12px; background:#f6f6f6; }
   .card{ max-width:720px; margin:0 auto; background:#fff; padding:12px; border-radius:6px; box-shadow:0 1px 6px rgba(0,0,0,0.06);}
@@ -23,7 +22,6 @@
   .preview{ margin-top:12px; padding:10px; border:1px dashed #222; font-family:monospace; white-space:pre-wrap; background:#fff; }
   .controls{ display:flex; gap:8px; }
   .controls button{ flex:1; width:auto; }
-  /* thermal preview width ~58mm -> ~280px on many devices */
   .thermal { width:280px; max-width:100%; margin:10px auto; font-size:12px; line-height:1.2; padding:8px; border-radius:4px; }
   @media print {
     body * { visibility:hidden; }
@@ -61,7 +59,7 @@
       <label>No. WhatsApp</label>
       <input id="nowa" type="tel" placeholder="08xxxxxxxxxx" />
 
-      <label>Keterangan</label>
+      <label>Catatan</label>
       <textarea id="ket" rows="2" placeholder="Jenis/berat/ket"></textarea>
 
       <label>Total (Rp)</label>
@@ -92,7 +90,7 @@
 <script>
 (() => {
   const APPS_URL = "https://script.google.com/macros/s/AKfycbxVWDTGgYeFLYXJS8xXIE88m0tBvBU0JDFK_nsKRxns-Ti2CDW3S_n9BZMVSEvFJC8h9Q/exec";
-  // Elements
+  
   const pinScreen = document.getElementById('pinScreen');
   const pinInput = document.getElementById('pinInput');
   const pinBtn = document.getElementById('pinBtn');
@@ -116,51 +114,43 @@
   const printBtn = document.getElementById('printBtn');
   const waBtn = document.getElementById('waBtn');
 
-  // helpers
-  function qs(url) {
-    return fetch(url).then(r => r.text());
-  }
-  function jsonGet(url) {
-    return fetch(url).then(r => r.json());
-  }
-  function fmtCurrency(n) {
-    try { return Number(n).toLocaleString('id-ID'); } catch { return n; }
-  }
+  function qs(url) { return fetch(url).then(r => r.text()); }
+  function jsonGet(url) { return fetch(url).then(r => r.json()); }
+  function fmtCurrency(n) { try { return Number(n).toLocaleString('id-ID'); } catch { return n; } }
   function sanitizePhone(input){
     let s = String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');
     if(s.startsWith('0')) s = '62' + s.slice(1);
-    if(!s.startsWith('62') && !s.startsWith('+')) {
-      s = '62' + s;
-    }
+    if(!s.startsWith('62') && !s.startsWith('+')) s = '62' + s;
     return s.replace(/^\+/, '');
   }
 
-  // build preview text (thermal)
+  // ✅ Struk Basic Rumah Nenek Laundry
   function buildPreview(data) {
     const lines = [];
-    lines.push('    RUMAH NENEK LAUNDRY');
-    lines.push('    WA: 0895622309251');
-    lines.push('------------------------------');
+    lines.push('================================');
+    lines.push('       Rumah Nenek Laundry');
+    lines.push('             Cariu');
+    lines.push('Jl. Mashudi No. 10');
+    lines.push('Samping Klinik Holistik');
+    lines.push('--------------------------------');
     lines.push('No Struk : ' + data.noStruk);
-    lines.push('No      : ' + data.no);
-    lines.push('Nama    : ' + data.nama);
-    if(data.alamat) lines.push('Alamat  : ' + data.alamat);
-    if(data.no_wa) lines.push('WA      : ' + data.no_wa);
-    if(data.ket) lines.push('Ket     : ' + data.ket);
-    lines.push('------------------------------');
-    lines.push('Total   : Rp ' + fmtCurrency(data.total));
-    lines.push('------------------------------');
-    lines.push('Terima kasih sudah mencuci di Rumah Nenek 💖');
+    lines.push('Nama     : ' + data.nama);
+    if (data.ket) lines.push('Catatan  : ' + data.ket);
+    lines.push('Total    : Rp ' + fmtCurrency(data.total));
+    lines.push('--------------------------------');
+    lines.push('wa/dana  : 0895-6223-09251');
+    lines.push('a.n.     : Tita Juarsih');
+    lines.push('================================');
+    lines.push('     Terima kasih sudah');
+    lines.push('     mencuci di kami 💧');
     return lines.join('\n');
   }
 
-  // show preview
   function showPreview(data) {
     previewBox.textContent = buildPreview(data);
     previewArea.style.display = 'block';
   }
 
-  // Reset form
   function resetForm() {
     namaEl.value = '';
     alamatEl.value = '';
@@ -171,7 +161,6 @@
     saveMsg.textContent = '';
   }
 
-  // Request checkPIN
   async function checkPIN(pin) {
     pinMsg.textContent = 'Memeriksa PIN...';
     try {
@@ -189,23 +178,17 @@
     }
   }
 
-  // Request getLast
   async function getLast() {
     try {
       const raw = await qs(APPS_URL + '?action=getLast');
-      try {
-        const o = JSON.parse(raw);
-        return o;
-      } catch {
-        return JSON.parse(raw);
-      }
+      const o = JSON.parse(raw);
+      return o;
     } catch (e) {
       console.error(e);
       return null;
     }
   }
 
-  // Request saveData (GET)
   async function saveData(payload) {
     saveMsg.textContent = 'Menyimpan...';
     const params = new URLSearchParams();
@@ -227,7 +210,6 @@
     }
   }
 
-  // Events
   pinBtn.addEventListener('click', async () => {
     const pin = pinInput.value.trim();
     if(!pin) { pinMsg.textContent = 'Masukkan PIN dulu.'; return; }
