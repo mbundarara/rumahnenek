@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Struk • Rumah Nenek Laundry</title>
 <style>
-  :root { font-family: 'Courier New', monospace; color:#000; }
+  :root { font-family: Arial, Helvetica, sans-serif; color:#111; }
   body{ margin:0; padding:12px; background:#f6f6f6; }
   .card{ max-width:720px; margin:0 auto; background:#fff; padding:12px; border-radius:6px; box-shadow:0 1px 6px rgba(0,0,0,0.06);}
   h2{ margin:6px 0 12px 0; font-size:18px; text-align:center;}
@@ -18,17 +18,18 @@
   .row > * { flex:1; }
   button{ padding:10px 12px; border:none; border-radius:6px; background:#1f8f8f; color:#fff; font-size:15px; margin-top:12px; width:100%; cursor:pointer; }
   button.secondary{ background:#4a5568; }
-  button.copy{ background:#718096; }
+  button.copy{ background:#999; }
   .muted{ color:#666; font-size:13px; margin-top:6px; }
   .preview{ margin-top:12px; padding:10px; border:1px dashed #222; font-family:monospace; white-space:pre-wrap; background:#fff; }
   .controls{ display:flex; gap:8px; flex-wrap:wrap; }
-  .controls button{ flex:1; min-width:100px; }
-  /* ukuran thermal printer 58mm (~280px) */
-  .thermal { width:280px; max-width:100%; margin:10px auto; font-size:12px; line-height:1.2; padding:8px; border-radius:4px; background:#fff; color:#000; }
+  .controls button{ flex:1; width:auto; }
+
+  .thermal { width:58mm; max-width:100%; margin:10px auto; font-size:12px; line-height:1.3; padding:8px; border-radius:4px; background:#fff; }
+  @page { size: 58mm auto; margin: 0; }
   @media print {
     body * { visibility:hidden; }
     .thermal, .thermal * { visibility:visible; }
-    .thermal { position:absolute; left:0; top:0; width:100%; }
+    .thermal { position: absolute; left:0; top:0; width:58mm; }
   }
 </style>
 </head>
@@ -36,7 +37,7 @@
   <div class="card">
     <h2>Struk • Rumah Nenek Laundry</h2>
 
-    <!-- PIN screen -->
+    <!-- PIN -->
     <div id="pinScreen">
       <label>Masukkan PIN (online)</label>
       <input id="pinInput" type="text" placeholder="PIN" autocomplete="off" />
@@ -44,13 +45,13 @@
       <div id="pinMsg" class="muted"></div>
     </div>
 
-    <!-- Main form -->
+    <!-- Form utama -->
     <div id="mainScreen" style="display:none;">
-      <label>No</label>
-      <input id="no" type="text" readonly />
+      <label>No Urut</label>
+      <input id="noUrut" type="text" readonly />
 
-      <label>No Struk</label>
-      <input id="noStruk" type="text" readonly />
+      <label>No Kwitansi</label>
+      <input id="noKwitansi" type="text" readonly />
 
       <label>Nama</label>
       <input id="nama" type="text" placeholder="Nama pelanggan" />
@@ -61,11 +62,17 @@
       <label>No. WhatsApp</label>
       <input id="nowa" type="tel" placeholder="08xxxxxxxxxx" />
 
+      <label>Jenis Layanan</label>
+      <input id="jenis" type="text" placeholder="Cuci, Setrika, dll" />
+
       <label>Catatan</label>
-      <textarea id="ket" rows="2" placeholder="Jenis/berat/ket"></textarea>
+      <textarea id="catatan" rows="2" placeholder="Berat, permintaan khusus, dll"></textarea>
 
       <label>Total (Rp)</label>
       <input id="total" type="number" placeholder="0" />
+
+      <label>Metode Pembayaran</label>
+      <input id="metode" type="text" placeholder="Tunai / Non Tunai" />
 
       <div class="row">
         <button id="saveBtn">Simpan ke Sheets</button>
@@ -79,167 +86,132 @@
 
         <div class="controls">
           <button id="printBtn">Print</button>
-          <button id="copyBtn" class="copy">Copy ke Clipboard</button>
-          <button id="waBtn" class="secondary">Kirim via WhatsApp</button>
+          <button id="waBtn" class="secondary">Bagikan WA</button>
+          <button id="copyBtn" class="copy">Copy Struk</button>
         </div>
       </div>
     </div>
 
     <div class="muted" style="margin-top:10px; font-size:12px;">
-      Note: Sistem online, data tersimpan di Google Sheets pusat.
+      Note: Sistem online. Pastikan koneksi Internet aktif.
     </div>
   </div>
 
 <script>
 (() => {
   const APPS_URL = "https://script.google.com/macros/s/AKfycbxVWDTGgYeFLYXJS8xXIE88m0tBvBU0JDFK_nsKRxns-Ti2CDW3S_n9BZMVSEvFJC8h9Q/exec";
-  
-  const pinScreen = document.getElementById('pinScreen');
-  const pinInput = document.getElementById('pinInput');
-  const pinBtn = document.getElementById('pinBtn');
-  const pinMsg = document.getElementById('pinMsg');
-  const mainScreen = document.getElementById('mainScreen');
-  const noEl = document.getElementById('no');
-  const noStrukEl = document.getElementById('noStruk');
-  const namaEl = document.getElementById('nama');
-  const alamatEl = document.getElementById('alamat');
-  const noWaEl = document.getElementById('nowa');
-  const ketEl = document.getElementById('ket');
-  const totalEl = document.getElementById('total');
-  const saveBtn = document.getElementById('saveBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const saveMsg = document.getElementById('saveMsg');
-  const previewArea = document.getElementById('previewArea');
-  const previewBox = document.getElementById('previewBox');
-  const printBtn = document.getElementById('printBtn');
-  const waBtn = document.getElementById('waBtn');
-  const copyBtn = document.getElementById('copyBtn');
 
-  function qs(url){return fetch(url).then(r=>r.text());}
-  function fmtCurrency(n){try{return Number(n).toLocaleString('id-ID');}catch{return n;}}
-  function sanitizePhone(input){
-    let s=String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');
-    if(s.startsWith('0')) s='62'+s.slice(1);
-    if(!s.startsWith('62')&&!s.startsWith('+')) s='62'+s;
-    return s.replace(/^\+/,'');
+  const el = id => document.getElementById(id);
+  const pinScreen = el('pinScreen'), mainScreen = el('mainScreen');
+  const pinInput = el('pinInput'), pinBtn = el('pinBtn'), pinMsg = el('pinMsg');
+  const noUrut = el('noUrut'), noKwitansi = el('noKwitansi'), nama = el('nama');
+  const alamat = el('alamat'), nowa = el('nowa'), jenis = el('jenis');
+  const catatan = el('catatan'), total = el('total'), metode = el('metode');
+  const saveBtn = el('saveBtn'), resetBtn = el('resetBtn'), saveMsg = el('saveMsg');
+  const previewArea = el('previewArea'), previewBox = el('previewBox');
+  const printBtn = el('printBtn'), waBtn = el('waBtn'), copyBtn = el('copyBtn');
+
+  const fmtIDR = n => Number(n||0).toLocaleString('id-ID');
+  const qs = u => fetch(u).then(r=>r.text());
+  const sanitizeWA = x => {
+    let s = x.replace(/\D/g,'');
+    if(s.startsWith('0')) s = '62' + s.slice(1);
+    return s;
+  };
+
+  async function checkPIN(pin) {
+    pinMsg.textContent = 'Memeriksa PIN...';
+    const r = await qs(APPS_URL + '?action=checkPIN&pin=' + encodeURIComponent(pin));
+    if(r.trim() === 'OK') { pinMsg.textContent = 'PIN OK'; return true; }
+    pinMsg.textContent = 'PIN salah'; return false;
   }
 
-  // ✅ Struk Basic (tanpa ucapan)
-  function buildPreview(data){
-    const lines=[];
-    lines.push('================================');
-    lines.push('       Rumah Nenek Laundry');
-    lines.push('             Cariu');
-    lines.push('Jl. Mashudi No. 10');
-    lines.push('Samping Klinik Holistik');
-    lines.push('--------------------------------');
-    lines.push('No Struk : '+data.noStruk);
-    lines.push('Nama     : '+data.nama);
-    if(data.ket) lines.push('Catatan  : '+data.ket);
-    lines.push('Total    : Rp '+fmtCurrency(data.total));
-    lines.push('--------------------------------');
-    lines.push('wa/dana  : 0895-6223-09251');
-    lines.push('a.n.     : Tita Juarsih');
-    lines.push('================================');
-    return lines.join('\\n');
+  async function getLast() {
+    const r = await qs(APPS_URL + '?action=getLast');
+    try { return JSON.parse(r); } catch { return null; }
   }
 
-  function showPreview(data){
-    previewBox.textContent=buildPreview(data);
-    previewArea.style.display='block';
-  }
-
-  function resetForm(){
-    [namaEl,alamatEl,noWaEl,ketEl,totalEl].forEach(el=>el.value='');
-    previewArea.style.display='none';
-    saveMsg.textContent='';
-  }
-
-  async function checkPIN(pin){
-    pinMsg.textContent='Memeriksa PIN...';
-    try{
-      const res=await qs(APPS_URL+'?action=checkPIN&pin='+encodeURIComponent(pin));
-      if(res&&res.trim()==='OK'){pinMsg.textContent='PIN OK. Memuat nomor...';return true;}
-      pinMsg.textContent='PIN salah.';return false;
-    }catch(e){pinMsg.textContent='Gagal koneksi.';return false;}
-  }
-
-  async function getLast(){
-    try{
-      const raw=await qs(APPS_URL+'?action=getLast');
-      return JSON.parse(raw);
-    }catch(e){console.error(e);return null;}
-  }
-
-  async function saveData(payload){
-    saveMsg.textContent='Menyimpan...';
-    const params=new URLSearchParams();
-    params.set('action','saveData');
-    for(const [k,v] of Object.entries(payload)) params.set(k,v||'');
-    try{
-      const resText=await qs(APPS_URL+'?'+params.toString());
-      saveMsg.textContent=resText||'SUKSES';
-      return (resText&&resText.trim().toUpperCase().includes('OK'))||true;
-    }catch(e){saveMsg.textContent='Gagal: '+(e.message||e);return false;}
-  }
-
-  pinBtn.addEventListener('click',async()=>{
-    const pin=pinInput.value.trim();
-    if(!pin){pinMsg.textContent='Masukkan PIN dulu.';return;}
-    pinBtn.disabled=true;
-    const ok=await checkPIN(pin);
-    pinBtn.disabled=false;
-    if(ok){
-      pinScreen.style.display='none';
-      mainScreen.style.display='block';
-      const last=await getLast();
-      if(last){noEl.value=last.no||'';noStrukEl.value=last.noStruk||'';}
-      else{
-        noEl.value='1';
-        const d=new Date();
-        noStrukEl.value=d.toLocaleDateString('id-ID').replace(/\D/g,'')+'-001';
-      }
+  async function saveData(d) {
+    saveMsg.textContent = 'Menyimpan...';
+    const p = new URLSearchParams();
+    p.set('action','saveData');
+    Object.entries(d).forEach(([k,v])=>p.set(k,v));
+    try {
+      const r = await qs(APPS_URL + '?' + p.toString());
+      saveMsg.textContent = r || 'Tersimpan.';
+      return true;
+    } catch(e){
+      saveMsg.textContent = 'Gagal simpan: ' + e;
+      return false;
     }
-  });
+  }
 
-  saveBtn.addEventListener('click',async()=>{
-    const data={
-      no:noEl.value||'',
-      noStruk:noStrukEl.value||'',
-      nama:namaEl.value.trim(),
-      alamat:alamatEl.value.trim(),
-      no_wa:noWaEl.value.trim(),
-      ket:ketEl.value.trim(),
-      total:totalEl.value||0
+  function buildPreview(d){
+    return [
+      '   RUMAH NENEK LAUNDRY',
+      '   Jl. Mashudi No. 10',
+      '   Samping Klinik Holistik',
+      '   WA/DANA: 0895622309251',
+      '   a.n. Tita Juarsih',
+      '-----------------------------',
+      'No Kwitansi : ' + d.noKwitansi,
+      'No Urut     : ' + d.noUrut,
+      'Nama        : ' + d.nama,
+      d.alamat ? 'Alamat      : ' + d.alamat : '',
+      d.nowa ? 'WA          : ' + d.nowa : '',
+      d.jenis ? 'Layanan     : ' + d.jenis : '',
+      d.catatan ? 'Catatan     : ' + d.catatan : '',
+      '-----------------------------',
+      'Total       : Rp ' + fmtIDR(d.total),
+      'Metode      : ' + d.metode,
+      '-----------------------------',
+    ].filter(Boolean).join('\n');
+  }
+
+  function showPreview(d){
+    previewBox.textContent = buildPreview(d);
+    previewArea.style.display = 'block';
+  }
+
+  pinBtn.onclick = async()=>{
+    const pin = pinInput.value.trim();
+    if(!pin) return pinMsg.textContent='Masukkan PIN';
+    pinBtn.disabled = true;
+    const ok = await checkPIN(pin);
+    pinBtn.disabled = false;
+    if(ok){
+      pinScreen.style.display='none'; mainScreen.style.display='block';
+      const last = await getLast();
+      if(last){ noUrut.value = last.noUrut; noKwitansi.value = last.noKwitansi; }
+    }
+  };
+
+  saveBtn.onclick = async()=>{
+    const d = {
+      noUrut:noUrut.value, noKwitansi:noKwitansi.value,
+      nama:nama.value, alamat:alamat.value,
+      nowa:nowa.value, jenis:jenis.value, catatan:catatan.value,
+      total:total.value, metode:metode.value
     };
-    if(!data.nama){saveMsg.textContent='Nama harus diisi.';return;}
-    if(!data.total){saveMsg.textContent='Total harus diisi.';return;}
-    saveBtn.disabled=true;
-    const ok=await saveData(data);
-    saveBtn.disabled=false;
-    if(ok){
-      showPreview(data);
-      const nxt=await getLast();
-      if(nxt){noEl.value=nxt.no||'';noStrukEl.value=nxt.noStruk||'';}
-    }
-  });
+    if(!d.nama || !d.total) return saveMsg.textContent='Isi nama & total.';
+    saveBtn.disabled = true;
+    const ok = await saveData(d);
+    saveBtn.disabled = false;
+    if(ok) showPreview(d);
+  };
 
-  resetBtn.addEventListener('click',()=>resetForm());
-  printBtn.addEventListener('click',()=>window.print());
-  waBtn.addEventListener('click',()=>{
-    const text=previewBox.textContent||'';
-    const phoneRaw=noWaEl.value.trim();
-    if(!phoneRaw){alert('Nomor WA pelanggan kosong.');return;}
-    const phone=sanitizePhone(phoneRaw);
-    window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(text),'_blank');
-  });
-  copyBtn.addEventListener('click',()=>{
-    navigator.clipboard.writeText(previewBox.textContent)
-      .then(()=>alert('Teks struk disalin ke clipboard ✅'))
-      .catch(()=>alert('Gagal menyalin teks.'));
-  });
-  pinInput.addEventListener('keyup',e=>{if(e.key==='Enter')pinBtn.click();});
-  pinInput.focus();
+  resetBtn.onclick=()=>{ [nama,alamat,nowa,jenis,catatan,total,metode].forEach(e=>e.value=''); previewArea.style.display='none'; };
+  printBtn.onclick=()=>window.print();
+  waBtn.onclick=()=>{
+    const msg = encodeURIComponent(previewBox.textContent);
+    const num = sanitizeWA(nowa.value);
+    if(!num) return alert('Nomor WA kosong');
+    window.open('https://wa.me/'+num+'?text='+msg,'_blank');
+  };
+  copyBtn.onclick=()=>{
+    navigator.clipboard.writeText(previewBox.textContent);
+    alert('Struk disalin ke clipboard');
+  };
 })();
 </script>
 </body>
