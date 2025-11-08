@@ -1,130 +1,408 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rumah Nenek Laundry</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Struk • Rumah Nenek Laundry</title>
 <style>
-body{font-family:sans-serif;padding:20px;background:#f7f7f7;}
-h2{text-align:center;color:#333;}
-form{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);}
-input,select,textarea,button{width:100%;margin:5px 0;padding:10px;font-size:16px;border-radius:5px;border:1px solid #ccc;}
-button{background:#4CAF50;color:#fff;border:none;cursor:pointer;}
-button:hover{background:#45a049;}
-#status{margin-top:10px;color:#333;text-align:center;}
-#kwitansiDisplay{background:#fff;padding:10px;margin-top:10px;border-radius:5px;white-space:pre-line;font-family:monospace;}
-@media print {
-  body{width:58mm;font-size:14px;margin:0;}
-  form, #status, #waBtn, #copyBtn, #printBtn{display:none;}
-  #kwitansiDisplay{width:58mm;}
-}
+  :root{ font-family: 'Courier New', monospace; color:#000; }
+  body{ margin:0; padding:12px; background:#f6f6f6; }
+  .card{ max-width:720px; margin:0 auto; background:#fff; padding:12px; border-radius:6px; box-shadow:0 1px 6px rgba(0,0,0,0.06);}
+  h2{ margin:6px 0 12px 0; font-size:18px; text-align:center;}
+  label{ display:block; font-size:13px; margin-top:8px; }
+  input[type=text], input[type=tel], input[type=number], input[type=datetime-local], textarea {
+    width:100%; padding:8px; font-size:15px; box-sizing:border-box; margin-top:4px; border:1px solid #ddd; border-radius:6px;
+  }
+  textarea{ resize:vertical; }
+  .row{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  .row > *{ flex:1; min-width:120px; }
+  button{ padding:10px 12px; border:none; border-radius:6px; background:#1f8f8f; color:#fff; font-size:15px; cursor:pointer; }
+  button.secondary{ background:#4a5568; }
+  button.warn{ background:#c53030; }
+  button.copy{ background:#718096; }
+  .muted{ color:#666; font-size:13px; margin-top:6px; }
+  .preview{ margin-top:12px; padding:10px; border:1px dashed #222; font-family:monospace; white-space:pre-wrap; background:#fff; }
+  .controls{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .controls button{ flex:1; min-width:110px; }
+  .thermal{ width:280px; max-width:100%; margin:10px auto; font-size:12px; line-height:1.2; padding:8px; border-radius:4px; background:#fff; color:#000; }
+  .hidden{ display:none; }
+  @media print {
+    body *{ visibility:hidden; }
+    .thermal, .thermal *{ visibility:visible; }
+    .thermal{ position:absolute; left:0; top:0; width:100%; }
+  }
 </style>
 </head>
 <body>
+  <div class="card">
+    <h2>Struk • Rumah Nenek Laundry</h2>
 
-<h2>Input Kwitansi Laundry</h2>
+    <!-- PIN/login (reuse existing flow) -->
+    <div id="pinScreen">
+      <label>Masukkan PIN (online)</label>
+      <input id="pinInput" type="text" placeholder="PIN" autocomplete="off" />
+      <div class="row">
+        <button id="pinBtn">Masuk</button>
+        <button id="skipPinBtn" class="secondary">Lewati (dev)</button>
+      </div>
+      <div id="pinMsg" class="muted"></div>
+    </div>
 
-<form id="kwitansiForm">
-  <input type="text" id="nama" placeholder="Nama Konsumen" required>
-  <input type="text" id="alamat" placeholder="Alamat Konsumen" required>
-  <input type="text" id="no_wa" placeholder="No WA" required>
-  <select id="jenis">
-    <option value="Cuci Kiloan">Cuci Kiloan</option>
-    <option value="Cuci Satuan">Cuci Satuan</option>
-  </select>
-  <textarea id="catatan" placeholder="Catatan"></textarea>
-  <input type="number" id="total" placeholder="Total Harga" required>
-  <select id="metode">
-    <option value="Cash">Cash</option>
-    <option value="Transfer">Transfer</option>
-  </select>
-  <button type="submit">Kirim Kwitansi</button>
-</form>
+    <!-- Main -->
+    <div id="mainScreen" class="hidden">
+      <label>Tanggal</label>
+      <input id="tanggal" type="text" placeholder="dd-mm-yyyy hh:ii:ss (opsional)" />
 
-<div id="status"></div>
+      <label>No Urut</label>
+      <input id="noUrut" type="text" readonly />
 
-<div style="margin-top:10px;text-align:center;">
-  <button id="printBtn">Print Kwitansi</button>
-  <button id="waBtn">Share WA</button>
-  <button id="copyBtn">Copy Kwitansi</button>
-</div>
+      <label>No Kwitansi</label>
+      <input id="noKwitansi" type="text" readonly />
 
-<div id="kwitansiDisplay"></div>
+      <label>Nama Konsumen</label>
+      <input id="nama" type="text" placeholder="Nama pelanggan" />
+
+      <label>Alamat Konsumen</label>
+      <input id="alamat" type="text" placeholder="Alamat (opsional)" />
+
+      <label>No. WhatsApp</label>
+      <input id="nowa" type="tel" placeholder="08xxxxxxxxxx" />
+
+      <label>Jenis Layanan</label>
+      <input id="layanan" type="text" placeholder="Ex: Cuci+Setrika / Kilogram / Express" />
+
+      <label>Catatan</label>
+      <textarea id="ket" rows="2" placeholder="Keterangan / berat / estimasi"></textarea>
+
+      <label>Total Harga (Rp)</label>
+      <input id="total" type="number" placeholder="0" />
+
+      <label>Metode Pembayaran</label>
+      <input id="metode" type="text" placeholder="Tunai / WA / Dana / Transfer" />
+
+      <div class="row">
+        <button id="saveBtn">Simpan (Struk Baru)</button>
+        <button id="resetBtn" class="secondary">Reset Form</button>
+        <button id="searchBtn" class="secondary">Cari Struk</button>
+      </div>
+
+      <div id="saveMsg" class="muted"></div>
+
+      <!-- Preview area -->
+      <div id="previewArea" class="hidden">
+        <div class="preview thermal" id="previewBox"></div>
+
+        <div class="controls" id="recordActions" style="display:flex;">
+          <!-- these buttons show after search or save -->
+          <button id="editBtn">Edit</button>
+          <button id="deleteBtn" class="warn">Hapus</button>
+          <button id="waBtn" class="secondary">Bagikan Ulang (WA)</button>
+          <button id="copyBtn" class="copy">Copy ke Clipboard</button>
+          <button id="printBtn">Print</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="muted" style="margin-top:10px; font-size:12px;">
+      Note: Sistem online, data tersimpan di sheet "Bulanan".
+    </div>
+  </div>
 
 <script>
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxYI1iBRJTbHdPFUhcIg4BtGaCxAZnfzErX3hS0gThC4lH12lL1v8jsywK2axb_noybBA/exec';
+(() => {
+  // MASUKKAN URL DEPLOY APPS SCRIPT kamu di bawah ini:
+  const APPS_URL = "PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE";
 
-const form = document.getElementById('kwitansiForm');
-const display = document.getElementById('kwitansiDisplay');
-const status = document.getElementById('status');
+  // Elements
+  const pinScreen = document.getElementById('pinScreen');
+  const pinInput = document.getElementById('pinInput');
+  const pinBtn = document.getElementById('pinBtn');
+  const skipPinBtn = document.getElementById('skipPinBtn');
+  const pinMsg = document.getElementById('pinMsg');
 
-form.addEventListener('submit', function(e){
-  e.preventDefault();
-  const data = {
-    Nama_Konsumen: document.getElementById('nama').value || '',
-    Alamat: document.getElementById('alamat').value || '',
-    No_WA: document.getElementById('no_wa').value || '0',
-    Jenis_Layanan: document.getElementById('jenis').value || 'Cuci Kiloan',
-    Catatan: document.getElementById('catatan').value || '',
-    Total_Harga: Number(document.getElementById('total').value || 0),
-    Metode_Pembayaran: document.getElementById('metode').value || 'Cash'
-  };
+  const mainScreen = document.getElementById('mainScreen');
+  const tanggalEl = document.getElementById('tanggal');
+  const noUrutEl = document.getElementById('noUrut');
+  const noKwitansiEl = document.getElementById('noKwitansi');
+  const namaEl = document.getElementById('nama');
+  const alamatEl = document.getElementById('alamat');
+  const noWaEl = document.getElementById('nowa');
+  const layananEl = document.getElementById('layanan');
+  const ketEl = document.getElementById('ket');
+  const totalEl = document.getElementById('total');
+  const metodeEl = document.getElementById('metode');
 
-  const kwitansiText = `Kwitansi Laundry\nNama: ${data.Nama_Konsumen}\nAlamat: ${data.Alamat}\nWA: ${data.No_WA}\nJenis: ${data.Jenis_Layanan}\nCatatan: ${data.Catatan}\nTotal: Rp ${data.Total_Harga}\nMetode: ${data.Metode_Pembayaran}`;
-  display.textContent = kwitansiText;
+  const saveBtn = document.getElementById('saveBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const searchBtn = document.getElementById('searchBtn');
+  const saveMsg = document.getElementById('saveMsg');
 
-  // Submit langsung ke Web App
-  fetch(WEB_APP_URL, {
-    method:'POST',
-    body: JSON.stringify(data),
-    headers:{'Content-Type':'application/json'}
-  })
-  .then(res=>res.json())
-  .then(res=>{
-    if(res.ok){
-      status.innerText='Kwitansi berhasil dikirim ke GSheet';
-      form.reset();
-    } else {
-      status.innerText='Gagal: '+res.error;
-    }
-  })
-  .catch(err=>{
-    status.innerText='Error: '+err;
-  });
-});
+  const previewArea = document.getElementById('previewArea');
+  const previewBox = document.getElementById('previewBox');
 
-// Print
-document.getElementById('printBtn').addEventListener('click', function(){
-  if(display.textContent){
-    window.print();
-  } else {
-    alert('Tidak ada kwitansi untuk dicetak!');
+  const editBtn = document.getElementById('editBtn');
+  const deleteBtn = document.getElementById('deleteBtn');
+  const waBtn = document.getElementById('waBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const printBtn = document.getElementById('printBtn');
+
+  // Helpers
+  function qs(url){ return fetch(url).then(r => r.text()); }
+  function jsonGet(url){ return fetch(url).then(r => r.json()); }
+  function fmtCurrency(n){ try { return Number(n).toLocaleString('id-ID'); } catch { return n; } }
+  function sanitizePhone(input){
+    let s = String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');
+    if(s.startsWith('0')) s = '62' + s.slice(1);
+    if(!s.startsWith('62') && !s.startsWith('+')) s = '62' + s;
+    return s.replace(/^\+/, '');
   }
-});
 
-// Share WA
-document.getElementById('waBtn').addEventListener('click', function(){
-  let noWa = document.getElementById('no_wa').value || '0';
-  if(noWa.startsWith('0')) noWa = '62'+noWa.slice(1);
-  const nama = document.getElementById('nama').value || '';
-  const total = document.getElementById('total').value || '0';
-  const msg = `Kwitansi Laundry:\nNama: ${nama}\nTotal: Rp ${total}`;
-  const waUrl = `https://wa.me/${noWa}?text=${encodeURIComponent(msg)}`;
-  window.open(waUrl,'_blank');
-});
+  // Build preview (struk basic restored)
+  function buildPreview(data){
+    const lines=[];
+    lines.push('================================');
+    lines.push('       Rumah Nenek Laundry');
+    lines.push('             Cariu');
+    lines.push('Jl. Mashudi No. 10');
+    lines.push('Samping Klinik Holistik');
+    lines.push('--------------------------------');
+    lines.push('No Struk : ' + (data.noKwitansi || ''));
+    lines.push('Nama     : ' + (data.nama || ''));
+    if(data.ket) lines.push('Catatan  : ' + data.ket);
+    lines.push('Total    : Rp ' + fmtCurrency(data.total || 0));
+    lines.push('--------------------------------');
+    lines.push('wa/dana  : 0895-6223-09251');
+    lines.push('a.n.     : Tita Juarsih');
+    lines.push('================================');
+    return lines.join('\\n');
+  }
 
-// Copy clipboard
-document.getElementById('copyBtn').addEventListener('click', function(){
-  const text = display.textContent;
-  if(text){
-    navigator.clipboard.writeText(text).then(()=>{
-      alert('Kwitansi berhasil dicopy ke clipboard!');
-    }).catch(err=>{
-      alert('Gagal copy kwitansi: '+err);
+  function showPreview(data){
+    previewBox.textContent = buildPreview(data);
+    previewArea.classList.remove('hidden');
+  }
+
+  function resetForm(){
+    tanggalEl.value = '';
+    namaEl.value = '';
+    alamatEl.value = '';
+    noWaEl.value = '';
+    layananEl.value = '';
+    ketEl.value = '';
+    totalEl.value = '';
+    metodeEl.value = '';
+    previewArea.classList.add('hidden');
+    saveMsg.textContent = '';
+    noUrutEl.value = '';
+    noKwitansiEl.value = '';
+  }
+
+  // getLast -> fetch last No_Urut, No_Kwitansi
+  async function getLast(){
+    try {
+      const res = await jsonGet(APPS_URL + '?action=getLast');
+      return res;
+    } catch (e) { console.error(e); return null; }
+  }
+
+  // saveData -> insert new row
+  async function saveData(payload){
+    saveMsg.textContent = 'Menyimpan...';
+    const params = new URLSearchParams({ action:'saveData', ...payload });
+    try {
+      const r = await qs(APPS_URL + '?' + params.toString());
+      saveMsg.textContent = r || 'SUKSES';
+      return true;
+    } catch (e) {
+      saveMsg.textContent = 'Gagal simpan: ' + e.message;
+      return false;
+    }
+  }
+
+  // editData -> update existing by No_Kwitansi
+  async function editData(payload){
+    saveMsg.textContent = 'Mengupdate...';
+    const params = new URLSearchParams({ action:'editData', ...payload });
+    try {
+      const r = await qs(APPS_URL + '?' + params.toString());
+      saveMsg.textContent = r || 'Terupdate';
+      return true;
+    } catch (e) {
+      saveMsg.textContent = 'Gagal update: ' + e.message;
+      return false;
+    }
+  }
+
+  // deleteData -> safe delete/tandai
+  async function deleteData(noKwitansi){
+    if(!confirm('Yakin ingin menghapus (aman) struk ini?')) return false;
+    saveMsg.textContent = 'Menghapus...';
+    try {
+      const r = await qs(APPS_URL + '?action=deleteData&noKwitansi=' + encodeURIComponent(noKwitansi));
+      saveMsg.textContent = r || 'Terhapus';
+      return true;
+    } catch (e) {
+      saveMsg.textContent = 'Gagal hapus: ' + e.message;
+      return false;
+    }
+  }
+
+  // searchData
+  async function searchData(keyword){
+    saveMsg.textContent = 'Mencari...';
+    try {
+      const res = await fetch(APPS_URL + '?action=searchData&keyword=' + encodeURIComponent(keyword));
+      const json = await res.json();
+      if(!json || !json.found) {
+        saveMsg.textContent = 'Data tidak ditemukan.';
+        return null;
+      }
+      saveMsg.textContent = 'Data ditemukan ✔';
+      return json;
+    } catch (e) {
+      saveMsg.textContent = 'Gagal cari: ' + e.message;
+      return null;
+    }
+  }
+
+  // Events
+  pinBtn.addEventListener('click', async () => {
+    const pin = pinInput.value.trim();
+    if(!pin){ pinMsg.textContent = 'Masukkan PIN dulu.'; return; }
+    pinBtn.disabled = true;
+    // simple PIN check via script (optional)
+    try {
+      const ok = await fetch(APPS_URL + '?action=checkPIN&pin=' + encodeURIComponent(pin)).then(r => r.text());
+      if(ok && ok.trim() === 'OK') {
+        pinScreen.classList.add('hidden');
+        mainScreen.classList.remove('hidden');
+        pinMsg.textContent = '';
+        const last = await getLast();
+        if(last){ noUrutEl.value = last.noUrut || ''; noKwitansiEl.value = last.noKwitansi || ''; }
+      } else {
+        pinMsg.textContent = 'PIN salah.';
+      }
+    } catch (e) {
+      pinMsg.textContent = 'Gagal koneksi: ' + e.message;
+    }
+    pinBtn.disabled = false;
+  });
+
+  // dev shortcut (skip PIN) - remove in production if you want
+  skipPinBtn.addEventListener('click', async () => {
+    pinScreen.classList.add('hidden');
+    mainScreen.classList.remove('hidden');
+    const last = await getLast();
+    if(last){ noUrutEl.value = last.noUrut || ''; noKwitansiEl.value = last.noKwitansi || ''; }
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    // prepare payload (if no noKwitansi provided; backend will generate)
+    const payload = {
+      tanggal: tanggalEl.value || '',
+      noUrut: noUrutEl.value || '',
+      noKwitansi: noKwitansiEl.value || '',
+      nama: namaEl.value.trim(),
+      alamat: alamatEl.value.trim(),
+      no_wa: noWaEl.value.trim(),
+      jenis_layanan: layananEl.value.trim(),
+      catatan: ketEl.value.trim(),
+      total_harga: totalEl.value || 0,
+      metode_pembayaran: metodeEl.value.trim()
+    };
+    if(!payload.nama){ saveMsg.textContent = 'Nama harus diisi.'; return; }
+    if(!payload.total_harga){ saveMsg.textContent = 'Total harus diisi.'; return; }
+
+    saveBtn.disabled = true;
+    const ok = await saveData(payload);
+    saveBtn.disabled = false;
+    if(ok){
+      // reload last
+      const last = await getLast();
+      if(last){ noUrutEl.value = last.noUrut || ''; noKwitansiEl.value = last.noKwitansi || ''; }
+      showPreview({
+        noKwitansi: payload.noKwitansi || (last && last.noKwitansi) || '',
+        nama: payload.nama,
+        ket: payload.catatan,
+        total: payload.total_harga
+      });
+    }
+  });
+
+  // Search flow
+  searchBtn.addEventListener('click', async () => {
+    const keyword = prompt('Masukkan No Kwitansi / Nama Konsumen / No WA:');
+    if(!keyword) return;
+    const result = await searchData(keyword.trim());
+    if(!result) return;
+    // fill form
+    tanggalEl.value = result.Tanggal || '';
+    noUrutEl.value = result.No_Urut || '';
+    noKwitansiEl.value = result.No_Kwitansi || '';
+    namaEl.value = result.Nama_Konsumen || '';
+    alamatEl.value = result.Alamat_Konsumen || '';
+    noWaEl.value = result.No_WA || '';
+    layananEl.value = result.Jenis_Layanan || '';
+    ketEl.value = result.Catatan || '';
+    totalEl.value = result.Total_Harga || '';
+    metodeEl.value = result.Metode_Pembayaran || '';
+    showPreview({
+      noKwitansi: result.No_Kwitansi,
+      nama: result.Nama_Konsumen,
+      ket: result.Catatan,
+      total: result.Total_Harga
     });
-  } else alert('Tidak ada kwitansi untuk dicopy!');
-});
-</script>
+  });
 
+  // Edit
+  editBtn.addEventListener('click', async () => {
+    const noK = noKwitansiEl.value.trim();
+    if(!noK){ alert('No Kwitansi kosong. Cari dulu'); return; }
+    const payload = {
+      noKwitansi: noK,
+      tanggal: tanggalEl.value || '',
+      noUrut: noUrutEl.value || '',
+      nama: namaEl.value.trim(),
+      alamat: alamatEl.value.trim(),
+      no_wa: noWaEl.value.trim(),
+      jenis_layanan: layananEl.value.trim(),
+      catatan: ketEl.value.trim(),
+      total_harga: totalEl.value || 0,
+      metode_pembayaran: metodeEl.value.trim()
+    };
+    const ok = await editData(payload);
+    if(ok) showPreview({ noKwitansi: payload.noKwitansi, nama: payload.nama, ket: payload.catatan, total: payload.total_harga });
+  });
+
+  // Delete
+  deleteBtn.addEventListener('click', async () => {
+    const noK = noKwitansiEl.value.trim();
+    if(!noK){ alert('No Kwitansi kosong. Cari dulu'); return; }
+    const ok = await deleteData(noK);
+    if(ok) resetForm();
+  });
+
+  // Share via WA
+  waBtn.addEventListener('click', () => {
+    const text = previewBox.textContent || '';
+    const phoneRaw = noWaEl.value.trim();
+    if(!phoneRaw){ alert('Nomor WA pelanggan kosong.'); return; }
+    const phone = sanitizePhone(phoneRaw);
+    window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(text), '_blank');
+  });
+
+  // Copy
+  copyBtn.addEventListener('click', () => {
+    const text = previewBox.textContent || '';
+    navigator.clipboard.writeText(text).then(() => alert('Teks struk disalin ke clipboard ✅')).catch(() => alert('Gagal menyalin teks.'));
+  });
+
+  // Print
+  printBtn.addEventListener('click', () => { window.print(); });
+
+  // initial focus
+  pinInput.focus();
+})();
+</script>
 </body>
 </html>
