@@ -3,182 +3,582 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Rumah Nenek Laundry</title>
+<title>Rumah Nenek Laundry — Mobile</title>
 <style>
-  :root { font-family: Arial, sans-serif; color:#111; }
-  body{ margin:0; padding:12px; background:#f5f5f5; }
-  .card{ max-width:720px; margin:auto; background:#fff; padding:16px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);}
-  h2{ text-align:center; font-size:18px; margin-bottom:10px; }
-  label{ font-size:13px; display:block; margin-top:10px; }
-  input,textarea{ width:100%; padding:8px; font-size:14px; box-sizing:border-box; border:1px solid #ddd; border-radius:6px; margin-top:4px; }
-  button{ background:#1f8f8f; color:#fff; border:none; padding:10px; border-radius:6px; font-size:14px; cursor:pointer; }
-  button.secondary{ background:#555; }
-  .row{ display:flex; gap:8px; margin-top:10px; }
-  .row > *{ flex:1; }
-  .muted{ font-size:12px; color:#666; margin-top:6px; }
-  .thermal{ width:280px; font-family:monospace; white-space:pre-wrap; background:#fff; border:1px dashed #000; padding:8px; border-radius:4px; margin:10px auto; }
-  .search-section{ margin-top:20px; border-top:1px solid #eee; padding-top:12px; }
-  .results{ margin-top:10px; }
-  .result-card{ border:1px solid #ddd; border-radius:6px; padding:8px; margin-bottom:8px; background:#fafafa; font-size:13px; }
-  .actions button{ margin-right:6px; margin-top:6px; }
+  :root{
+    --bg:#f7fafc; --card:#ffffff; --accent:#0a8386; --muted:#6b7280;
+    --danger:#e53e3e; --ok:#2f855a;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  html,body{height:100%; margin:0; background:var(--bg); color:#111;}
+  .wrap{max-width:720px; margin:0 auto; padding:12px;}
+  .card{background:var(--card); border-radius:12px; padding:12px; box-shadow:0 6px 18px rgba(15,23,42,0.06);}
+  header{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  h1{font-size:18px; margin:0;}
+  .status{margin-left:auto; font-size:12px; color:var(--muted);}
+  label{display:block; font-size:13px; margin-top:10px; color:#111;}
+  input[type=text], input[type=tel], input[type=number], textarea {
+    width:100%; padding:10px; font-size:15px; border:1px solid #e6edf0; border-radius:10px; box-sizing:border-box;
+  }
+  textarea{min-height:64px; resize:vertical;}
+  .row{display:flex; gap:8px; margin-top:10px;}
+  .row > *{flex:1;}
+  button{
+    display:inline-block; border:0; padding:12px; border-radius:10px; font-size:15px; cursor:pointer;
+    background:var(--accent); color:white;
+  }
+  button.ghost{background:#f0f6f7; color:#0a1f22; border:1px solid #e6edf0;}
+  button.warn{background:var(--danger);}
+  .muted{font-size:13px; color:var(--muted); margin-top:8px;}
+  .thermal{width:280px; margin:12px auto; padding:10px; font-family:monospace; white-space:pre-wrap; border:1px dashed #222; border-radius:6px; background:white;}
+  .controls{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;}
+  .small{font-size:13px; padding:8px 10px; border-radius:8px;}
+  .search-section{margin-top:14px; border-top:1px solid #eef2f6; padding-top:12px;}
+  .results{margin-top:10px;}
+  .result-card{background:#fbfeff; border:1px solid #e6edf0; padding:10px; border-radius:10px; margin-bottom:8px;}
+  .result-meta{font-size:13px; color:var(--muted); margin-top:6px;}
+  .row-actions{display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;}
+  .badge{display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; background:#f1f5f9; color:#0b1220;}
+  .toast{position:fixed; left:50%; transform:translateX(-50%); bottom:22px; background:rgba(0,0,0,0.8); color:white; padding:10px 14px; border-radius:8px; display:none; z-index:9999;}
+  @media (min-width:720px){ .wrap{padding:24px;} .card{padding:18px;} }
+  /* print */
   @media print {
-    body *{ visibility:hidden; }
-    .thermal, .thermal *{ visibility:visible; }
-    .thermal{ position:absolute; left:0; top:0; width:100%; }
+    body *{visibility:hidden;}
+    .thermal, .thermal *{visibility:visible;}
+    .thermal{position:absolute; left:0; top:0; width:58mm; font-size:12px;}
   }
 </style>
 </head>
 <body>
-<div class="card">
-  <h2>Rumah Nenek Laundry</h2>
+<div class="wrap">
+  <div class="card">
+    <header>
+      <h1>Rumah Nenek Laundry</h1>
+      <div class="status" id="netStatus">Checking...</div>
+    </header>
 
-  <!-- Step 1: PIN -->
-  <div id="pinScreen">
-    <label>Masukkan PIN</label>
-    <input id="pinInput" type="text" placeholder="PIN" autocomplete="off" />
-    <button id="pinBtn">Masuk</button>
-    <div id="pinMsg" class="muted"></div>
-  </div>
-
-  <!-- Step 2: Form input -->
-  <div id="mainScreen" style="display:none;">
-    <label>No Urut</label>
-    <input id="noUrut" type="text" readonly />
-
-    <label>No Kwitansi</label>
-    <input id="noKwitansi" type="text" readonly />
-
-    <label>Nama Konsumen</label>
-    <input id="nama" type="text" placeholder="Nama pelanggan" />
-
-    <label>Alamat Konsumen</label>
-    <input id="alamat" type="text" placeholder="Alamat (opsional)" />
-
-    <label>No WA</label>
-    <input id="nowa" type="tel" placeholder="08xxxxxxxxxx" />
-
-    <label>Jenis Layanan</label>
-    <input id="jenis" type="text" placeholder="Cuci Kering / Setrika / dll" />
-
-    <label>Catatan</label>
-    <textarea id="catatan" rows="2" placeholder="Catatan tambahan"></textarea>
-
-    <label>Total Harga (Rp)</label>
-    <input id="total" type="number" placeholder="0" />
-
-    <label>Metode Pembayaran</label>
-    <input id="metode" type="text" placeholder="Tunai / Non-Tunai" />
-
-    <div class="row">
-      <button id="saveBtn">Simpan</button>
-      <button id="resetBtn" class="secondary">Reset</button>
+    <!-- STEP 1: PIN -->
+    <div id="pinScreen">
+      <label>Masukkan PIN</label>
+      <input id="pinInput" type="text" inputmode="numeric" placeholder="Masukkan PIN staf" />
+      <div class="row">
+        <button id="pinBtn">Masuk</button>
+        <button id="pingBtn" class="ghost small">Cek Koneksi</button>
+      </div>
+      <div class="muted" id="pinMsg">Aplikasi membutuhkan koneksi internet untuk menyimpan data.</div>
     </div>
 
-    <div class="muted" id="saveMsg"></div>
-
-    <div id="previewArea" style="display:none;">
-      <div class="thermal" id="previewBox"></div>
-      <div class="row">
-        <button id="waBtn">Bagikan WA</button>
-        <button id="copyBtn" class="secondary">Copy</button>
+    <!-- STEP 2: MAIN -->
+    <div id="mainScreen" style="display:none; margin-top:10px;">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <div>
+          <label>No Urut</label>
+          <input id="noUrut" type="text" readonly />
+        </div>
+        <div style="flex:2;">
+          <label>No Kwitansi</label>
+          <input id="noKwitansi" type="text" readonly />
+        </div>
       </div>
-    </div>
 
-    <!-- Step 2.5: Search -->
-    <div class="search-section">
-      <label>Cari Struk</label>
-      <input id="searchInput" type="text" placeholder="No Urut / Nama / No Struk / No WA" />
-      <div class="row">
-        <button id="searchBtn">Cari</button>
-        <button id="exportBtn" class="secondary">Ekspor CSV</button>
+      <label>Nama Konsumen</label>
+      <input id="nama" type="text" placeholder="Contoh: Ibu Nani" />
+
+      <label>Alamat (opsional)</label>
+      <input id="alamat" type="text" placeholder="Alamat pelanggan" />
+
+      <label>No. WhatsApp</label>
+      <input id="nowa" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx" />
+
+      <label>Jenis Layanan</label>
+      <input id="jenis" type="text" placeholder="Cuci / Setrika / Express" />
+
+      <label>Catatan</label>
+      <textarea id="catatan" placeholder="Berat, garansi, permintaan khusus"></textarea>
+
+      <label>Total (Rp)</label>
+      <input id="total" type="number" inputmode="numeric" placeholder="25000" />
+
+      <label>Metode Pembayaran</label>
+      <input id="metode" type="text" placeholder="Tunai / Transfer / Dana" />
+
+      <div class="row" style="margin-top:12px;">
+        <button id="saveBtn">Simpan Struk</button>
+        <button id="resetBtn" class="ghost">Reset</button>
       </div>
-      <div id="searchMsg" class="muted"></div>
-      <div class="results" id="results"></div>
+
+      <div class="muted" id="saveMsg" style="margin-top:8px;"></div>
+
+      <!-- preview & quick actions -->
+      <div id="previewArea" style="display:none;">
+        <div class="thermal" id="previewBox"></div>
+        <div class="controls">
+          <button id="printBtn" class="ghost">Print</button>
+          <button id="waBtn" class="small ghost">Bagikan WA</button>
+          <button id="copyBtn" class="small ghost">Copy Struk</button>
+        </div>
+      </div>
+
+      <!-- SEARCH SECTION -->
+      <div class="search-section">
+        <label>Cari Struk (No Urut / No Kwitansi / Nama / No WA)</label>
+        <div style="display:flex; gap:8px;">
+          <input id="searchInput" type="text" placeholder="ketik lalu tekan Cari..." />
+          <button id="searchBtn" class="small">Cari</button>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button id="exportBtn" class="ghost small">Ekspor CSV</button>
+          <button id="retryQueueBtn" class="ghost small">Kirim Ulang Antrian</button>
+        </div>
+        <div id="searchMsg" class="muted" style="margin-top:8px;"></div>
+        <div class="results" id="results"></div>
+      </div>
     </div>
   </div>
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
-(() => {
-  const APPS_URL = "https://script.google.com/macros/s/AKfycbxjqWmwkXCvz32crj5fWg7leHzpb8iDZFWLo1Spd_zUBmIdqjMBpi_oaseLR7oZMeml/exec";
+/* ========== CONFIG ========== */
+const APPS_URL = "https://script.google.com/macros/s/AKfycbwd3F9qxpnhibR8qpbg4PTTrKe88EQcDWLvnm7vKbR2lpGDg07j9VqVyL1hxTeUPUmkNQ/exec";
+const QUEUE_KEY = 'rn_queue_v1'; // localStorage key for pending submits
+const PIN_DEFAULT = '1234'; // helper fallback if needed (but backend controls real PIN)
+const FETCH_TIMEOUT = 12000; // ms
 
-  const el = id => document.getElementById(id);
+/* ========== UTILS ========== */
+const el = id => document.getElementById(id);
+function toast(msg, ms=2500){ const t=el('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(t._hid); t._hid=setTimeout(()=>t.style.display='none', ms); }
+function formatIDR(n){ try { return Number(n).toLocaleString('id-ID'); } catch { return n; } }
+function uid(){ return Date.now().toString(36) + '-' + Math.floor(Math.random()*90000).toString(36); }
+function fetchWithTimeout(url, opts={}, timeout=FETCH_TIMEOUT){
+  const controller = new AbortController();
+  const id = setTimeout(()=>controller.abort(), timeout);
+  opts.signal = controller.signal;
+  return fetch(url, opts).finally(()=>clearTimeout(id));
+}
+function isOnline(){ return navigator.onLine; }
 
-  // Elements
-  const pinScreen = el('pinScreen'), pinInput = el('pinInput'), pinBtn = el('pinBtn'), pinMsg = el('pinMsg');
-  const mainScreen = el('mainScreen'), noUrut = el('noUrut'), noKwitansi = el('noKwitansi');
-  const nama = el('nama'), alamat = el('alamat'), nowa = el('nowa'), jenis = el('jenis'), catatan = el('catatan');
-  const total = el('total'), metode = el('metode'), saveBtn = el('saveBtn'), resetBtn = el('resetBtn'), saveMsg = el('saveMsg');
-  const previewArea = el('previewArea'), previewBox = el('previewBox'), waBtn = el('waBtn'), copyBtn = el('copyBtn');
-  const searchInput = el('searchInput'), searchBtn = el('searchBtn'), exportBtn = el('exportBtn'), results = el('results'), searchMsg = el('searchMsg');
+/* ========== ELEMENTS ========== */
+const pinScreen = el('pinScreen'), pinInput = el('pinInput'), pinBtn = el('pinBtn'), pinMsg = el('pinMsg'), pingBtn = el('pingBtn');
+const mainScreen = el('mainScreen'), netStatus = el('netStatus');
+const noUrutEl = el('noUrut'), noKwitansiEl = el('noKwitansi'), namaEl = el('nama'), alamatEl = el('alamat');
+const nowaEl = el('nowa'), jenisEl = el('jenis'), catatanEl = el('catatan'), totalEl = el('total'), metodeEl = el('metode');
+const saveBtn = el('saveBtn'), resetBtn = el('resetBtn'), saveMsg = el('saveMsg');
+const previewArea = el('previewArea'), previewBox = el('previewBox'), waBtn = el('waBtn'), copyBtn = el('copyBtn'), printBtn = el('printBtn');
+const searchInput = el('searchInput'), searchBtn = el('searchBtn'), resultsEl = el('results'), searchMsg = el('searchMsg');
+const exportBtn = el('exportBtn'), retryQueueBtn = el('retryQueueBtn');
 
-  function fmtCur(n){return Number(n||0).toLocaleString('id-ID');}
-  function sanitizePhone(input){let s=String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');if(s.startsWith('0'))s='62'+s.slice(1);if(!s.startsWith('62'))s='62'+s;return s;}
-  function buildPreview(d){
-    return [
-      '    RUMAH NENEK LAUNDRY',
-      'Jl. Mashudi No 10 - Cariu',
-      'WA/DANA 0895-6223-09251 a.n. Tita Juarsih',
-      '----------------------------------',
-      'No Kwitansi : '+d.noKwitansi,
-      'No Urut     : '+d.noUrut,
-      'Nama        : '+d.nama,
-      d.alamat ? 'Alamat      : '+d.alamat : '',
-      d.nowa ? 'WA          : '+d.nowa : '',
-      d.jenis ? 'Layanan     : '+d.jenis : '',
-      d.catatan ? 'Catatan     : '+d.catatan : '',
-      '----------------------------------',
-      'Total       : Rp '+fmtCur(d.total),
-      'Metode Bayar: '+d.metode,
-      '----------------------------------'
-    ].filter(Boolean).join('\n');
+/* ========== STATE ========== */
+let editing = null; // null or { rowIndex, No_Struk }
+let clientIdCurrent = null;
+
+/* ========== NETWORK STATUS UI ========== */
+function updateNetStatus(){
+  netStatus.textContent = isOnline() ? 'Online' : 'Offline';
+  netStatus.style.color = isOnline() ? '#0b8459' : '#b34747';
+}
+window.addEventListener('online', ()=>{ updateNetStatus(); toast('Koneksi kembali — mencoba kirim antrian...'); processQueue(); });
+window.addEventListener('offline', ()=>{ updateNetStatus(); toast('Offline — data akan disimpan lokal jika disimpan'); });
+updateNetStatus();
+
+/* ========== PIN FLOW ========== */
+pinBtn.onclick = async () => {
+  const pin = pinInput.value.trim();
+  if (!pin) { pinMsg.textContent = 'Masukkan PIN.'; return; }
+  pinMsg.textContent = 'Memeriksa PIN...';
+  try {
+    const res = await fetchWithTimeout(APPS_URL + '?action=checkPIN&pin=' + encodeURIComponent(pin));
+    const text = await res.text();
+    // backend v2 returns JSON, but older may return plain - handle both
+    let ok = false;
+    try { const j = JSON.parse(text); ok = j.status === 'success'; } catch(e){ ok = text.trim()==='OK' || text.trim()==='OK'; }
+    if (ok) {
+      pinScreen.style.display='none'; mainScreen.style.display='block';
+      pinMsg.textContent = '';
+      toast('Login berhasil');
+      await loadLast();
+      processQueue(); // try pending on login
+    } else {
+      pinMsg.textContent = 'PIN salah.';
+    }
+  } catch (err) {
+    pinMsg.textContent = 'Gagal cek PIN — ' + (err.name==='AbortError' ? 'timeout' : 'cek koneksi');
+  }
+};
+pingBtn.onclick = async () => {
+  try {
+    const r = await fetchWithTimeout(APPS_URL + '?action=ping', {}, 6000);
+    const j = await r.json();
+    toast('Server OK: ' + j.time);
+  } catch (e) {
+    toast('Ping gagal: ' + (e.name==='AbortError' ? 'timeout' : e.message), 3500);
+  }
+};
+
+/* ========== GET LAST (populate No Urut & No Kwitansi suggested) ========== */
+async function loadLast(){
+  try {
+    const r = await fetchWithTimeout(APPS_URL + '?action=getLast');
+    const j = await r.json();
+    if (j && j.status === 'success' && j.data) {
+      noUrutEl.value = j.data.noUrut;
+      noKwitansiEl.value = j.data.noKwitansi;
+    } else {
+      // fallback if older format
+      if (j.noUrut) noUrutEl.value = j.noUrut;
+      if (j.noKwitansi) noKwitansiEl.value = j.noKwitansi;
+    }
+  } catch (e) {
+    console.error('loadLast error', e);
+    toast('Gagal ambil nomor: ' + (e.name==='AbortError' ? 'timeout' : 'cek koneksi'), 3000);
+  }
+}
+
+/* ========== PREVIEW BUILD ========== */
+function buildPreview(obj){
+  return [
+    '    RUMAH NENEK LAUNDRY',
+    'Jl. Mashudi No 10 - Cariu',
+    'WA/DANA: 0895-6223-09251',
+    '--------------------------------',
+    'No Kwitansi : ' + (obj.noKwitansi || ''),
+    'No Urut     : ' + (obj.noUrut || ''),
+    'Nama        : ' + (obj.nama || ''),
+    obj.alamat ? ('Alamat      : ' + obj.alamat) : '',
+    obj.nowa ? ('WA          : ' + obj.nowa) : '',
+    obj.jenis ? ('Layanan     : ' + obj.jenis) : '',
+    obj.keterangan ? ('Catatan     : ' + obj.keterangan) : '',
+    '--------------------------------',
+    'Total       : Rp ' + formatIDR(obj.total || 0),
+    'Metode Bayar: ' + (obj.metode || ''),
+    '--------------------------------'
+  ].filter(Boolean).join('\n');
+}
+
+/* ========== QUEUE (localStorage) ========== */
+function getQueue(){ try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch(e){ return []; } }
+function setQueue(q){ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
+function pushQueue(item){
+  const q = getQueue(); q.push(item); setQueue(q); toast('Data disimpan sementara (antrian).');
+}
+async function processQueue(){
+  const q = getQueue();
+  if (!q.length) { toast('Tidak ada antrian.'); return; }
+  if (!isOnline()) { toast('Masih offline — tunggu koneksi.'); return; }
+  toast('Mengirim ' + q.length + ' item antrian...');
+
+  const succeed = [];
+  for (let i = 0; i < q.length; i++){
+    const item = q[i];
+    try {
+      const params = new URLSearchParams({ action:'ingestQueued', clientId: item.clientId });
+      Object.entries(item.payload).forEach(([k,v]) => params.set(k, v));
+      const res = await fetchWithTimeout(APPS_URL + '?' + params.toString(), {}, FETCH_TIMEOUT);
+      const j = await res.json();
+      if (j && j.status === 'success') {
+        succeed.push(i);
+      } else {
+        console.warn('queue item failed', j);
+      }
+    } catch (e) {
+      console.error('queue send error', e);
+    }
+  }
+  // Remove successful from queue
+  if (succeed.length){
+    const newQ = q.filter((_, idx) => !succeed.includes(idx));
+    setQueue(newQ);
+    toast('Berhasil mengirim ' + succeed.length + ' item.');
+    // refresh UI maybe
+    await loadLast();
+  } else {
+    toast('Belum berhasil mengirim antrian. Akan dicoba lagi nanti.', 2500);
+  }
+}
+
+/* ========== SUBMIT (save) with idempotency + fallback to queue ========= */
+async function submitData({ isEdit=false } = {}) {
+  // collect
+  const nama = namaEl.value.trim();
+  const alamat = alamatEl.value.trim();
+  const nowa = nowaEl.value.trim();
+  const jenis = jenisEl.value.trim();
+  const keterangan = catatanEl.value.trim();
+  const total = totalEl.value.trim();
+  const metode = metodeEl.value.trim();
+
+  if (!nama || !total) { saveMsg.textContent = 'Nama dan Total wajib diisi.'; return; }
+
+  // payload
+  const payload = {
+    nama: nama,
+    alamat: alamat,
+    nowa: nowa,
+    keterangan: keterangan,
+    total: total,
+    metode: metode,
+    noUrut: noUrutEl.value || '',
+    noKwitansi: noKwitansiEl.value || ''
+  };
+
+  // generate clientId for idempotency
+  const clientId = uid();
+  clientIdCurrent = clientId;
+
+  // if editing include identifier
+  if (isEdit && editing && editing.No_Struk) {
+    payload.No_Struk = editing.No_Struk;
+    payload.rowIndex = editing._rowIndex || '';
   }
 
-  // PIN check
-  pinBtn.onclick = async ()=>{
-    pinMsg.textContent='Memeriksa PIN...';
-    const res = await fetch(APPS_URL+'?action=checkPIN&pin='+encodeURIComponent(pinInput.value)).then(r=>r.text());
-    if(res.trim()==='OK'){ pinScreen.style.display='none'; mainScreen.style.display='block'; const d=await fetch(APPS_URL+'?action=getLast').then(r=>r.json()); noUrut.value=d.noUrut; noKwitansi.value=d.noKwitansi; }
-    else pinMsg.textContent='PIN salah.';
-  };
+  saveMsg.textContent = 'Menyimpan...';
+  const params = new URLSearchParams({ action: isEdit ? 'editData' : 'saveData', clientId: clientId });
+  Object.entries(payload).forEach(([k,v]) => params.set(k, v));
 
-  // Save
-  saveBtn.onclick = async ()=>{
-    const data = {noUrut:noUrut.value,nama:nama.value,alamat:alamat.value,nowa:nowa.value,jenis:jenis.value,catatan:catatan.value,total:total.value,metode:metode.value,noKwitansi:noKwitansi.value};
-    if(!data.nama||!data.total){saveMsg.textContent='Nama dan total wajib diisi.';return;}
-    saveMsg.textContent='Menyimpan...';
-    const r = await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(data)).then(r=>r.text());
-    saveMsg.textContent=r;
-    previewBox.textContent=buildPreview(data); previewArea.style.display='block';
-  };
+  try {
+    if (!isOnline()) throw new Error('offline');
+    const r = await fetchWithTimeout(APPS_URL + '?' + params.toString());
+    const j = await r.json();
+    if (j.status === 'success') {
+      saveMsg.textContent = j.message || 'Berhasil';
+      // reset form if not edit
+      if (!isEdit) {
+        previewBox.textContent = buildPreview({ noKwitansi: j.data.noKwitansi || payload.noKwitansi, noUrut: j.data.noUrut || payload.noUrut, nama, alamat, nowa, jenis, keterangan, total, metode });
+        previewArea.style.display = 'block';
+        toast('Data tersimpan ✅');
+      } else {
+        toast('Perubahan tersimpan ✅');
+      }
+      // refresh last
+      await loadLast();
+      // clear editing
+      editing = null;
+    } else {
+      // server responded but error (validation or duplicate)
+      saveMsg.textContent = j.message || 'Error';
+      if (j.status === 'error' && j.message && j.message.toLowerCase().includes('offline')) {
+        // fallback to queue
+        pushQueue({ clientId, payload });
+      }
+    }
+  } catch (err) {
+    // network or timeout -> queue
+    console.error('submitData error', err);
+    saveMsg.textContent = 'Gagal koneksi — data disimpan lokal dan akan dikirim otomatis saat online.';
+    pushQueue({ clientId, payload });
+  }
+}
 
-  resetBtn.onclick=()=>[nama,alamat,nowa,jenis,catatan,total,metode].forEach(e=>e.value='');
+/* ========== EDIT FLOW: fill form with given record ========== */
+function startEdit(record){
+  editing = record;
+  // fill form
+  noUrutEl.value = record.No || '';
+  noKwitansiEl.value = record.No_Struk || '';
+  namaEl.value = record.Nama || '';
+  alamatEl.value = record.Alamat || '';
+  nowaEl.value = record.No_WA || '';
+  jenisEl.value = record.Jenis_Layanan || '';
+  catatanEl.value = record.Keterangan || '';
+  totalEl.value = record.Total || '';
+  metodeEl.value = record.Metode_Pembayaran || '';
+  previewBox.textContent = buildPreview({
+    noKwitansi: noKwitansiEl.value,
+    noUrut: noUrutEl.value,
+    nama: namaEl.value,
+    alamat: alamatEl.value,
+    nowa: nowaEl.value,
+    jenis: jenisEl.value,
+    keterangan: catatanEl.value,
+    total: totalEl.value,
+    metode: metodeEl.value
+  });
+  previewArea.style.display = 'block';
+  saveMsg.textContent = 'Mode Edit aktif — ubah lalu tekan Simpan';
+}
 
-  waBtn.onclick=()=>{const text=encodeURIComponent(previewBox.textContent);const phone=sanitizePhone(nowa.value);window.open('https://wa.me/'+phone+'?text='+text,'_blank');};
-  copyBtn.onclick=()=>{navigator.clipboard.writeText(previewBox.textContent);alert('Disalin ke clipboard');};
+/* ========== SEARCH ========== */
+searchBtn.onclick = async () => {
+  const q = searchInput.value.trim();
+  if (!q) { searchMsg.textContent = 'Masukkan kata pencarian.'; return; }
+  searchMsg.textContent = 'Mencari...';
+  resultsEl.innerHTML = '';
+  try {
+    const r = await fetchWithTimeout(APPS_URL + '?action=searchStruk&q=' + encodeURIComponent(q));
+    const j = await r.json();
+    if (j.status === 'success') {
+      const rows = j.data || [];
+      searchMsg.textContent = rows.length + ' hasil ditemukan';
+      if (!rows.length) { resultsEl.innerHTML = '<div class="muted">Tidak ada hasil.</div>'; return;}
+      rows.forEach(row => {
+        const div = document.createElement('div'); div.className='result-card';
+        div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:start;">
+          <div><strong>${row.Nama || row['Nama'] || '-'}</strong><div class="result-meta">No: ${row.No || row['No'] || ''} • ${row.No_Struk || row['No_Struk'] || ''}</div></div>
+          <div class="badge">Rp ${formatIDR(row.Total || row['Total'] || 0)}</div>
+        </div>`;
+        const actions = document.createElement('div'); actions.className='row-actions';
+        // Bagikan WA
+        const bWA = document.createElement('button'); bWA.className='ghost small'; bWA.textContent='Bagikan WA';
+        bWA.onclick = () => {
+          const num = (row.No_WA || row['No_WA'] || '').toString().replace(/\D/g,'');
+          const phone = num.startsWith('0') ? '62' + num.slice(1) : (num.startsWith('62') ? num : '62' + num);
+          const text = encodeURIComponent(buildPreview({
+            noKwitansi: row.No_Struk || row['No_Struk'],
+            noUrut: row.No || row['No'],
+            nama: row.Nama || row['Nama'],
+            alamat: row.Alamat || row['Alamat'],
+            nowa: row.No_WA || row['No_WA'],
+            jenis: row.Jenis_Layanan || row['Jenis_Layanan'],
+            keterangan: row.Keterangan || row['Keterangan'],
+            total: row.Total || row['Total'],
+            metode: row.Metode_Pembayaran || row['Metode_Pembayaran']
+          }));
+          window.open('https://wa.me/' + phone + '?text=' + text, '_blank');
+        };
+        // Edit
+        const bEdit = document.createElement('button'); bEdit.className='small'; bEdit.textContent='Edit';
+        bEdit.onclick = () => {
+          startEdit(row);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        // Hapus
+        const bDel = document.createElement('button'); bDel.className='warn small'; bDel.textContent='Hapus';
+        bDel.onclick = async () => {
+          if (!confirm('Yakin batalkan struk ini?')) return;
+          try {
+            const url = APPS_URL + '?action=deleteRow&No=' + encodeURIComponent(row.No || row['No']) + '&No_Struk=' + encodeURIComponent(row.No_Struk || row['No_Struk']);
+            const res = await fetchWithTimeout(url);
+            const jj = await res.json();
+            if (jj.status === 'success') {
+              toast('Struk dibatalkan.');
+              searchBtn.click(); // refresh search
+            } else {
+              toast('Gagal: ' + (jj.message || ''));
+            }
+          } catch (e) {
+            toast('Gagal koneksi saat hapus');
+          }
+        };
+        // Copy
+        const bCopy = document.createElement('button'); bCopy.className='ghost small'; bCopy.textContent='Copy';
+        bCopy.onclick = () => {
+          navigator.clipboard.writeText(buildPreview({
+            noKwitansi: row.No_Struk || row['No_Struk'],
+            noUrut: row.No || row['No'],
+            nama: row.Nama || row['Nama'],
+            alamat: row.Alamat || row['Alamat'],
+            nowa: row.No_WA || row['No_WA'],
+            jenis: row.Jenis_Layanan || row['Jenis_Layanan'],
+            keterangan: row.Keterangan || row['Keterangan'],
+            total: row.Total || row['Total'],
+            metode: row.Metode_Pembayaran || row['Metode_Pembayaran']
+          }));
+          toast('Struk disalin ke clipboard.');
+        };
 
-  // Search
-  searchBtn.onclick=async ()=>{
-    searchMsg.textContent='Mencari...';
-    const q=searchInput.value.trim();
-    const res=await fetch(APPS_URL+'?action=searchStruk&q='+encodeURIComponent(q)).then(r=>r.json());
-    results.innerHTML=''; searchMsg.textContent=res.length+' hasil ditemukan';
-    res.forEach(r=>{
-      const div=document.createElement('div'); div.className='result-card';
-      div.innerHTML=`<b>${r.Nama_Konsumen}</b><br>No: ${r.No_Urut} | ${r.No_Kwitansi}<br>Total: Rp ${fmtCur(r.Total_Harga)}<br>
-      <div class='actions'>
-      <button onclick="window.open('https://wa.me/${sanitizePhone(r.No_WA)}?text='+encodeURIComponent('${buildPreview(r)}'),'_blank')">Bagikan WA</button>
-      <button onclick="alert('Edit mode belum aktif')">Edit</button>
-      <button onclick="if(confirm('Hapus struk ini?'))fetch('${APPS_URL}?action=deleteRow&no=${r.No_Urut}')">Hapus</button>
-      <button onclick="navigator.clipboard.writeText(\`${buildPreview(r)}\`)">Copy</button>
-      </div>`;
-      results.appendChild(div);
-    });
-  };
+        actions.appendChild(bWA); actions.appendChild(bEdit); actions.appendChild(bDel); actions.appendChild(bCopy);
+        div.appendChild(actions);
+        resultsEl.appendChild(div);
+      });
+    } else {
+      searchMsg.textContent = j.message || 'Error pencarian';
+    }
+  } catch (err) {
+    console.error('search error', err);
+    searchMsg.textContent = 'Gagal pencarian — periksa koneksi';
+  }
+};
 
-  // Export CSV
-  exportBtn.onclick=()=>{window.open(APPS_URL+'?action=exportCSV&sheet=Bulanan','_blank');};
+/* ========== EXPORT CSV ========== */
+exportBtn.onclick = () => {
+  // open in new tab to trigger download
+  window.open(APPS_URL + '?action=exportCSV&sheet=Struk', '_blank');
+};
+
+/* ========== RETRY QUEUE MANUAL ========= */
+retryQueueBtn.onclick = () => { processQueue(); };
+
+/* ========== SAVE / RESET / PRINT / COPY / WA ========= */
+saveBtn.onclick = async () => {
+  // if editing, call edit endpoint instead
+  if (editing) {
+    // send editData
+    await submitData({ isEdit:true });
+    editing = null;
+  } else {
+    await submitData({ isEdit:false });
+  }
+};
+
+resetBtn.onclick = () => {
+  [namaEl, alamatEl, nowaEl, jenisEl, catatanEl, totalEl, metodeEl].forEach(i=>i.value='');
+  previewArea.style.display = 'none';
+  saveMsg.textContent = '';
+  editing = null;
+};
+
+waBtn.onclick = () => {
+  const text = encodeURIComponent(previewBox.textContent || '');
+  const phoneRaw = nowaEl.value.trim().replace(/\D/g,'');
+  const phone = phoneRaw.startsWith('0') ? '62' + phoneRaw.slice(1) : (phoneRaw.startsWith('62') ? phoneRaw : '62' + phoneRaw);
+  if (!phoneRaw) { toast('Nomor WA kosong'); return; }
+  window.open('https://wa.me/' + phone + '?text=' + text, '_blank');
+};
+
+copyBtn.onclick = () => {
+  const text = previewBox.textContent || '';
+  if (!text) { toast('Tidak ada struk untuk disalin.'); return; }
+  navigator.clipboard.writeText(text).then(()=>toast('Struk disalin ke clipboard')).catch(()=>toast('Gagal menyalin'));
+};
+
+printBtn.onclick = () => { window.print(); };
+
+/* ========== Automatic resend on load (try) and keep UI tight ========== */
+(async function init(){
+  // try to load last suggested numbers if online and after login will refresh as well
+  try {
+    // quick ping to server to confirm endpoint reachable
+    const r = await fetchWithTimeout(APPS_URL + '?action=ping', {}, 4000);
+    if (r.ok) {
+      const j = await r.json();
+      netStatus.textContent = 'Online';
+      netStatus.style.color = '#0b8459';
+    }
+  } catch (e) {
+    netStatus.textContent = 'Offline';
+    netStatus.style.color = '#b34747';
+  }
+
+  // If user was mid-edit (saved editing state in sessionStorage), restore?
+  // Not implementing persistent edit automatically to keep UX simple.
+
+  // Try processing queue once (in case app opened after offline)
+  setTimeout(()=>{ if (isOnline()) processQueue(); }, 1500);
 })();
+
+/* ========== helper: show preview when fields change ========== */
+[namaEl, alamatEl, nowaEl, jenisEl, catatanEl, totalEl, metodeEl].forEach(inp=>{
+  inp.addEventListener('input', () => {
+    const obj = {
+      noKwitansi: noKwitansiEl.value,
+      noUrut: noUrutEl.value,
+      nama: namaEl.value,
+      alamat: alamatEl.value,
+      nowa: nowaEl.value,
+      jenis: jenisEl.value,
+      keterangan: catatanEl.value,
+      total: totalEl.value,
+      metode: metodeEl.value
+    };
+    previewBox.textContent = buildPreview(obj);
+    previewArea.style.display = (obj.nama || obj.total) ? 'block' : 'none';
+  });
+});
+
+/* Utility: auto-focus PIN on load */
+pinInput.focus();
+
 </script>
 </body>
 </html>
