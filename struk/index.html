@@ -18,9 +18,10 @@
   .muted{ font-size:12px; color:#555; margin-top:6px; }
   .offline{ background:#ffeb3b; color:#000; padding:8px; border-radius:6px; margin-top:6px; font-size:13px; }
   .thermal{ width:280px; font-family:monospace; white-space:pre-wrap; background:#fff; border:1px dashed #000; padding:8px; border-radius:4px; margin:10px auto; }
-  .suggest-list{ position:absolute; background:#fff; border:1px solid #ddd; max-height:120px; overflow-y:auto; width:calc(100% - 20px); z-index:10; }
-  .suggest-item{ padding:6px; cursor:pointer; }
-  .suggest-item:hover{ background:#eee; }
+  .search-section{ margin-top:20px; border-top:1px solid #eee; padding-top:12px; }
+  .results{ margin-top:10px; }
+  .result-card{ border:1px solid #ddd; border-radius:6px; padding:8px; margin-bottom:8px; background:#fafafa; font-size:13px; }
+  .actions button{ margin-right:6px; margin-top:6px; }
   @media print {
     body *{ visibility:hidden; }
     .thermal, .thermal *{ visibility:visible; }
@@ -49,10 +50,7 @@
     <input id="noKwitansi" type="text" readonly>
 
     <label>Nama Konsumen</label>
-    <div style="position:relative;">
-      <input id="nama" type="text" placeholder="Nama pelanggan" autocomplete="off">
-      <div id="namaSuggest" class="suggest-list" style="display:none;"></div>
-    </div>
+    <input id="nama" type="text" placeholder="Nama pelanggan">
 
     <label>Alamat Konsumen</label>
     <input id="alamat" type="text" placeholder="Alamat (opsional)">
@@ -61,10 +59,7 @@
     <input id="nowa" type="tel" placeholder="08xxxxxxxxxx">
 
     <label>Keterangan / Layanan</label>
-    <div style="position:relative;">
-      <textarea id="catatan" rows="2" placeholder="Misal: Cuci Kering, Setrika, Kilat"></textarea>
-      <div id="catatanSuggest" class="suggest-list" style="display:none;"></div>
-    </div>
+    <textarea id="catatan" rows="2" placeholder="Misal: Cuci Kering, Setrika, Kilat"></textarea>
 
     <label>Total Harga (Rp)</label>
     <input id="total" type="number" placeholder="0">
@@ -85,6 +80,17 @@
         <button id="copyBtn" class="secondary">Copy</button>
       </div>
     </div>
+
+    <!-- Step 2.5: Search -->
+    <div class="search-section">
+      <label>Cari Struk</label>
+      <input id="searchInput" type="text" placeholder="Cari No, Nama, No Struk, No WA">
+      <div class="row">
+        <button id="searchBtn">Cari</button>
+      </div>
+      <div id="searchMsg" class="muted"></div>
+      <div class="results" id="results"></div>
+    </div>
   </div>
 </div>
 
@@ -98,18 +104,10 @@
   const nama = el('nama'), alamat = el('alamat'), nowa = el('nowa'), catatan = el('catatan'), total = el('total');
   const saveBtn = el('saveBtn'), resetBtn = el('resetBtn'), saveMsg = el('saveMsg'), offlineMsg = el('offlineMsg');
   const previewArea = el('previewArea'), previewBox = el('previewBox'), waBtn = el('waBtn'), copyBtn = el('copyBtn');
-  const namaSuggest = el('namaSuggest'), catatanSuggest = el('catatanSuggest');
-
-  const SUGGEST_NAMA = []; // Akan diisi nama pelanggan auto-suggest
-  const SUGGEST_CATATAN = ["Cuci Kering", "Setrika", "Kilat", "Cuci Basah", "Pewangi Tambahan"];
+  const searchInput = el('searchInput'), searchBtn = el('searchBtn'), results = el('results'), searchMsg = el('searchMsg');
 
   function fmtCur(n){return Number(n||0).toLocaleString('id-ID');}
-  function sanitizePhone(input){
-    let s=String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');
-    if(s.startsWith('0')) s='62'+s.slice(1);
-    if(!s.startsWith('62')) s='62'+s;
-    return s;
-  }
+  function sanitizePhone(input){let s=String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');if(s.startsWith('0'))s='62'+s.slice(1);if(!s.startsWith('62'))s='62'+s;return s;}
   function buildPreview(d){
     return [
       '   RUMAH NENEK LAUNDRY',
@@ -137,41 +135,35 @@
     const pending = JSON.parse(localStorage.getItem('pendingData')||'[]');
     if(pending.length===0) return;
     for(const d of pending){
-      try{
-        const res = await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(d)).then(r=>r.json());
-        if(res.status==='success') offlineMsg.textContent='✅ Data berhasil tersinkron';
-      } catch(e){ offlineMsg.textContent='⚠ Menunggu koneksi'; return; }
+      try{ await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(d)); }
+      catch(e){ return; }
     }
     localStorage.removeItem('pendingData');
-  }
-
-  function autoSaveField(field, key){
-    field.addEventListener('input', ()=>{
-      let data = JSON.parse(localStorage.getItem('draftData')||'{}');
-      data[key]=field.value;
-      localStorage.setItem('draftData', JSON.stringify(data));
-    });
+    offlineMsg.style.display='none';
   }
 
   // PIN check
   pinBtn.onclick = async ()=>{
     pinMsg.textContent='Memeriksa PIN...';
-    const res = await fetch(APPS_URL+'?action=checkPIN&pin='+encodeURIComponent(pinInput.value)).then(r=>r.json());
-    if(res.status==='success'){
-      pinScreen.style.display='none';
-      mainScreen.style.display='block';
-      const d=await fetch(APPS_URL+'?action=getLast').then(r=>r.json());
-      noUrut.value=d.data.noUrut; noKwitansi.value=d.data.noKwitansi;
-      const draft = JSON.parse(localStorage.getItem('draftData')||'{}');
-      if(Object.keys(draft).length) Object.assign({nama,alamat,nowa,catatan,total}, draft);
-      sendPendingData();
-    } else pinMsg.textContent='PIN salah. Coba lagi.';
+    try{
+      const res = await fetch(APPS_URL+'?action=checkPIN&pin='+encodeURIComponent(pinInput.value)).then(r=>r.json());
+      if(res.status==='success'){
+        pinScreen.style.display='none';
+        mainScreen.style.display='block';
+        const d=await fetch(APPS_URL+'?action=getLast').then(r=>r.json());
+        noUrut.value=d.data.noUrut; noKwitansi.value=d.data.noKwitansi;
+        sendPendingData();
+      } else pinMsg.textContent='PIN salah. Coba lagi.';
+    } catch(e){
+      pinMsg.textContent='Gagal memeriksa PIN. Cek koneksi.';
+    }
   };
 
   // Save
   saveBtn.onclick = async ()=>{
-    if(!nama.value || !total.value){saveMsg.textContent='Nama dan total wajib diisi.'; return;}
+    if(!confirm('Simpan data transaksi ini?')) return;
     const data = {noUrut:noUrut.value,nama:nama.value,alamat:alamat.value,nowa:nowa.value,catatan:catatan.value,total:total.value,noKwitansi:noKwitansi.value};
+    if(!data.nama||!data.total){saveMsg.textContent='Nama dan total wajib diisi.';return;}
     previewBox.textContent=buildPreview(data); previewArea.style.display='block';
     saveMsg.textContent='Menyimpan...';
 
@@ -188,60 +180,46 @@
         const r = await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(data)).then(r=>r.json());
         saveMsg.textContent=r.message;
         offlineMsg.style.display='none';
-      } catch(e){
-        saveMsg.textContent='❌ Gagal tersimpan online, tetap disimpan lokal';
-        const pending = JSON.parse(localStorage.getItem('pendingData')||'[]');
-        pending.push(data);
-        localStorage.setItem('pendingData',JSON.stringify(pending));
-      }
+      }catch(e){ saveMsg.textContent='Gagal menyimpan online.'; offlineMsg.style.display='block'; offlineMsg.textContent='📦 Menunggu koneksi internet.'; }
     }
   };
 
-  // Reset
   resetBtn.onclick=()=>{ if(confirm('Kosongkan semua kolom?')) [nama,alamat,nowa,catatan,total].forEach(e=>e.value=''); };
+  waBtn.onclick=()=>{const text=encodeURIComponent(previewBox.textContent);const phone=sanitizePhone(nowa.value);window.open('https://wa.me/'+phone+'?text='+text,'_blank');};
+  copyBtn.onclick=()=>{navigator.clipboard.writeText(previewBox.textContent);alert('Disalin ke clipboard');};
 
-  // WA share
-  waBtn.onclick=()=>{ 
-    const text=encodeURIComponent(previewBox.textContent);
-    const phone=sanitizePhone(nowa.value);
-    if(!/^\d{10,15}$/.test(phone.replace('62',''))) return alert('Nomor WA tidak valid');
-    window.open('https://wa.me/'+phone+'?text='+text,'_blank');
-  };
-  copyBtn.onclick=()=>{ navigator.clipboard.writeText(previewBox.textContent); alert('Disalin ke clipboard'); };
-
-  // Auto save each field
-  autoSaveField(nama,'nama');
-  autoSaveField(alamat,'alamat');
-  autoSaveField(nowa,'nowa');
-  autoSaveField(catatan,'catatan');
-  autoSaveField(total,'total');
-
-  // Autocomplete / Suggestion
-  function setupSuggest(field, list, container){
-    field.addEventListener('input', ()=>{
-      const val = field.value.toLowerCase();
-      container.innerHTML='';
-      if(!val){container.style.display='none'; return;}
-      const matches = list.filter(x=>x.toLowerCase().includes(val));
-      if(matches.length===0){container.style.display='none'; return;}
-      matches.forEach(x=>{
-        const div=document.createElement('div');
-        div.className='suggest-item';
-        div.textContent=x;
-        div.onclick=()=>{field.value=x; container.style.display='none';};
-        container.appendChild(div);
+  // Search - diperbaiki
+  searchBtn.onclick=async ()=>{
+    searchMsg.textContent='Mencari...';
+    results.innerHTML='';
+    const q=searchInput.value.trim();
+    if(!q){ searchMsg.textContent='Masukkan kata kunci untuk mencari.'; return; }
+    try{
+      const res = await fetch(APPS_URL+'?action=searchStruk&q='+encodeURIComponent(q)).then(r=>r.json());
+      if(!res.data || !Array.isArray(res.data) || res.data.length===0){
+        searchMsg.textContent='Tidak ada hasil ditemukan.';
+        return;
+      }
+      searchMsg.textContent=res.data.length+' hasil ditemukan';
+      res.data.forEach(r=>{
+        const div=document.createElement('div'); div.className='result-card';
+        const prev=buildPreview({noKwitansi:r.No_Struk||r.NoKwitansi,noUrut:r.No||r.No,nama:r.Nama||r.nama,alamat:r.Alamat||r.alamat,nowa:r.No_WA||r.nowa,catatan:r.Keterangan||r.catatan,total:r.Total||r.total});
+        div.innerHTML=`<b>${r.Nama||r.nama}</b><br>No: ${r.No||r.no} | ${r.No_Struk||r.noKwitansi}<br>Total: Rp ${fmtCur(r.Total||r.total)}<br>
+        <div class='actions'>
+        <button onclick="window.open('https://wa.me/${sanitizePhone(r.No_WA||r.nowa)}?text='+encodeURIComponent(\`${prev}\`),'_blank')">Bagikan WA</button>
+        <button class='danger' onclick="if(confirm('Hapus struk ini?'))fetch('${APPS_URL}?action=deleteRow&no=${r.No||r.no}').then(r=>r.text()).then(alert)">Hapus</button>
+        <button onclick="navigator.clipboard.writeText(\`${prev}\`)">Copy</button>
+        </div>`;
+        results.appendChild(div);
       });
-      container.style.display='block';
-    });
-    document.addEventListener('click', e=>{if(e.target!==field) container.style.display='none';});
-  }
+    } catch(e){
+      searchMsg.textContent='Terjadi kesalahan saat mencari.';
+      console.error(e);
+    }
+  };
 
-  setupSuggest(nama,SUGGEST_NAMA,namaSuggest);
-  setupSuggest(catatan,SUGGEST_CATATAN,catatanSuggest);
-
-  // Auto send pending on online
+  // Jika online kembali, kirim data tertunda
   window.addEventListener('online', sendPendingData);
-
 })();
 </script>
 </body>
