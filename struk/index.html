@@ -87,6 +87,7 @@
       <input id="searchInput" type="text" placeholder="Cari No, Nama, No Struk, No WA">
       <div class="row">
         <button id="searchBtn">Cari</button>
+        <button id="exportBtn" class="secondary">Ekspor CSV</button>
       </div>
       <div id="searchMsg" class="muted"></div>
       <div class="results" id="results"></div>
@@ -104,7 +105,7 @@
   const nama = el('nama'), alamat = el('alamat'), nowa = el('nowa'), catatan = el('catatan'), total = el('total');
   const saveBtn = el('saveBtn'), resetBtn = el('resetBtn'), saveMsg = el('saveMsg'), offlineMsg = el('offlineMsg');
   const previewArea = el('previewArea'), previewBox = el('previewBox'), waBtn = el('waBtn'), copyBtn = el('copyBtn');
-  const searchInput = el('searchInput'), searchBtn = el('searchBtn'), results = el('results'), searchMsg = el('searchMsg');
+  const searchInput = el('searchInput'), searchBtn = el('searchBtn'), exportBtn = el('exportBtn'), results = el('results'), searchMsg = el('searchMsg');
 
   function fmtCur(n){return Number(n||0).toLocaleString('id-ID');}
   function sanitizePhone(input){let s=String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');if(s.startsWith('0'))s='62'+s.slice(1);if(!s.startsWith('62'))s='62'+s;return s;}
@@ -145,18 +146,14 @@
   // PIN check
   pinBtn.onclick = async ()=>{
     pinMsg.textContent='Memeriksa PIN...';
-    try{
-      const res = await fetch(APPS_URL+'?action=checkPIN&pin='+encodeURIComponent(pinInput.value)).then(r=>r.json());
-      if(res.status==='success'){
-        pinScreen.style.display='none';
-        mainScreen.style.display='block';
-        const d=await fetch(APPS_URL+'?action=getLast').then(r=>r.json());
-        noUrut.value=d.data.noUrut; noKwitansi.value=d.data.noKwitansi;
-        sendPendingData();
-      } else pinMsg.textContent='PIN salah. Coba lagi.';
-    } catch(e){
-      pinMsg.textContent='Gagal memeriksa PIN. Cek koneksi.';
-    }
+    const res = await fetch(APPS_URL+'?action=checkPIN&pin='+encodeURIComponent(pinInput.value)).then(r=>r.json());
+    if(res.status==='success'){
+      pinScreen.style.display='none';
+      mainScreen.style.display='block';
+      const d=await fetch(APPS_URL+'?action=getLast').then(r=>r.json());
+      noUrut.value=d.data.noUrut; noKwitansi.value=d.data.noKwitansi;
+      sendPendingData();
+    } else pinMsg.textContent='PIN salah. Coba lagi.';
   };
 
   // Save
@@ -176,11 +173,9 @@
       offlineMsg.textContent='📦 Disimpan lokal — menunggu koneksi internet.';
       saveMsg.textContent='Tersimpan lokal sementara.';
     } else {
-      try{
-        const r = await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(data)).then(r=>r.json());
-        saveMsg.textContent=r.message;
-        offlineMsg.style.display='none';
-      }catch(e){ saveMsg.textContent='Gagal menyimpan online.'; offlineMsg.style.display='block'; offlineMsg.textContent='📦 Menunggu koneksi internet.'; }
+      const r = await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(data)).then(r=>r.json());
+      saveMsg.textContent=r.message;
+      offlineMsg.style.display='none';
     }
   };
 
@@ -188,35 +183,27 @@
   waBtn.onclick=()=>{const text=encodeURIComponent(previewBox.textContent);const phone=sanitizePhone(nowa.value);window.open('https://wa.me/'+phone+'?text='+text,'_blank');};
   copyBtn.onclick=()=>{navigator.clipboard.writeText(previewBox.textContent);alert('Disalin ke clipboard');};
 
-  // Search - diperbaiki
+  // Search
   searchBtn.onclick=async ()=>{
     searchMsg.textContent='Mencari...';
-    results.innerHTML='';
     const q=searchInput.value.trim();
-    if(!q){ searchMsg.textContent='Masukkan kata kunci untuk mencari.'; return; }
-    try{
-      const res = await fetch(APPS_URL+'?action=searchStruk&q='+encodeURIComponent(q)).then(r=>r.json());
-      if(!res.data || !Array.isArray(res.data) || res.data.length===0){
-        searchMsg.textContent='Tidak ada hasil ditemukan.';
-        return;
-      }
-      searchMsg.textContent=res.data.length+' hasil ditemukan';
-      res.data.forEach(r=>{
-        const div=document.createElement('div'); div.className='result-card';
-        const prev=buildPreview({noKwitansi:r.No_Struk||r.NoKwitansi,noUrut:r.No||r.No,nama:r.Nama||r.nama,alamat:r.Alamat||r.alamat,nowa:r.No_WA||r.nowa,catatan:r.Keterangan||r.catatan,total:r.Total||r.total});
-        div.innerHTML=`<b>${r.Nama||r.nama}</b><br>No: ${r.No||r.no} | ${r.No_Struk||r.noKwitansi}<br>Total: Rp ${fmtCur(r.Total||r.total)}<br>
-        <div class='actions'>
-        <button onclick="window.open('https://wa.me/${sanitizePhone(r.No_WA||r.nowa)}?text='+encodeURIComponent(\`${prev}\`),'_blank')">Bagikan WA</button>
-        <button class='danger' onclick="if(confirm('Hapus struk ini?'))fetch('${APPS_URL}?action=deleteRow&no=${r.No||r.no}').then(r=>r.text()).then(alert)">Hapus</button>
-        <button onclick="navigator.clipboard.writeText(\`${prev}\`)">Copy</button>
-        </div>`;
-        results.appendChild(div);
-      });
-    } catch(e){
-      searchMsg.textContent='Terjadi kesalahan saat mencari.';
-      console.error(e);
-    }
+    const res=await fetch(APPS_URL+'?action=searchStruk&q='+encodeURIComponent(q)).then(r=>r.json());
+    results.innerHTML=''; searchMsg.textContent=res.data.length+' hasil ditemukan';
+    res.data.forEach(r=>{
+      const div=document.createElement('div'); div.className='result-card';
+      const prev=buildPreview({noKwitansi:r.No_Struk,noUrut:r.No,nama:r.Nama,alamat:r.Alamat,nowa:r.No_WA,catatan:r.Keterangan,total:r.Total});
+      div.innerHTML=`<b>${r.Nama}</b><br>No: ${r.No} | ${r.No_Struk}<br>Total: Rp ${fmtCur(r.Total)}<br>
+      <div class='actions'>
+      <button onclick="window.open('https://wa.me/${sanitizePhone(r.No_WA)}?text='+encodeURIComponent('${prev}'),'_blank')">Bagikan WA</button>
+      <button class='danger' onclick="if(confirm('Hapus struk ini?'))fetch('${APPS_URL}?action=deleteRow&no=${r.No}').then(r=>r.text()).then(alert)">Hapus</button>
+      <button onclick="navigator.clipboard.writeText(\`${prev}\`)">Copy</button>
+      </div>`;
+      results.appendChild(div);
+    });
   };
+
+  // Export CSV
+  exportBtn.onclick=()=>{window.open(APPS_URL+'?action=exportCSV&sheet=Struk','_blank');};
 
   // Jika online kembali, kirim data tertunda
   window.addEventListener('online', sendPendingData);
