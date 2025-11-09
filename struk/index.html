@@ -87,7 +87,6 @@
       <input id="searchInput" type="text" placeholder="Cari No, Nama, No Struk, No WA">
       <div class="row">
         <button id="searchBtn">Cari</button>
-        <button id="exportBtn" class="secondary">Ekspor CSV</button>
       </div>
       <div id="searchMsg" class="muted"></div>
       <div class="results" id="results"></div>
@@ -105,7 +104,7 @@
   const nama = el('nama'), alamat = el('alamat'), nowa = el('nowa'), catatan = el('catatan'), total = el('total');
   const saveBtn = el('saveBtn'), resetBtn = el('resetBtn'), saveMsg = el('saveMsg'), offlineMsg = el('offlineMsg');
   const previewArea = el('previewArea'), previewBox = el('previewBox'), waBtn = el('waBtn'), copyBtn = el('copyBtn');
-  const searchInput = el('searchInput'), searchBtn = el('searchBtn'), exportBtn = el('exportBtn'), results = el('results'), searchMsg = el('searchMsg');
+  const searchInput = el('searchInput'), searchBtn = el('searchBtn'), results = el('results'), searchMsg = el('searchMsg');
 
   function fmtCur(n){return Number(n||0).toLocaleString('id-ID');}
   function sanitizePhone(input){let s=String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');if(s.startsWith('0'))s='62'+s.slice(1);if(!s.startsWith('62'))s='62'+s;return s;}
@@ -183,27 +182,43 @@
   waBtn.onclick=()=>{const text=encodeURIComponent(previewBox.textContent);const phone=sanitizePhone(nowa.value);window.open('https://wa.me/'+phone+'?text='+text,'_blank');};
   copyBtn.onclick=()=>{navigator.clipboard.writeText(previewBox.textContent);alert('Disalin ke clipboard');};
 
-  // Search
-  searchBtn.onclick=async ()=>{
-    searchMsg.textContent='Mencari...';
-    const q=searchInput.value.trim();
-    const res=await fetch(APPS_URL+'?action=searchStruk&q='+encodeURIComponent(q)).then(r=>r.json());
-    results.innerHTML=''; searchMsg.textContent=res.data.length+' hasil ditemukan';
-    res.data.forEach(r=>{
-      const div=document.createElement('div'); div.className='result-card';
-      const prev=buildPreview({noKwitansi:r.No_Struk,noUrut:r.No,nama:r.Nama,alamat:r.Alamat,nowa:r.No_WA,catatan:r.Keterangan,total:r.Total});
-      div.innerHTML=`<b>${r.Nama}</b><br>No: ${r.No} | ${r.No_Struk}<br>Total: Rp ${fmtCur(r.Total)}<br>
-      <div class='actions'>
-      <button onclick="window.open('https://wa.me/${sanitizePhone(r.No_WA)}?text='+encodeURIComponent('${prev}'),'_blank')">Bagikan WA</button>
-      <button class='danger' onclick="if(confirm('Hapus struk ini?'))fetch('${APPS_URL}?action=deleteRow&no=${r.No}').then(r=>r.text()).then(alert)">Hapus</button>
-      <button onclick="navigator.clipboard.writeText(\`${prev}\`)">Copy</button>
-      </div>`;
-      results.appendChild(div);
-    });
-  };
+  // Search (perbaikan)
+  searchBtn.onclick = async () => {
+    searchMsg.textContent = 'Mencari...';
+    const q = searchInput.value.trim();
+    try {
+      const res = await fetch(APPS_URL + '?action=searchStruk&q=' + encodeURIComponent(q));
+      const json = await res.json();
+      const data = json.data || json;  
+      results.innerHTML = '';
+      searchMsg.textContent = data.length + ' hasil ditemukan';
 
-  // Export CSV
-  exportBtn.onclick=()=>{window.open(APPS_URL+'?action=exportCSV&sheet=Struk','_blank');};
+      data.forEach(r => {
+        const prev = buildPreview({
+          noKwitansi: r.No_Struk,
+          noUrut: r.No,
+          nama: r.Nama,
+          alamat: r.Alamat,
+          nowa: r.No_WA,
+          catatan: r.Keterangan,
+          total: r.Total
+        });
+
+        const div = document.createElement('div');
+        div.className = 'result-card';
+        div.innerHTML = `<b>${r.Nama}</b><br>No: ${r.No} | ${r.No_Struk}<br>Total: Rp ${fmtCur(r.Total)}<br>
+          <div class='actions'>
+            <button onclick="window.open('https://wa.me/${sanitizePhone(r.No_WA)}?text='+encodeURIComponent(\`${prev}\`),'_blank')">Bagikan WA</button>
+            <button class='danger' onclick="if(confirm('Hapus struk ini?'))fetch('${APPS_URL}?action=deleteRow&no=${r.No}').then(r=>r.text()).then(alert)">Hapus</button>
+            <button onclick="navigator.clipboard.writeText(\`${prev}\`)">Copy</button>
+          </div>`;
+        results.appendChild(div);
+      });
+    } catch (err) {
+      searchMsg.textContent = 'Terjadi kesalahan saat mencari.';
+      console.error(err);
+    }
+  };
 
   // Jika online kembali, kirim data tertunda
   window.addEventListener('online', sendPendingData);
