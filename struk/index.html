@@ -85,16 +85,16 @@
       </div>
     </div>
 
-    <!-- Search results -->
     <div class="results" id="results"></div>
   </div>
 </div>
 
 <script>
 (() => {
-  // ------------- CONFIG -------------
+  // CONFIG (gunakan exec yang kamu konfirmasi)
   const APPS_URL = "https://script.google.com/macros/s/AKfycbwZEEiXV5H7doeMZtc3seh1YkFH3xfD3TnnL9--3oMamu6lPeCBbzfAYS-1dsHhvzICog/exec";
-  // ------------- ELEMENTS -------------
+
+  // ELEMS
   const $ = id => document.getElementById(id);
   const pinScreen = $('pinScreen'), pinInput = $('pinInput'), pinBtn = $('pinBtn'), pingBtn = $('pingBtn'), pinMsg = $('pinMsg');
   const mainScreen = $('mainScreen'), noUrutEl = $('noUrut'), noKwitEl = $('noKwitansi');
@@ -103,34 +103,30 @@
   const previewArea = $('previewArea'), previewBox = $('previewBox'), waBtn = $('waBtn'), copyBtn = $('copyBtn');
   const resultsBox = $('results');
 
-  // ------------- HELPERS -------------
-  function setStatus(msg, type) {
-    statusBox.style.display = msg ? 'block' : 'none';
-    statusBox.textContent = msg || '';
-    statusBox.className = 'status ' + (type === 'ok' ? 'ok' : type === 'err' ? 'err' : 'warn');
+  // HELPERS
+  function setStatus(msg, kind){
+    if(!msg){ statusBox.style.display='none'; statusBox.textContent=''; return; }
+    statusBox.style.display='block';
+    statusBox.textContent = msg;
+    statusBox.className = 'status ' + (kind === 'ok' ? 'ok' : kind === 'err' ? 'err' : 'warn');
   }
-  function safeJSON(txt){
-    try { return JSON.parse(txt); } catch(e){ return null; }
-  }
+  function safeJSON(txt){ try{return JSON.parse(txt);}catch(e){return null;} }
   async function fetchText(url, opts){ return fetch(url, opts).then(r=>r.text()); }
   async function fetchJSON(url, opts){
     const txt = await fetchText(url, opts);
     const j = safeJSON(txt);
     if(j !== null) return j;
-    // tolerant fallback for plain text responses
     const t = txt.trim();
     if(t.toUpperCase() === 'OK') return { status:'success', message:'OK' };
     return { status:'error', message: t || 'Unknown response' };
   }
   function fmtIDR(n){ try { return Number(n||0).toLocaleString('id-ID'); } catch(e){ return n; } }
 
-  // WA sanitize: produce '62...' string; returns '' if input empty
   function sanitizePhone(input){
     if(!input) return '';
     let s = String(input).replace(/\D/g,'');
     if(s.startsWith('0')) s = '62' + s.slice(1);
     if(!s.startsWith('62')) s = '62' + s;
-    // limit to max 15 digits total (country+rest)
     s = s.slice(0, 15);
     return s;
   }
@@ -140,76 +136,63 @@
     return digits.length >= 11 && digits.length <= 15;
   }
 
-  // ------------- CORE: tolerant endpoints -------------
+  // API wrappers (tolerant)
   async function checkPIN(pin){
     if(!pin) return { status:'error', message:'PIN kosong' };
-    try {
-      const j = await fetchJSON(APPS_URL + '?action=checkPIN&pin=' + encodeURIComponent(pin));
-      return j;
-    } catch(err){
-      return { status:'error', message:'Gagal koneksi' };
-    }
+    try { return await fetchJSON(APPS_URL + '?action=checkPIN&pin=' + encodeURIComponent(pin)); }
+    catch(e){ return { status:'error', message:'Gagal koneksi' }; }
   }
-
   async function getLast(){
     try {
       const j = await fetchJSON(APPS_URL + '?action=getLast');
-      // tolerant: might be {status:'success', data:{...}} or {noUrut:.., noKwitansi:..}
       if(j && j.data) return j.data;
       if(j && (j.noUrut || j.noKwitansi)) return { noUrut: j.noUrut, noKwitansi: j.noKwitansi };
       return {};
-    } catch(e){
-      return {};
-    }
+    } catch(e){ return {}; }
   }
-
   async function saveToServer(payload){
-    // payload - plain object
     try {
-      // Apps Script expects data in param 'data' (JSON encoded) for 'save'
       const url = APPS_URL + '?action=save&data=' + encodeURIComponent(JSON.stringify(payload));
-      const j = await fetchJSON(url);
-      return j;
-    } catch(e){
-      return { status:'error', message:'Gagal koneksi' };
-    }
+      return await fetchJSON(url);
+    } catch(e){ return { status:'error', message:'Gagal koneksi' }; }
   }
-
-  async function backupLog(payload){
-    // Best-effort: call an endpoint on Apps Script that might create a Log entry.
-    // If backend doesn't support it, ignore errors (we don't change backend).
-    try {
-      const url = APPS_URL + '?action=saveLog&data=' + encodeURIComponent(JSON.stringify(payload));
-      const j = await fetchJSON(url);
-      return j;
-    } catch(e){
-      return null;
-    }
-  }
-
   async function searchServer(q){
     try {
       const url = APPS_URL + '?action=search&q=' + encodeURIComponent(q);
       const j = await fetchJSON(url);
-      // expected shapes: {status:'success', hasil:[...]} or {status:'success', data:[...]} or array itself
       if(j && j.hasil) return j.hasil;
       if(j && j.data) return j.data;
       if(Array.isArray(j)) return j;
       return [];
-    } catch(e){
-      return [];
-    }
+    } catch(e){ return []; }
   }
-
   async function deleteServer(noStruk){
     try {
-      const url = APPS_URL + '?action=delete&noStruk=' + encodeURIComponent(noStruk);
-      const j = await fetchJSON(url);
-      return j;
+      return await fetchJSON(APPS_URL + '?action=delete&noStruk=' + encodeURIComponent(noStruk));
     } catch(e){ return { status:'error', message:'Gagal koneksi' }; }
   }
 
-  // ------------- UI actions -------------
+  // Build preview text
+  function buildPreviewText(d){
+    return [
+      '   RUMAH NENEK LAUNDRY',
+      'Jl. Mashudi No 10 - Cariu',
+      'WA/DANA 0895-6223-09251 a.n. Tita Juarsih',
+      '----------------------------------',
+      'No Struk   : ' + (d.No_Struk || ''),
+      'No Urut    : ' + (d.No || ''),
+      'Nama       : ' + (d.Nama || ''),
+      d.Alamat ? ('Alamat     : ' + d.Alamat) : '',
+      d.No_WA ? ('WA         : ' + d.No_WA) : '',
+      d.Keterangan ? ('Keterangan : ' + d.Keterangan) : '',
+      '----------------------------------',
+      'Total      : Rp ' + fmtIDR(d.Total || 0),
+      '----------------------------------',
+      new Date().toLocaleString('id-ID')
+    ].filter(Boolean).join('\n');
+  }
+
+  // PIN login
   pinBtn.addEventListener('click', async ()=>{
     setStatus('Memeriksa PIN...', 'warn');
     const res = await checkPIN(pinInput.value.trim());
@@ -219,10 +202,10 @@
       mainScreen.style.display = 'block';
       const last = await getLast();
       if(last.noUrut) noUrutEl.value = last.noUrut;
-      if(last.noKwitansi || last.noKwit) noKwitEl.value = last.noKwitansi || last.noKwit || '';
+      if(last.noKwitansi) noKwitEl.value = last.noKwitansi;
       setStatus('', '');
     } else {
-      setStatus(res.message || 'PIN salah', 'err');
+      setStatus(res && res.message ? res.message : 'PIN salah', 'err');
     }
   });
 
@@ -231,25 +214,23 @@
     try {
       const j = await fetchJSON(APPS_URL + '?action=ping');
       setStatus('Server merespon', 'ok');
-    } catch(e){
-      setStatus('Server tidak merespon', 'err');
-    }
+    } catch(e){ setStatus('Server tidak merespon', 'err'); }
   });
 
-  // Save handler (full-online)
-  saveBtn.addEventListener('click', async (e)=>{
-    e.preventDefault();
+  // SAVE: full-online; after success -> keep preview, disable Save, do NOT auto-refresh numbers
+  saveBtn.addEventListener('click', async (ev)=>{
+    ev.preventDefault();
     setStatus('', '');
-    const namaVal = (nama.value || '').trim();
-    const totalVal = (total.value || '').toString().trim();
-    if(!namaVal || namaVal.length < 2){ setStatus('Nama minimal 2 karakter', 'err'); nama.focus(); return; }
+    const nameVal = (nama.value||'').trim();
+    const totalVal = (total.value||'').toString().trim();
+    if(!nameVal || nameVal.length < 2){ setStatus('Nama minimal 2 karakter', 'err'); nama.focus(); return; }
     if(!totalVal || isNaN(Number(totalVal)) || Number(totalVal) <= 0){ setStatus('Total harus angka > 0', 'err'); total.focus(); return; }
     if(nowa.value && !isPhoneValidForWA(nowa.value)){ setStatus('Nomor WA tidak valid (format 08... atau +62...)', 'err'); nowa.focus(); return; }
 
     const payload = {
       No: noUrutEl.value || '',
       No_Struk: noKwitEl.value || '',
-      Nama: namaVal,
+      Nama: nameVal,
       Alamat: (alamat.value||'').trim(),
       No_WA: sanitizePhone(nowa.value),
       Keterangan: (catatan.value||'').trim(),
@@ -257,37 +238,40 @@
       Tanggal: new Date().toLocaleString('id-ID')
     };
 
-    // preview
     previewBox.textContent = buildPreviewText(payload);
     previewArea.style.display = 'block';
-    setStatus('Menyimpan ke server...', 'warn');
+    previewBox.scrollIntoView({behavior:'smooth', block:'center'});
 
-    // save to Struk
+    setStatus('Menyimpan ke server...', 'warn');
+    // Save
     const res = await saveToServer(payload);
-    if(res && (res.status === 'success' || (res.message && String(res.message).toLowerCase().includes('sukses') || String(res.message).toLowerCase().includes('ok')))){
-      setStatus('✅ Data tersimpan online', 'ok');
-      // attempt auto-backup to Log (best-effort)
-      backupLog({ action: 'backup', payload, ts: new Date().toISOString() }).catch(()=>{ /* ignore */ });
-      // refresh no urut & kwitansi
-      const last = await getLast();
-      if(last.noUrut) noUrutEl.value = last.noUrut;
-      if(last.noKwitansi || last.noKwit) noKwitEl.value = last.noKwitansi || last.noKwit || '';
-      // clear input for next
-      nama.value = ''; alamat.value = ''; nowa.value = ''; catatan.value = ''; total.value = '';
-      previewArea.style.display = 'none';
+    if(res && (res.status === 'success' || (res.message && (String(res.message).toLowerCase().includes('sukses') || String(res.message).toLowerCase().includes('ok'))))){
+      setStatus('✅ Data tersimpan online. Silakan Bagikan WA atau Copy. Tekan Reset untuk entri baru.', 'ok');
+      // disable save to prevent duplicate
+      saveBtn.disabled = true;
+      // optionally attempt best-effort backup (no harm if backend not support)
+      try { fetch(APPS_URL + '?action=saveLog&data=' + encodeURIComponent(JSON.stringify({payload,ts:new Date().toISOString()}))).catch(()=>{}); } catch(e){}
     } else {
-      const msg = (res && res.message) ? res.message : 'Gagal menyimpan (server error)';
-      setStatus(msg, 'err');
+      setStatus((res && res.message) ? res.message : 'Gagal menyimpan (server)', 'err');
     }
   });
 
-  resetBtn.addEventListener('click', ()=>{
-    if(!confirm('Kosongkan semua kolom?')) return;
+  // Reset -> begin new entry: fetch getLast to refresh No & No_Struk, clear inputs, enable Save
+  resetBtn.addEventListener('click', async ()=>{
+    if(!confirm('Mulai entri baru? (ini akan bersihkan form dan ambil nomor berikutnya)')) return;
     nama.value = ''; alamat.value = ''; nowa.value = ''; catatan.value = ''; total.value = '';
     previewArea.style.display = 'none';
+    saveBtn.disabled = false;
+    setStatus('Memuat nomor baru...', 'warn');
+    const last = await getLast();
+    if(last.noUrut) noUrutEl.value = last.noUrut;
+    if(last.noKwitansi) noKwitEl.value = last.noKwitansi;
     setStatus('', '');
+    // focus ke nama untuk input cepat
+    nama.focus();
   });
 
+  // WA & Copy work on preview; since preview is kept after save, user can click immediately
   waBtn.addEventListener('click', ()=>{
     const txt = previewBox.textContent || '';
     if(!txt){ alert('Tidak ada struk untuk dibagikan.'); return; }
@@ -302,87 +286,73 @@
     navigator.clipboard.writeText(txt).then(()=> setStatus('Struk disalin ke clipboard', 'ok')).catch(()=> setStatus('Gagal salin', 'err'));
   });
 
-  // Search: bind to input change (with small debounce)
-  let searchTimer = null;
-  function buildPreviewText(d){
-    return [
-      '   RUMAH NENEK LAUNDRY',
-      'Jl. Mashudi No 10 - Cariu',
-      'WA/DANA 0895-6223-09251 a.n. Tita Juarsih',
-      '----------------------------------',
-      'No Struk   : ' + (d.No_Struk || d.NoKwit || d.No_Struk || ''),
-      'No Urut    : ' + (d.No || d.NoUrut || d.No || ''),
-      'Nama       : ' + (d.Nama || d.nama || ''),
-      d.Alamat ? 'Alamat     : ' + d.Alamat : '',
-      d.No_WA ? 'WA         : ' + d.No_WA : '',
-      d.Keterangan ? 'Keterangan : ' + d.Keterangan : '',
-      '----------------------------------',
-      'Total      : Rp ' + fmtIDR(d.Total || d.Total_Harga || 0),
-      '----------------------------------',
-      new Date().toLocaleString('id-ID')
-    ].filter(Boolean).join('\n');
-  }
-
-  // create a simple search UI: user long-press on Nama field to search last entries,
-  // but since user wanted no separate search button we will use 'press and hold' on Nama to trigger quick search.
-  // However user previously had search; we'll implement a small inline search when user types Ctrl+F in Nama (fallback)
-  // Also implement a global small search by prompt.
+  // Quick search with Ctrl/Cmd+F prompt (ke Apps Script 'search')
   document.addEventListener('keydown', (ev)=>{
-    // Ctrl+F or Cmd+F to open quick search prompt (non-blocking)
     if((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'f'){
       ev.preventDefault();
       const q = prompt('Cari No/No_Struk/Nama/No_WA:');
-      if(q !== null){
-        runSearch(q.trim());
-      }
+      if(q !== null && q.trim() !== '') runSearch(q.trim());
     }
   });
 
   async function runSearch(q){
-    if(!q){ setStatus('Query kosong', 'warn'); return; }
     setStatus('Mencari: "'+q+'" ...', 'warn');
     resultsBox.innerHTML = '';
     const data = await searchServer(q);
     if(!data || data.length === 0){ setStatus('Tidak ada hasil untuk "'+q+'"', 'err'); return; }
     setStatus('Hasil ditemukan: '+data.length, 'ok');
-    // render results
     resultsBox.innerHTML = '';
     data.forEach((r) => {
-      // r might be array row or object; normalize
       let row = {};
       if(Array.isArray(r)){
-        // according to sheet: No, No_Struk, Nama, Alamat, No_WA, Keterangan, Total, Tanggal
-        row = {
-          No: r[0], No_Struk: r[1], Nama: r[2], Alamat: r[3], No_WA: r[4], Keterangan: r[5], Total: r[6], Tanggal: r[7]
-        };
-      } else {
-        row = r;
-      }
+        row = { No: r[0], No_Struk: r[1], Nama: r[2], Alamat: r[3], No_WA: r[4], Keterangan: r[5], Total: r[6], Tanggal: r[7] };
+      } else { row = r; }
       const card = document.createElement('div');
       card.className = 'result-card';
-      card.innerHTML = `<b>${row.Nama || row.Nama}</b><br>
+      const previewText = buildPreviewText(row);
+      // build buttons with safe handlers
+      card.innerHTML = `<b>${row.Nama || ''}</b><br>
         No: ${row.No || ''} | ${row.No_Struk || ''}<br>
         Total: Rp ${fmtIDR(row.Total || row.Total_Harga || 0)}<br>
         <small>${row.Tanggal ? row.Tanggal : ''}</small>
         <div style="margin-top:8px;" class="actions">
-          <button onclick="(function(){ window.open('https://wa.me/${sanitizePhone(row.No_WA||'') }?text='+encodeURIComponent(${JSON.stringify(buildPreviewText(row))}),'_blank') })()">Bagikan WA</button>
-          <button onclick="(function(){ if(confirm('Hapus struk '+(row.No_Struk||'')+' ?')){ fetch('${APPS_URL}?action=delete&noStruk='+encodeURIComponent(row.No_Struk||row.NoKwit||'')) .then(r=>r.text()).then(alert).catch(e=>alert('Gagal hapus')) } })()" class="danger">Hapus</button>
-          <button onclick="navigator.clipboard.writeText(${JSON.stringify(buildPreviewText(row))})">Copy</button>
+          <button class="secondary copyResult">Bagikan WA</button>
+          <button class="danger delResult">Hapus</button>
+          <button class="secondary doCopy">Copy</button>
         </div>`;
       resultsBox.appendChild(card);
+      // attach event listeners
+      const copyBtns = card.querySelectorAll('.doCopy');
+      copyBtns.forEach(btn => btn.addEventListener('click', ()=>{ navigator.clipboard.writeText(previewText); setStatus('Struk disalin ke clipboard', 'ok'); }));
+      const shareBtns = card.querySelectorAll('.copyResult');
+      shareBtns.forEach(btn => btn.addEventListener('click', ()=>{ 
+        if(!isPhoneValidForWA(row.No_WA)){ alert('Nomor WA di struk tidak valid'); return; }
+        const phone = sanitizePhone(row.No_WA);
+        window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(previewText), '_blank');
+      }));
+      const delBtns = card.querySelectorAll('.delResult');
+      delBtns.forEach(btn => btn.addEventListener('click', async ()=>{
+        if(!confirm('Hapus struk '+(row.No_Struk||'')+' ?')) return;
+        setStatus('Menghapus...', 'warn');
+        const res = await deleteServer(row.No_Struk || '');
+        if(res && (res.status === 'success' || (res.message && String(res.message).toLowerCase().includes('ok')))){
+          setStatus('Struk dibatalkan (safe).', 'ok');
+          card.remove();
+        } else setStatus((res && res.message) ? res.message : 'Gagal hapus', 'err');
+      }));
     });
   }
 
-  // small UX: load last numbers on init
+  // init: load last numbers
   (async function init(){
     setStatus('Memuat...', 'warn');
     const last = await getLast();
     if(last.noUrut) noUrutEl.value = last.noUrut;
-    if(last.noKwitansi || last.noKwit) noKwitEl.value = last.noKwitansi || last.noKwit || '';
+    if(last.noKwitansi) noKwitEl.value = last.noKwitansi;
     setStatus('', '');
   })();
 
-  // prevent enter from submitting; allow Enter in textarea only
+  // prevent Enter auto-submit (allow newline in textarea)
   window.addEventListener('keydown', (e)=>{
     if(e.key === 'Enter' && (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName))){
       if(document.activeElement.id !== 'catatan') e.preventDefault();
