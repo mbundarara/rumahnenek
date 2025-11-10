@@ -6,82 +6,85 @@
 <title>Rumah Nenek Laundry</title>
 <style>
   :root { font-family: Arial, sans-serif; color:#111; }
-  body{ margin:0; padding:12px; background:#f7f7f7; }
-  .card{ max-width:720px; margin:auto; background:#fff; padding:16px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+  body{ margin:0; padding:12px; background:#f7f7f7; -webkit-tap-highlight-color: transparent; }
+  .card{ max-width:720px; width:95vw; margin:auto; background:#fff; padding:16px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);}
   h2{ text-align:center; font-size:18px; margin-bottom:10px; }
   label{ font-size:13px; display:block; margin-top:10px; font-weight:600; }
-  input,textarea{ width:100%; padding:8px; font-size:14px; box-sizing:border-box; border:1px solid #ddd; border-radius:6px; margin-top:4px; }
-  button{ background:#00796b; color:#fff; border:none; padding:10px; border-radius:6px; font-size:14px; cursor:pointer; }
+  input,textarea{ width:100%; padding:10px; font-size:15px; box-sizing:border-box; border:1px solid #ddd; border-radius:8px; margin-top:6px; }
+  button{ background:#00796b; color:#fff; border:none; padding:12px; border-radius:8px; font-size:15px; cursor:pointer; touch-action:manipulation; }
   button.secondary{ background:#666; }
   button.danger{ background:#d32f2f; }
-  .row{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-  .muted{ font-size:12px; color:#555; margin-top:6px; }
-  .offline{ background:#ffeb3b; color:#000; padding:8px; border-radius:6px; margin-top:6px; font-size:13px; }
-  .thermal{ width:280px; font-family:monospace; white-space:pre-wrap; background:#fff; border:1px dashed #000; padding:8px; border-radius:4px; margin:10px auto; }
-  .suggest-list{ position:absolute; background:#fff; border:1px solid #ddd; max-height:120px; overflow-y:auto; width:calc(100% - 20px); z-index:10; }
-  .suggest-item{ padding:6px; cursor:pointer; }
+  .row{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .row > *{ flex:1; min-width:0; }
+  .muted{ font-size:13px; color:#555; margin-top:8px; }
+  .offline{ background:#fff3cd; color:#663; padding:10px; border-radius:8px; margin-top:8px; font-size:13px; display:none; }
+  .thermal{ width:280px; font-family:monospace; white-space:pre-wrap; background:#fff; border:1px dashed #222; padding:10px; border-radius:6px; margin:12px auto; }
+  .suggest-list{ position:absolute; background:#fff; border:1px solid #ddd; max-height:160px; overflow-y:auto; width:calc(100% - 24px); z-index:20; border-radius:6px; display:none; }
+  .suggest-item{ padding:8px; cursor:pointer; font-size:14px; }
   .suggest-item:hover{ background:#eee; }
   @media print {
     body *{ visibility:hidden; }
     .thermal, .thermal *{ visibility:visible; }
-    .thermal{ position:absolute; left:0; top:0; width:100%; }
+    .thermal{ position:absolute; left:0; top:0; width:58mm; font-size:11px; }
   }
 </style>
 </head>
 <body>
-<div class="card">
+<div class="card" role="application" aria-label="Rumah Nenek Laundry">
   <h2>🧺 Rumah Nenek Laundry</h2>
 
-  <!-- Step 1: PIN -->
+  <!-- PIN -->
   <div id="pinScreen">
-    <label>Masukkan PIN</label>
-    <input id="pinInput" type="text" placeholder="PIN" autocomplete="off" />
-    <button id="pinBtn">Masuk</button>
-    <div id="pinMsg" class="muted"></div>
+    <label for="pinInput">Masukkan PIN</label>
+    <input id="pinInput" type="password" inputmode="numeric" placeholder="PIN" autocomplete="off" aria-label="PIN" />
+    <div class="row">
+      <button id="pinBtn" aria-label="Masuk">Masuk</button>
+      <button id="pingBtn" class="secondary" aria-label="Cek Server">Cek Server</button>
+    </div>
+    <div id="pinMsg" class="muted" role="status" aria-live="polite"></div>
   </div>
 
-  <!-- Step 2: Form input -->
+  <!-- MAIN -->
   <div id="mainScreen" style="display:none;">
     <label>No Urut</label>
-    <input id="noUrut" type="text" readonly>
+    <input id="noUrut" type="text" readonly />
 
     <label>No Kwitansi</label>
-    <input id="noKwitansi" type="text" readonly>
+    <input id="noKwitansi" type="text" readonly />
 
-    <label>Nama Konsumen</label>
+    <label for="nama">Nama Konsumen</label>
     <div style="position:relative;">
-      <input id="nama" type="text" placeholder="Nama pelanggan" autocomplete="off">
-      <div id="namaSuggest" class="suggest-list" style="display:none;"></div>
+      <input id="nama" type="text" placeholder="Nama pelanggan" autocomplete="off" aria-label="Nama pelanggan" />
+      <div id="namaSuggest" class="suggest-list" role="listbox"></div>
     </div>
 
     <label>Alamat Konsumen</label>
-    <input id="alamat" type="text" placeholder="Alamat (opsional)">
+    <input id="alamat" type="text" placeholder="Alamat (opsional)" />
 
     <label>No WA</label>
-    <input id="nowa" type="tel" placeholder="08xxxxxxxxxx">
+    <input id="nowa" type="tel" placeholder="08xxxxxxxxxx" inputmode="tel" />
 
     <label>Keterangan / Layanan</label>
     <div style="position:relative;">
       <textarea id="catatan" rows="2" placeholder="Misal: Cuci Kering, Setrika, Kilat"></textarea>
-      <div id="catatanSuggest" class="suggest-list" style="display:none;"></div>
+      <div id="catatanSuggest" class="suggest-list"></div>
     </div>
 
     <label>Total Harga (Rp)</label>
-    <input id="total" type="number" placeholder="0">
+    <input id="total" type="number" placeholder="0" inputmode="numeric" />
 
     <div class="row">
       <button id="saveBtn">Simpan</button>
       <button id="resetBtn" class="secondary">Reset</button>
     </div>
 
-    <div class="muted" id="saveMsg"></div>
-    <div id="offlineMsg" class="offline" style="display:none;"></div>
+    <div id="saveMsg" class="muted" role="status" aria-live="polite"></div>
+    <div id="offlineMsg" class="offline" role="status" aria-live="polite"></div>
 
-    <!-- Preview -->
-    <div id="previewArea" style="display:none;">
-      <div class="thermal" id="previewBox"></div>
+    <div id="previewArea" style="display:none; margin-top:10px;">
+      <div class="thermal" id="previewBox" aria-hidden="false"></div>
       <div class="row">
-        <button id="waBtn">Bagikan WA</button>
+        <button id="waBtn" class="secondary">Bagikan WA</button>
         <button id="copyBtn" class="secondary">Copy</button>
       </div>
     </div>
@@ -90,159 +93,150 @@
 
 <script>
 (() => {
+  // ---------- CONFIG ----------
   const APPS_URL = "https://script.google.com/macros/s/AKfycbwZEEiXV5H7doeMZtc3seh1YkFH3xfD3TnnL9--3oMamu6lPeCBbzfAYS-1dsHhvzICog/exec";
-  const el = id => document.getElementById(id);
+  const QUEUE_KEY = 'rn_pending_v2';
+  const DRAFT_KEY = 'rn_draft_v2';
+  const SUGGEST_NAME_KEY = 'rn_suggest_names_v2';
+  const SUGGEST_CAT_KEY = 'rn_suggest_cat_v2';
+  const BACKUP_KEY = 'rn_backup_v2';
+  const FETCH_TIMEOUT = 12000;
+  const PIN_MAX_TRIES = 4;
+  const PIN_LOCK_SECONDS = 45;
 
-  const pinScreen = el('pinScreen'), pinInput = el('pinInput'), pinBtn = el('pinBtn'), pinMsg = el('pinMsg');
-  const mainScreen = el('mainScreen'), noUrut = el('noUrut'), noKwitansi = el('noKwitansi');
-  const nama = el('nama'), alamat = el('alamat'), nowa = el('nowa'), catatan = el('catatan'), total = el('total');
-  const saveBtn = el('saveBtn'), resetBtn = el('resetBtn'), saveMsg = el('saveMsg'), offlineMsg = el('offlineMsg');
-  const previewArea = el('previewArea'), previewBox = el('previewBox'), waBtn = el('waBtn'), copyBtn = el('copyBtn');
-  const namaSuggest = el('namaSuggest'), catatanSuggest = el('catatanSuggest');
-
-  const SUGGEST_NAMA = []; // Akan diisi nama pelanggan auto-suggest
-  const SUGGEST_CATATAN = ["Cuci Kering", "Setrika", "Kilat", "Cuci Basah", "Pewangi Tambahan"];
-
-  function fmtCur(n){return Number(n||0).toLocaleString('id-ID');}
-  function sanitizePhone(input){
-    let s=String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');
-    if(s.startsWith('0')) s='62'+s.slice(1);
-    if(!s.startsWith('62')) s='62'+s;
-    return s;
+  // ---------- HELPERS ----------
+  const $ = id => document.getElementById(id);
+  function nowISO(){ return new Date().toISOString(); }
+  function uid(){ return Date.now().toString(36) + '-' + Math.floor(Math.random()*90000).toString(36); }
+  function safeJSON(txt){ try { return JSON.parse(txt); } catch(e){ return null; } }
+  function fetchWithTimeout(url, opts={}, timeout=FETCH_TIMEOUT){
+    const controller = new AbortController();
+    opts.signal = controller.signal;
+    const timer = setTimeout(()=>controller.abort(), timeout);
+    return fetch(url, opts).finally(()=>clearTimeout(timer));
   }
-  function buildPreview(d){
+  function fmtIDR(n){ try { return Number(n||0).toLocaleString('id-ID'); } catch(e){ return n; } }
+
+  // sanitize phone to 62... digits (max length enforcement)
+  function sanitizePhoneRaw(input){
+    if(!input) return '';
+    let s = String(input).replace(/\D/g,'');
+    if(s.startsWith('0')) s = '62' + s.slice(1);
+    if(!s.startsWith('62')) s = '62' + s;
+    const rest = s.slice(2).slice(0,13); // max 13 after country (=> total up to 15)
+    return '62' + rest;
+  }
+  function isPhoneValidForWA(raw){
+    const cleaned = sanitizePhoneRaw(raw);
+    const digits = cleaned.replace(/\D/g, '');
+    return digits.length >= 11 && digits.length <= 15;
+  }
+
+  // ---------- ELEMENTS ----------
+  const pinScreen = $('pinScreen'), pinInput = $('pinInput'), pinBtn = $('pinBtn'), pingBtn = $('pingBtn'), pinMsg = $('pinMsg');
+  const mainScreen = $('mainScreen'), noUrutEl = $('noUrut'), noKwitEl = $('noKwitansi');
+  const nama = $('nama'), alamat = $('alamat'), nowa = $('nowa'), catatan = $('catatan'), total = $('total');
+  const saveBtn = $('saveBtn'), resetBtn = $('resetBtn'), saveMsg = $('saveMsg'), offlineMsg = $('offlineMsg');
+  const previewArea = $('previewArea'), previewBox = $('previewBox'), waBtn = $('waBtn'), copyBtn = $('copyBtn');
+  const namaSuggest = $('namaSuggest'), catSuggest = $('catatanSuggest');
+
+  // ---------- Local storage helpers ----------
+  function getDraft(){ try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}'); } catch(e){ return {}; } }
+  function setDraft(obj){ localStorage.setItem(DRAFT_KEY, JSON.stringify(obj||{})); }
+  function getQueue(){ try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch(e){ return []; } }
+  function setQueue(q){ localStorage.setItem(QUEUE_KEY, JSON.stringify(q||[])); }
+  function pushQueue(item){ const q = getQueue(); q.push(item); setQueue(q); backupAll(); }
+  function removeQueueByClient(clientId){ let q = getQueue(); q = q.filter(x => x.clientId !== clientId); setQueue(q); backupAll(); }
+
+  function getSuggest(key){ try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; } }
+  function pushSuggest(key, val, limit=80){
+    if(!val) return;
+    try{
+      const list = getSuggest(key);
+      const lower = val.toString().trim();
+      if(!lower) return;
+      const idx = list.indexOf(lower);
+      if(idx !== -1) list.splice(idx, 1);
+      list.unshift(lower);
+      if(list.length > limit) list.length = limit;
+      localStorage.setItem(key, JSON.stringify(list));
+    }catch(e){}
+  }
+
+  // backup both draft and pending periodically
+  function backupAll(){
+    try {
+      const payload = { time: nowISO(), draft: getDraft(), pending: getQueue() };
+      localStorage.setItem(BACKUP_KEY, JSON.stringify(payload));
+    } catch(e){ console.warn('backup failed', e); }
+  }
+  setInterval(backupAll, 60000);
+  window.addEventListener('beforeunload', backupAll);
+
+  // ---------- Auto-save (unlimited) ----------
+  function autoSaveField(field, key){
+    field.addEventListener('input', ()=>{
+      const draft = getDraft();
+      draft[key] = field.value;
+      setDraft(draft);
+    }, {passive:true});
+  }
+  autoSaveField(nama,'nama'); autoSaveField(alamat,'alamat'); autoSaveField(nowa,'nowa'); autoSaveField(catatan,'catatan'); autoSaveField(total,'total');
+
+  // ---------- Suggest setup ----------
+  function setupSuggest(field, storageKey, container){
+    field.addEventListener('input', ()=>{
+      const val = field.value.trim().toLowerCase();
+      container.innerHTML = '';
+      if(!val){ container.style.display='none'; return; }
+      const list = getSuggest(storageKey);
+      const matches = list.filter(x => x.toLowerCase().includes(val)).slice(0,30);
+      if(matches.length===0){ container.style.display='none'; return; }
+      matches.forEach(m => {
+        const it = document.createElement('div');
+        it.className = 'suggest-item';
+        it.textContent = m;
+        it.addEventListener('click', ()=>{ field.value = m; container.style.display='none'; field.focus(); });
+        container.appendChild(it);
+      });
+      container.style.display = 'block';
+    }, {passive:true});
+    document.addEventListener('click', e=>{ if(e.target !== field) container.style.display='none'; });
+  }
+  setupSuggest(nama, SUGGEST_NAME_KEY, namaSuggest);
+  setupSuggest(catatan, SUGGEST_CAT_KEY, catSuggest);
+
+  // ---------- Preview builder ----------
+  function buildPreviewObj(d){
+    return {
+      noKwitansi: d.noKwitansi || '',
+      noUrut: d.noUrut || '',
+      nama: d.nama || '',
+      alamat: d.alamat || '',
+      nowa: d.nowa || '',
+      catatan: d.catatan || '',
+      total: fmtIDR(d.total || 0)
+    };
+  }
+  function buildPreviewText(d){
+    const p = buildPreviewObj(d);
     return [
       '   RUMAH NENEK LAUNDRY',
       'Jl. Mashudi No 10 - Cariu',
       'WA/DANA 0895-6223-09251 a.n. Tita Juarsih',
       '----------------------------------',
-      'No Struk   : '+d.noKwitansi,
-      'No Urut    : '+d.noUrut,
-      'Nama       : '+d.nama,
-      d.alamat ? 'Alamat     : '+d.alamat : '',
-      d.nowa ? 'WA         : '+d.nowa : '',
-      d.catatan ? 'Keterangan : '+d.catatan : '',
+      'No Struk   : ' + p.noKwitansi,
+      'No Urut    : ' + p.noUrut,
+      'Nama       : ' + p.nama,
+      p.alamat ? ('Alamat     : ' + p.alamat) : '',
+      p.nowa ? ('WA         : ' + p.nowa) : '',
+      p.catatan ? ('Keterangan : ' + p.catatan) : '',
       '----------------------------------',
-      'Total      : Rp '+fmtCur(d.total),
-      '----------------------------------'
+      'Total      : Rp ' + p.total,
+      '----------------------------------',
+      new Date().toLocaleString('id-ID')
     ].filter(Boolean).join('\n');
   }
 
-  async function checkConnection(){
-    try{ await fetch(APPS_URL+'?ping=1',{method:'GET',cache:'no-store'}); return true; }
-    catch{ return false; }
-  }
-
-  async function sendPendingData(){
-    const pending = JSON.parse(localStorage.getItem('pendingData')||'[]');
-    if(pending.length===0) return;
-    for(const d of pending){
-      try{
-        const res = await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(d)).then(r=>r.json());
-        if(res.status==='success') offlineMsg.textContent='✅ Data berhasil tersinkron';
-      } catch(e){ offlineMsg.textContent='⚠ Menunggu koneksi'; return; }
-    }
-    localStorage.removeItem('pendingData');
-  }
-
-  function autoSaveField(field, key){
-    field.addEventListener('input', ()=>{
-      let data = JSON.parse(localStorage.getItem('draftData')||'{}');
-      data[key]=field.value;
-      localStorage.setItem('draftData', JSON.stringify(data));
-    });
-  }
-
-  // PIN check
-  pinBtn.onclick = async ()=>{
-    pinMsg.textContent='Memeriksa PIN...';
-    const res = await fetch(APPS_URL+'?action=checkPIN&pin='+encodeURIComponent(pinInput.value)).then(r=>r.json());
-    if(res.status==='success'){
-      pinScreen.style.display='none';
-      mainScreen.style.display='block';
-      const d=await fetch(APPS_URL+'?action=getLast').then(r=>r.json());
-      noUrut.value=d.data.noUrut; noKwitansi.value=d.data.noKwitansi;
-      const draft = JSON.parse(localStorage.getItem('draftData')||'{}');
-      if(Object.keys(draft).length) Object.assign({nama,alamat,nowa,catatan,total}, draft);
-      sendPendingData();
-    } else pinMsg.textContent='PIN salah. Coba lagi.';
-  };
-
-  // Save
-  saveBtn.onclick = async ()=>{
-    if(!nama.value || !total.value){saveMsg.textContent='Nama dan total wajib diisi.'; return;}
-    const data = {noUrut:noUrut.value,nama:nama.value,alamat:alamat.value,nowa:nowa.value,catatan:catatan.value,total:total.value,noKwitansi:noKwitansi.value};
-    previewBox.textContent=buildPreview(data); previewArea.style.display='block';
-    saveMsg.textContent='Menyimpan...';
-
-    const online = await checkConnection();
-    if(!online){
-      const pending = JSON.parse(localStorage.getItem('pendingData')||'[]');
-      pending.push(data);
-      localStorage.setItem('pendingData',JSON.stringify(pending));
-      offlineMsg.style.display='block';
-      offlineMsg.textContent='📦 Disimpan lokal — menunggu koneksi internet.';
-      saveMsg.textContent='Tersimpan lokal sementara.';
-    } else {
-      try{
-        const r = await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(data)).then(r=>r.json());
-        saveMsg.textContent=r.message;
-        offlineMsg.style.display='none';
-      } catch(e){
-        saveMsg.textContent='❌ Gagal tersimpan online, tetap disimpan lokal';
-        const pending = JSON.parse(localStorage.getItem('pendingData')||'[]');
-        pending.push(data);
-        localStorage.setItem('pendingData',JSON.stringify(pending));
-      }
-    }
-  };
-
-  // Reset
-  resetBtn.onclick=()=>{ if(confirm('Kosongkan semua kolom?')) [nama,alamat,nowa,catatan,total].forEach(e=>e.value=''); };
-
-  // WA share
-  waBtn.onclick=()=>{ 
-    const text=encodeURIComponent(previewBox.textContent);
-    const phone=sanitizePhone(nowa.value);
-    if(!/^\d{10,15}$/.test(phone.replace('62',''))) return alert('Nomor WA tidak valid');
-    window.open('https://wa.me/'+phone+'?text='+text,'_blank');
-  };
-  copyBtn.onclick=()=>{ navigator.clipboard.writeText(previewBox.textContent); alert('Disalin ke clipboard'); };
-
-  // Auto save each field
-  autoSaveField(nama,'nama');
-  autoSaveField(alamat,'alamat');
-  autoSaveField(nowa,'nowa');
-  autoSaveField(catatan,'catatan');
-  autoSaveField(total,'total');
-
-  // Autocomplete / Suggestion
-  function setupSuggest(field, list, container){
-    field.addEventListener('input', ()=>{
-      const val = field.value.toLowerCase();
-      container.innerHTML='';
-      if(!val){container.style.display='none'; return;}
-      const matches = list.filter(x=>x.toLowerCase().includes(val));
-      if(matches.length===0){container.style.display='none'; return;}
-      matches.forEach(x=>{
-        const div=document.createElement('div');
-        div.className='suggest-item';
-        div.textContent=x;
-        div.onclick=()=>{field.value=x; container.style.display='none';};
-        container.appendChild(div);
-      });
-      container.style.display='block';
-    });
-    document.addEventListener('click', e=>{if(e.target!==field) container.style.display='none';});
-  }
-
-  setupSuggest(nama,SUGGEST_NAMA,namaSuggest);
-  setupSuggest(catatan,SUGGEST_CATATAN,catatanSuggest);
-
-  // Auto send pending on online
-  window.addEventListener('online', sendPendingData);
-
-})();
-</script>
-</body>
-</html>
+  // ---------- Network helpers ----------
+  async function tryFetchJSON(url
