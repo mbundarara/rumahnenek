@@ -6,207 +6,389 @@
 <title>Rumah Nenek Laundry</title>
 <style>
   :root { font-family: Arial, sans-serif; color:#111; }
-  body{ margin:0; padding:12px; background:#f7f7f7; }
-  .card{ max-width:720px; margin:auto; background:#fff; padding:16px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);}
-  h2{ text-align:center; font-size:18px; margin-bottom:10px; }
-  label{ font-size:13px; display:block; margin-top:10px; font-weight:600; }
-  input,textarea{ width:100%; padding:8px; font-size:14px; box-sizing:border-box; border:1px solid #ddd; border-radius:6px; margin-top:4px; }
-  button{ background:#00796b; color:#fff; border:none; padding:10px; border-radius:6px; font-size:14px; cursor:pointer; }
-  button.secondary{ background:#666; }
+  body{ margin:0; padding:12px; background:#f7f7f7; -webkit-tap-highlight-color: transparent; }
+  .card{ max-width:720px; width:95vw; margin:auto; background:#fff; padding:14px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  h2{ text-align:center; font-size:18px; margin-bottom:8px; }
+  label{ font-size:13px; display:block; margin-top:8px; font-weight:600; }
+  input,textarea{ width:100%; padding:10px; font-size:15px; box-sizing:border-box; border:1px solid #ddd; border-radius:8px; margin-top:6px; }
+  button{ background:#00796b; color:#fff; border:none; padding:12px; border-radius:8px; font-size:15px; cursor:pointer; touch-action:manipulation; }
+  button.secondary{ background:#6c757d; }
   button.danger{ background:#d32f2f; }
-  .row{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-  .muted{ font-size:12px; color:#555; margin-top:6px; }
-  .offline{ background:#ffeb3b; color:#000; padding:8px; border-radius:6px; margin-top:6px; font-size:13px; }
-  .thermal{ width:280px; font-family:monospace; white-space:pre-wrap; background:#fff; border:1px dashed #000; padding:8px; border-radius:4px; margin:10px auto; }
-  .search-section{ margin-top:20px; border-top:1px solid #eee; padding-top:12px; }
+  .row{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .row > *{ flex:1; min-width:0; }
+  .muted{ font-size:13px; color:#555; margin-top:8px; }
+  .status{ margin-top:8px; padding:8px; border-radius:8px; font-weight:600; display:none; }
+  .ok{ background:#e6ffef; color:#0b7a4a; display:block; }
+  .warn{ background:#fff4e6; color:#b47a00; display:block; }
+  .err{ background:#ffecec; color:#b32f2f; display:block; }
+  .thermal{ width:280px; font-family:monospace; white-space:pre-wrap; background:#fff; border:1px dashed #222; padding:10px; border-radius:6px; margin:12px auto; }
   .results{ margin-top:10px; }
   .result-card{ border:1px solid #ddd; border-radius:6px; padding:8px; margin-bottom:8px; background:#fafafa; font-size:13px; }
   .actions button{ margin-right:6px; margin-top:6px; }
   @media print {
     body *{ visibility:hidden; }
     .thermal, .thermal *{ visibility:visible; }
-    .thermal{ position:absolute; left:0; top:0; width:100%; }
+    .thermal{ position:absolute; left:0; top:0; width:58mm; font-size:11px; }
   }
 </style>
 </head>
 <body>
-<div class="card">
+<div class="card" role="application" aria-label="Rumah Nenek Laundry">
   <h2>🧺 Rumah Nenek Laundry</h2>
 
-  <!-- Step 1: PIN -->
+  <!-- PIN -->
   <div id="pinScreen">
-    <label>Masukkan PIN</label>
-    <input id="pinInput" type="text" placeholder="PIN" autocomplete="off" />
-    <button id="pinBtn">Masuk</button>
-    <div id="pinMsg" class="muted"></div>
+    <label for="pinInput">Masukkan PIN</label>
+    <input id="pinInput" type="password" inputmode="numeric" placeholder="PIN" autocomplete="off" />
+    <div class="row">
+      <button id="pinBtn">Masuk</button>
+      <button id="pingBtn" class="secondary">Cek Server</button>
+    </div>
+    <div id="pinMsg" class="muted" role="status" aria-live="polite"></div>
   </div>
 
-  <!-- Step 2: Form input -->
+  <!-- MAIN -->
   <div id="mainScreen" style="display:none;">
     <label>No Urut</label>
-    <input id="noUrut" type="text" readonly>
+    <input id="noUrut" type="text" readonly />
 
     <label>No Kwitansi</label>
-    <input id="noKwitansi" type="text" readonly>
+    <input id="noKwitansi" type="text" readonly />
 
     <label>Nama Konsumen</label>
-    <input id="nama" type="text" placeholder="Nama pelanggan">
+    <input id="nama" type="text" placeholder="Nama pelanggan" autocomplete="off" />
 
     <label>Alamat Konsumen</label>
-    <input id="alamat" type="text" placeholder="Alamat (opsional)">
+    <input id="alamat" type="text" placeholder="Alamat (opsional)" />
 
     <label>No WA</label>
-    <input id="nowa" type="tel" placeholder="08xxxxxxxxxx">
+    <input id="nowa" type="tel" placeholder="08xxxxxxxxxx" inputmode="tel" />
 
     <label>Keterangan / Layanan</label>
     <textarea id="catatan" rows="2" placeholder="Misal: Cuci Kering, Setrika, Kilat"></textarea>
 
     <label>Total Harga (Rp)</label>
-    <input id="total" type="number" placeholder="0">
+    <input id="total" type="number" placeholder="0" inputmode="numeric" />
 
     <div class="row">
       <button id="saveBtn">Simpan</button>
       <button id="resetBtn" class="secondary">Reset</button>
     </div>
 
-    <div class="muted" id="saveMsg"></div>
-    <div id="offlineMsg" class="offline" style="display:none;"></div>
+    <div id="statusBox" class="status muted" role="status" aria-live="polite"></div>
 
-    <!-- Preview -->
-    <div id="previewArea" style="display:none;">
-      <div class="thermal" id="previewBox"></div>
+    <div id="previewArea" style="display:none; margin-top:10px;">
+      <div class="thermal" id="previewBox" aria-hidden="false"></div>
       <div class="row">
-        <button id="waBtn">Bagikan WA</button>
+        <button id="waBtn" class="secondary">Bagikan WA</button>
         <button id="copyBtn" class="secondary">Copy</button>
       </div>
     </div>
 
-    <!-- Step 2.5: Search -->
-    <div class="search-section">
-      <label>Cari Struk</label>
-      <input id="searchInput" type="text" placeholder="Cari No, Nama, No Struk, No WA">
-      <div class="row">
-        <button id="searchBtn">Cari</button>
-        <button id="exportBtn" class="secondary">Ekspor CSV</button>
-      </div>
-      <div id="searchMsg" class="muted"></div>
-      <div class="results" id="results"></div>
-    </div>
+    <!-- Search results -->
+    <div class="results" id="results"></div>
   </div>
 </div>
 
 <script>
 (() => {
+  // ------------- CONFIG -------------
   const APPS_URL = "https://script.google.com/macros/s/AKfycbwZEEiXV5H7doeMZtc3seh1YkFH3xfD3TnnL9--3oMamu6lPeCBbzfAYS-1dsHhvzICog/exec";
-  const el = id => document.getElementById(id);
+  // ------------- ELEMENTS -------------
+  const $ = id => document.getElementById(id);
+  const pinScreen = $('pinScreen'), pinInput = $('pinInput'), pinBtn = $('pinBtn'), pingBtn = $('pingBtn'), pinMsg = $('pinMsg');
+  const mainScreen = $('mainScreen'), noUrutEl = $('noUrut'), noKwitEl = $('noKwitansi');
+  const nama = $('nama'), alamat = $('alamat'), nowa = $('nowa'), catatan = $('catatan'), total = $('total');
+  const saveBtn = $('saveBtn'), resetBtn = $('resetBtn'), statusBox = $('statusBox');
+  const previewArea = $('previewArea'), previewBox = $('previewBox'), waBtn = $('waBtn'), copyBtn = $('copyBtn');
+  const resultsBox = $('results');
 
-  const pinScreen = el('pinScreen'), pinInput = el('pinInput'), pinBtn = el('pinBtn'), pinMsg = el('pinMsg');
-  const mainScreen = el('mainScreen'), noUrut = el('noUrut'), noKwitansi = el('noKwitansi');
-  const nama = el('nama'), alamat = el('alamat'), nowa = el('nowa'), catatan = el('catatan'), total = el('total');
-  const saveBtn = el('saveBtn'), resetBtn = el('resetBtn'), saveMsg = el('saveMsg'), offlineMsg = el('offlineMsg');
-  const previewArea = el('previewArea'), previewBox = el('previewBox'), waBtn = el('waBtn'), copyBtn = el('copyBtn');
-  const searchInput = el('searchInput'), searchBtn = el('searchBtn'), exportBtn = el('exportBtn'), results = el('results'), searchMsg = el('searchMsg');
+  // ------------- HELPERS -------------
+  function setStatus(msg, type) {
+    statusBox.style.display = msg ? 'block' : 'none';
+    statusBox.textContent = msg || '';
+    statusBox.className = 'status ' + (type === 'ok' ? 'ok' : type === 'err' ? 'err' : 'warn');
+  }
+  function safeJSON(txt){
+    try { return JSON.parse(txt); } catch(e){ return null; }
+  }
+  async function fetchText(url, opts){ return fetch(url, opts).then(r=>r.text()); }
+  async function fetchJSON(url, opts){
+    const txt = await fetchText(url, opts);
+    const j = safeJSON(txt);
+    if(j !== null) return j;
+    // tolerant fallback for plain text responses
+    const t = txt.trim();
+    if(t.toUpperCase() === 'OK') return { status:'success', message:'OK' };
+    return { status:'error', message: t || 'Unknown response' };
+  }
+  function fmtIDR(n){ try { return Number(n||0).toLocaleString('id-ID'); } catch(e){ return n; } }
 
-  function fmtCur(n){return Number(n||0).toLocaleString('id-ID');}
-  function sanitizePhone(input){let s=String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');if(s.startsWith('0'))s='62'+s.slice(1);if(!s.startsWith('62'))s='62'+s;return s;}
-  function buildPreview(d){
+  // WA sanitize: produce '62...' string; returns '' if input empty
+  function sanitizePhone(input){
+    if(!input) return '';
+    let s = String(input).replace(/\D/g,'');
+    if(s.startsWith('0')) s = '62' + s.slice(1);
+    if(!s.startsWith('62')) s = '62' + s;
+    // limit to max 15 digits total (country+rest)
+    s = s.slice(0, 15);
+    return s;
+  }
+  function isPhoneValidForWA(raw){
+    const cleaned = sanitizePhone(raw);
+    const digits = cleaned.replace(/\D/g,'');
+    return digits.length >= 11 && digits.length <= 15;
+  }
+
+  // ------------- CORE: tolerant endpoints -------------
+  async function checkPIN(pin){
+    if(!pin) return { status:'error', message:'PIN kosong' };
+    try {
+      const j = await fetchJSON(APPS_URL + '?action=checkPIN&pin=' + encodeURIComponent(pin));
+      return j;
+    } catch(err){
+      return { status:'error', message:'Gagal koneksi' };
+    }
+  }
+
+  async function getLast(){
+    try {
+      const j = await fetchJSON(APPS_URL + '?action=getLast');
+      // tolerant: might be {status:'success', data:{...}} or {noUrut:.., noKwitansi:..}
+      if(j && j.data) return j.data;
+      if(j && (j.noUrut || j.noKwitansi)) return { noUrut: j.noUrut, noKwitansi: j.noKwitansi };
+      return {};
+    } catch(e){
+      return {};
+    }
+  }
+
+  async function saveToServer(payload){
+    // payload - plain object
+    try {
+      // Apps Script expects data in param 'data' (JSON encoded) for 'save'
+      const url = APPS_URL + '?action=save&data=' + encodeURIComponent(JSON.stringify(payload));
+      const j = await fetchJSON(url);
+      return j;
+    } catch(e){
+      return { status:'error', message:'Gagal koneksi' };
+    }
+  }
+
+  async function backupLog(payload){
+    // Best-effort: call an endpoint on Apps Script that might create a Log entry.
+    // If backend doesn't support it, ignore errors (we don't change backend).
+    try {
+      const url = APPS_URL + '?action=saveLog&data=' + encodeURIComponent(JSON.stringify(payload));
+      const j = await fetchJSON(url);
+      return j;
+    } catch(e){
+      return null;
+    }
+  }
+
+  async function searchServer(q){
+    try {
+      const url = APPS_URL + '?action=search&q=' + encodeURIComponent(q);
+      const j = await fetchJSON(url);
+      // expected shapes: {status:'success', hasil:[...]} or {status:'success', data:[...]} or array itself
+      if(j && j.hasil) return j.hasil;
+      if(j && j.data) return j.data;
+      if(Array.isArray(j)) return j;
+      return [];
+    } catch(e){
+      return [];
+    }
+  }
+
+  async function deleteServer(noStruk){
+    try {
+      const url = APPS_URL + '?action=delete&noStruk=' + encodeURIComponent(noStruk);
+      const j = await fetchJSON(url);
+      return j;
+    } catch(e){ return { status:'error', message:'Gagal koneksi' }; }
+  }
+
+  // ------------- UI actions -------------
+  pinBtn.addEventListener('click', async ()=>{
+    setStatus('Memeriksa PIN...', 'warn');
+    const res = await checkPIN(pinInput.value.trim());
+    if(res && (res.status === 'success' || (res.message && String(res.message).toLowerCase().includes('ok')))){
+      setStatus('PIN valid. Memuat nomor...', 'ok');
+      pinScreen.style.display = 'none';
+      mainScreen.style.display = 'block';
+      const last = await getLast();
+      if(last.noUrut) noUrutEl.value = last.noUrut;
+      if(last.noKwitansi || last.noKwit) noKwitEl.value = last.noKwitansi || last.noKwit || '';
+      setStatus('', '');
+    } else {
+      setStatus(res.message || 'PIN salah', 'err');
+    }
+  });
+
+  pingBtn.addEventListener('click', async ()=>{
+    setStatus('Memeriksa server...', 'warn');
+    try {
+      const j = await fetchJSON(APPS_URL + '?action=ping');
+      setStatus('Server merespon', 'ok');
+    } catch(e){
+      setStatus('Server tidak merespon', 'err');
+    }
+  });
+
+  // Save handler (full-online)
+  saveBtn.addEventListener('click', async (e)=>{
+    e.preventDefault();
+    setStatus('', '');
+    const namaVal = (nama.value || '').trim();
+    const totalVal = (total.value || '').toString().trim();
+    if(!namaVal || namaVal.length < 2){ setStatus('Nama minimal 2 karakter', 'err'); nama.focus(); return; }
+    if(!totalVal || isNaN(Number(totalVal)) || Number(totalVal) <= 0){ setStatus('Total harus angka > 0', 'err'); total.focus(); return; }
+    if(nowa.value && !isPhoneValidForWA(nowa.value)){ setStatus('Nomor WA tidak valid (format 08... atau +62...)', 'err'); nowa.focus(); return; }
+
+    const payload = {
+      No: noUrutEl.value || '',
+      No_Struk: noKwitEl.value || '',
+      Nama: namaVal,
+      Alamat: (alamat.value||'').trim(),
+      No_WA: sanitizePhone(nowa.value),
+      Keterangan: (catatan.value||'').trim(),
+      Total: Number(totalVal),
+      Tanggal: new Date().toLocaleString('id-ID')
+    };
+
+    // preview
+    previewBox.textContent = buildPreviewText(payload);
+    previewArea.style.display = 'block';
+    setStatus('Menyimpan ke server...', 'warn');
+
+    // save to Struk
+    const res = await saveToServer(payload);
+    if(res && (res.status === 'success' || (res.message && String(res.message).toLowerCase().includes('sukses') || String(res.message).toLowerCase().includes('ok')))){
+      setStatus('✅ Data tersimpan online', 'ok');
+      // attempt auto-backup to Log (best-effort)
+      backupLog({ action: 'backup', payload, ts: new Date().toISOString() }).catch(()=>{ /* ignore */ });
+      // refresh no urut & kwitansi
+      const last = await getLast();
+      if(last.noUrut) noUrutEl.value = last.noUrut;
+      if(last.noKwitansi || last.noKwit) noKwitEl.value = last.noKwitansi || last.noKwit || '';
+      // clear input for next
+      nama.value = ''; alamat.value = ''; nowa.value = ''; catatan.value = ''; total.value = '';
+      previewArea.style.display = 'none';
+    } else {
+      const msg = (res && res.message) ? res.message : 'Gagal menyimpan (server error)';
+      setStatus(msg, 'err');
+    }
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    if(!confirm('Kosongkan semua kolom?')) return;
+    nama.value = ''; alamat.value = ''; nowa.value = ''; catatan.value = ''; total.value = '';
+    previewArea.style.display = 'none';
+    setStatus('', '');
+  });
+
+  waBtn.addEventListener('click', ()=>{
+    const txt = previewBox.textContent || '';
+    if(!txt){ alert('Tidak ada struk untuk dibagikan.'); return; }
+    if(!isPhoneValidForWA(nowa.value)){ alert('Nomor WA tidak valid.'); return; }
+    const phone = sanitizePhone(nowa.value);
+    window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(txt), '_blank');
+  });
+
+  copyBtn.addEventListener('click', ()=>{
+    const txt = previewBox.textContent || '';
+    if(!txt){ setStatus('Tidak ada struk untuk disalin', 'warn'); return; }
+    navigator.clipboard.writeText(txt).then(()=> setStatus('Struk disalin ke clipboard', 'ok')).catch(()=> setStatus('Gagal salin', 'err'));
+  });
+
+  // Search: bind to input change (with small debounce)
+  let searchTimer = null;
+  function buildPreviewText(d){
     return [
       '   RUMAH NENEK LAUNDRY',
       'Jl. Mashudi No 10 - Cariu',
       'WA/DANA 0895-6223-09251 a.n. Tita Juarsih',
       '----------------------------------',
-      'No Struk   : '+d.noKwitansi,
-      'No Urut    : '+d.noUrut,
-      'Nama       : '+d.nama,
-      d.alamat ? 'Alamat     : '+d.alamat : '',
-      d.nowa ? 'WA         : '+d.nowa : '',
-      d.catatan ? 'Keterangan : '+d.catatan : '',
+      'No Struk   : ' + (d.No_Struk || d.NoKwit || d.No_Struk || ''),
+      'No Urut    : ' + (d.No || d.NoUrut || d.No || ''),
+      'Nama       : ' + (d.Nama || d.nama || ''),
+      d.Alamat ? 'Alamat     : ' + d.Alamat : '',
+      d.No_WA ? 'WA         : ' + d.No_WA : '',
+      d.Keterangan ? 'Keterangan : ' + d.Keterangan : '',
       '----------------------------------',
-      'Total      : Rp '+fmtCur(d.total),
-      '----------------------------------'
+      'Total      : Rp ' + fmtIDR(d.Total || d.Total_Harga || 0),
+      '----------------------------------',
+      new Date().toLocaleString('id-ID')
     ].filter(Boolean).join('\n');
   }
 
-  async function checkConnection(){
-    try{ await fetch(APPS_URL+'?ping=1',{method:'GET',cache:'no-store'}); return true; }
-    catch{ return false; }
-  }
-
-  async function sendPendingData(){
-    const pending = JSON.parse(localStorage.getItem('pendingData')||'[]');
-    if(pending.length===0) return;
-    for(const d of pending){
-      try{ await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(d)); }
-      catch(e){ return; }
+  // create a simple search UI: user long-press on Nama field to search last entries,
+  // but since user wanted no separate search button we will use 'press and hold' on Nama to trigger quick search.
+  // However user previously had search; we'll implement a small inline search when user types Ctrl+F in Nama (fallback)
+  // Also implement a global small search by prompt.
+  document.addEventListener('keydown', (ev)=>{
+    // Ctrl+F or Cmd+F to open quick search prompt (non-blocking)
+    if((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'f'){
+      ev.preventDefault();
+      const q = prompt('Cari No/No_Struk/Nama/No_WA:');
+      if(q !== null){
+        runSearch(q.trim());
+      }
     }
-    localStorage.removeItem('pendingData');
-    offlineMsg.style.display='none';
-  }
+  });
 
-  // PIN check
-  pinBtn.onclick = async ()=>{
-    pinMsg.textContent='Memeriksa PIN...';
-    const res = await fetch(APPS_URL+'?action=checkPIN&pin='+encodeURIComponent(pinInput.value)).then(r=>r.json());
-    if(res.status==='success'){
-      pinScreen.style.display='none';
-      mainScreen.style.display='block';
-      const d=await fetch(APPS_URL+'?action=getLast').then(r=>r.json());
-      noUrut.value=d.data.noUrut; noKwitansi.value=d.data.noKwitansi;
-      sendPendingData();
-    } else pinMsg.textContent='PIN salah. Coba lagi.';
-  };
-
-  // Save
-  saveBtn.onclick = async ()=>{
-    if(!confirm('Simpan data transaksi ini?')) return;
-    const data = {noUrut:noUrut.value,nama:nama.value,alamat:alamat.value,nowa:nowa.value,catatan:catatan.value,total:total.value,noKwitansi:noKwitansi.value};
-    if(!data.nama||!data.total){saveMsg.textContent='Nama dan total wajib diisi.';return;}
-    previewBox.textContent=buildPreview(data); previewArea.style.display='block';
-    saveMsg.textContent='Menyimpan...';
-
-    const online = await checkConnection();
-    if(!online){
-      const pending = JSON.parse(localStorage.getItem('pendingData')||'[]');
-      pending.push(data);
-      localStorage.setItem('pendingData',JSON.stringify(pending));
-      offlineMsg.style.display='block';
-      offlineMsg.textContent='📦 Disimpan lokal — menunggu koneksi internet.';
-      saveMsg.textContent='Tersimpan lokal sementara.';
-    } else {
-      const r = await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(data)).then(r=>r.json());
-      saveMsg.textContent=r.message;
-      offlineMsg.style.display='none';
-    }
-  };
-
-  resetBtn.onclick=()=>{ if(confirm('Kosongkan semua kolom?')) [nama,alamat,nowa,catatan,total].forEach(e=>e.value=''); };
-  waBtn.onclick=()=>{const text=encodeURIComponent(previewBox.textContent);const phone=sanitizePhone(nowa.value);window.open('https://wa.me/'+phone+'?text='+text,'_blank');};
-  copyBtn.onclick=()=>{navigator.clipboard.writeText(previewBox.textContent);alert('Disalin ke clipboard');};
-
-  // Search
-  searchBtn.onclick=async ()=>{
-    searchMsg.textContent='Mencari...';
-    const q=searchInput.value.trim();
-    const res=await fetch(APPS_URL+'?action=searchStruk&q='+encodeURIComponent(q)).then(r=>r.json());
-    results.innerHTML=''; searchMsg.textContent=res.data.length+' hasil ditemukan';
-    res.data.forEach(r=>{
-      const div=document.createElement('div'); div.className='result-card';
-      const prev=buildPreview({noKwitansi:r.No_Struk,noUrut:r.No,nama:r.Nama,alamat:r.Alamat,nowa:r.No_WA,catatan:r.Keterangan,total:r.Total});
-      div.innerHTML=`<b>${r.Nama}</b><br>No: ${r.No} | ${r.No_Struk}<br>Total: Rp ${fmtCur(r.Total)}<br>
-      <div class='actions'>
-      <button onclick="window.open('https://wa.me/${sanitizePhone(r.No_WA)}?text='+encodeURIComponent('${prev}'),'_blank')">Bagikan WA</button>
-      <button class='danger' onclick="if(confirm('Hapus struk ini?'))fetch('${APPS_URL}?action=deleteRow&no=${r.No}').then(r=>r.text()).then(alert)">Hapus</button>
-      <button onclick="navigator.clipboard.writeText(\`${prev}\`)">Copy</button>
-      </div>`;
-      results.appendChild(div);
+  async function runSearch(q){
+    if(!q){ setStatus('Query kosong', 'warn'); return; }
+    setStatus('Mencari: "'+q+'" ...', 'warn');
+    resultsBox.innerHTML = '';
+    const data = await searchServer(q);
+    if(!data || data.length === 0){ setStatus('Tidak ada hasil untuk "'+q+'"', 'err'); return; }
+    setStatus('Hasil ditemukan: '+data.length, 'ok');
+    // render results
+    resultsBox.innerHTML = '';
+    data.forEach((r) => {
+      // r might be array row or object; normalize
+      let row = {};
+      if(Array.isArray(r)){
+        // according to sheet: No, No_Struk, Nama, Alamat, No_WA, Keterangan, Total, Tanggal
+        row = {
+          No: r[0], No_Struk: r[1], Nama: r[2], Alamat: r[3], No_WA: r[4], Keterangan: r[5], Total: r[6], Tanggal: r[7]
+        };
+      } else {
+        row = r;
+      }
+      const card = document.createElement('div');
+      card.className = 'result-card';
+      card.innerHTML = `<b>${row.Nama || row.Nama}</b><br>
+        No: ${row.No || ''} | ${row.No_Struk || ''}<br>
+        Total: Rp ${fmtIDR(row.Total || row.Total_Harga || 0)}<br>
+        <small>${row.Tanggal ? row.Tanggal : ''}</small>
+        <div style="margin-top:8px;" class="actions">
+          <button onclick="(function(){ window.open('https://wa.me/${sanitizePhone(row.No_WA||'') }?text='+encodeURIComponent(${JSON.stringify(buildPreviewText(row))}),'_blank') })()">Bagikan WA</button>
+          <button onclick="(function(){ if(confirm('Hapus struk '+(row.No_Struk||'')+' ?')){ fetch('${APPS_URL}?action=delete&noStruk='+encodeURIComponent(row.No_Struk||row.NoKwit||'')) .then(r=>r.text()).then(alert).catch(e=>alert('Gagal hapus')) } })()" class="danger">Hapus</button>
+          <button onclick="navigator.clipboard.writeText(${JSON.stringify(buildPreviewText(row))})">Copy</button>
+        </div>`;
+      resultsBox.appendChild(card);
     });
-  };
+  }
 
-  // Export CSV
-  exportBtn.onclick=()=>{window.open(APPS_URL+'?action=exportCSV&sheet=Struk','_blank');};
+  // small UX: load last numbers on init
+  (async function init(){
+    setStatus('Memuat...', 'warn');
+    const last = await getLast();
+    if(last.noUrut) noUrutEl.value = last.noUrut;
+    if(last.noKwitansi || last.noKwit) noKwitEl.value = last.noKwitansi || last.noKwit || '';
+    setStatus('', '');
+  })();
 
-  // Jika online kembali, kirim data tertunda
-  window.addEventListener('online', sendPendingData);
+  // prevent enter from submitting; allow Enter in textarea only
+  window.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName))){
+      if(document.activeElement.id !== 'catatan') e.preventDefault();
+    }
+  });
+
 })();
 </script>
 </body>
