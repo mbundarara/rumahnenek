@@ -6,445 +6,208 @@
 <title>Rumah Nenek Laundry</title>
 <style>
   :root { font-family: Arial, sans-serif; color:#111; }
-  body{ margin:0; padding:12px; background:#f7f7f7; -webkit-tap-highlight-color: transparent; }
-  .card{ max-width:720px; width:95vw; margin:auto; background:#fff; padding:16px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+  body{ margin:0; padding:12px; background:#f7f7f7; }
+  .card{ max-width:720px; margin:auto; background:#fff; padding:16px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);}
   h2{ text-align:center; font-size:18px; margin-bottom:10px; }
   label{ font-size:13px; display:block; margin-top:10px; font-weight:600; }
-  input,textarea{ width:100%; padding:10px; font-size:15px; box-sizing:border-box; border:1px solid #ddd; border-radius:8px; margin-top:6px; }
-  button{ background:#00796b; color:#fff; border:none; padding:12px; border-radius:8px; font-size:15px; cursor:pointer; touch-action:manipulation; }
+  input,textarea{ width:100%; padding:8px; font-size:14px; box-sizing:border-box; border:1px solid #ddd; border-radius:6px; margin-top:4px; }
+  button{ background:#00796b; color:#fff; border:none; padding:10px; border-radius:6px; font-size:14px; cursor:pointer; }
   button.secondary{ background:#666; }
   button.danger{ background:#d32f2f; }
-  .row{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
-  .row > *{ flex:1; min-width:0; }
-  .muted{ font-size:13px; color:#555; margin-top:8px; }
-  .offline{ background:#fff3cd; color:#663; padding:10px; border-radius:8px; margin-top:8px; font-size:13px; display:none; }
-  .thermal{ width:280px; font-family:monospace; white-space:pre-wrap; background:#fff; border:1px dashed #222; padding:10px; border-radius:6px; margin:12px auto; }
-  .suggest-list{ position:absolute; background:#fff; border:1px solid #ddd; max-height:160px; overflow-y:auto; width:calc(100% - 24px); z-index:20; border-radius:6px; display:none; }
-  .suggest-item{ padding:8px; cursor:pointer; font-size:14px; }
-  .suggest-item:hover{ background:#eee; }
+  .row{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .muted{ font-size:12px; color:#555; margin-top:6px; }
+  .offline{ background:#ffeb3b; color:#000; padding:8px; border-radius:6px; margin-top:6px; font-size:13px; }
+  .thermal{ width:280px; font-family:monospace; white-space:pre-wrap; background:#fff; border:1px dashed #000; padding:8px; border-radius:4px; margin:10px auto; }
+  .search-section{ margin-top:20px; border-top:1px solid #eee; padding-top:12px; }
+  .results{ margin-top:10px; }
+  .result-card{ border:1px solid #ddd; border-radius:6px; padding:8px; margin-bottom:8px; background:#fafafa; font-size:13px; }
+  .actions button{ margin-right:6px; margin-top:6px; }
   @media print {
     body *{ visibility:hidden; }
     .thermal, .thermal *{ visibility:visible; }
-    .thermal{ position:absolute; left:0; top:0; width:58mm; font-size:11px; }
+    .thermal{ position:absolute; left:0; top:0; width:100%; }
   }
 </style>
 </head>
 <body>
-<div class="card" role="application" aria-label="Rumah Nenek Laundry">
+<div class="card">
   <h2>🧺 Rumah Nenek Laundry</h2>
 
-  <!-- PIN -->
+  <!-- Step 1: PIN -->
   <div id="pinScreen">
-    <label for="pinInput">Masukkan PIN</label>
-    <input id="pinInput" type="password" inputmode="numeric" placeholder="PIN" autocomplete="off" aria-label="PIN" />
-    <div class="row">
-      <button id="pinBtn" aria-label="Masuk">Masuk</button>
-      <button id="pingBtn" class="secondary" aria-label="Cek Server">Cek Server</button>
-    </div>
-    <div id="pinMsg" class="muted" role="status" aria-live="polite"></div>
+    <label>Masukkan PIN</label>
+    <input id="pinInput" type="text" placeholder="PIN" autocomplete="off" />
+    <button id="pinBtn">Masuk</button>
+    <div id="pinMsg" class="muted"></div>
   </div>
 
-  <!-- MAIN -->
+  <!-- Step 2: Form input -->
   <div id="mainScreen" style="display:none;">
     <label>No Urut</label>
-    <input id="noUrut" type="text" readonly />
+    <input id="noUrut" type="text" readonly>
 
     <label>No Kwitansi</label>
-    <input id="noKwitansi" type="text" readonly />
+    <input id="noKwitansi" type="text" readonly>
 
-    <label for="nama">Nama Konsumen</label>
-    <div style="position:relative;">
-      <input id="nama" type="text" placeholder="Nama pelanggan" autocomplete="off" aria-label="Nama pelanggan" />
-      <div id="namaSuggest" class="suggest-list" role="listbox"></div>
-    </div>
+    <label>Nama Konsumen</label>
+    <input id="nama" type="text" placeholder="Nama pelanggan">
 
     <label>Alamat Konsumen</label>
-    <input id="alamat" type="text" placeholder="Alamat (opsional)" />
+    <input id="alamat" type="text" placeholder="Alamat (opsional)">
 
     <label>No WA</label>
-    <input id="nowa" type="tel" placeholder="08xxxxxxxxxx" inputmode="tel" />
+    <input id="nowa" type="tel" placeholder="08xxxxxxxxxx">
 
     <label>Keterangan / Layanan</label>
-    <div style="position:relative;">
-      <textarea id="catatan" rows="2" placeholder="Misal: Cuci Kering, Setrika, Kilat"></textarea>
-      <div id="catatanSuggest" class="suggest-list"></div>
-    </div>
+    <textarea id="catatan" rows="2" placeholder="Misal: Cuci Kering, Setrika, Kilat"></textarea>
 
     <label>Total Harga (Rp)</label>
-    <input id="total" type="number" placeholder="0" inputmode="numeric" />
+    <input id="total" type="number" placeholder="0">
 
     <div class="row">
       <button id="saveBtn">Simpan</button>
       <button id="resetBtn" class="secondary">Reset</button>
     </div>
 
-    <div id="saveMsg" class="muted" role="status" aria-live="polite"></div>
-    <div id="offlineMsg" class="offline" role="status" aria-live="polite"></div>
+    <div class="muted" id="saveMsg"></div>
+    <div id="offlineMsg" class="offline" style="display:none;"></div>
 
-    <div id="previewArea" style="display:none; margin-top:10px;">
-      <div class="thermal" id="previewBox" aria-hidden="false"></div>
+    <!-- Preview -->
+    <div id="previewArea" style="display:none;">
+      <div class="thermal" id="previewBox"></div>
       <div class="row">
-        <button id="waBtn" class="secondary">Bagikan WA</button>
+        <button id="waBtn">Bagikan WA</button>
         <button id="copyBtn" class="secondary">Copy</button>
       </div>
+    </div>
+
+    <!-- Step 2.5: Search -->
+    <div class="search-section">
+      <label>Cari Struk</label>
+      <input id="searchInput" type="text" placeholder="Cari No, Nama, No Struk, No WA">
+      <div class="row">
+        <button id="searchBtn">Cari</button>
+        <button id="exportBtn" class="secondary">Ekspor CSV</button>
+      </div>
+      <div id="searchMsg" class="muted"></div>
+      <div class="results" id="results"></div>
     </div>
   </div>
 </div>
 
 <script>
 (() => {
-  // ---------- CONFIG ----------
   const APPS_URL = "https://script.google.com/macros/s/AKfycbwZEEiXV5H7doeMZtc3seh1YkFH3xfD3TnnL9--3oMamu6lPeCBbzfAYS-1dsHhvzICog/exec";
-  const QUEUE_KEY = 'rn_pending_v2';
-  const DRAFT_KEY = 'rn_draft_v2';
-  const SUGGEST_NAME_KEY = 'rn_suggest_names_v2';
-  const SUGGEST_CAT_KEY = 'rn_suggest_cat_v2';
-  const BACKUP_KEY = 'rn_backup_v2';
-  const FETCH_TIMEOUT = 12000;
-  const PIN_MAX_TRIES = 4;
-  const PIN_LOCK_SECONDS = 45;
+  const el = id => document.getElementById(id);
 
-  // ---------- HELPERS ----------
-  const $ = id => document.getElementById(id);
-  function nowISO(){ return new Date().toISOString(); }
-  function uid(){ return Date.now().toString(36) + '-' + Math.floor(Math.random()*90000).toString(36); }
-  function safeJSON(txt){ try { return JSON.parse(txt); } catch(e){ return null; } }
-  function fetchWithTimeout(url, opts={}, timeout=FETCH_TIMEOUT){
-    const controller = new AbortController();
-    opts.signal = controller.signal;
-    const timer = setTimeout(()=>controller.abort(), timeout);
-    return fetch(url, opts).finally(()=>clearTimeout(timer));
-  }
-  function fmtIDR(n){ try { return Number(n||0).toLocaleString('id-ID'); } catch(e){ return n; } }
+  const pinScreen = el('pinScreen'), pinInput = el('pinInput'), pinBtn = el('pinBtn'), pinMsg = el('pinMsg');
+  const mainScreen = el('mainScreen'), noUrut = el('noUrut'), noKwitansi = el('noKwitansi');
+  const nama = el('nama'), alamat = el('alamat'), nowa = el('nowa'), catatan = el('catatan'), total = el('total');
+  const saveBtn = el('saveBtn'), resetBtn = el('resetBtn'), saveMsg = el('saveMsg'), offlineMsg = el('offlineMsg');
+  const previewArea = el('previewArea'), previewBox = el('previewBox'), waBtn = el('waBtn'), copyBtn = el('copyBtn');
+  const searchInput = el('searchInput'), searchBtn = el('searchBtn'), exportBtn = el('exportBtn'), results = el('results'), searchMsg = el('searchMsg');
 
-  // sanitize phone to 62... digits (max length enforcement)
-  function sanitizePhoneRaw(input){
-    if(!input) return '';
-    let s = String(input).replace(/\D/g,'');
-    if(s.startsWith('0')) s = '62' + s.slice(1);
-    if(!s.startsWith('62')) s = '62' + s;
-    const rest = s.slice(2).slice(0,13); // max 13 after country (=> total up to 15)
-    return '62' + rest;
-  }
-  function isPhoneValidForWA(raw){
-    const cleaned = sanitizePhoneRaw(raw);
-    const digits = cleaned.replace(/\D/g, '');
-    return digits.length >= 11 && digits.length <= 15;
-  }
-
-  // ---------- ELEMENTS ----------
-  const pinScreen = $('pinScreen'), pinInput = $('pinInput'), pinBtn = $('pinBtn'), pingBtn = $('pingBtn'), pinMsg = $('pinMsg');
-  const mainScreen = $('mainScreen'), noUrutEl = $('noUrut'), noKwitEl = $('noKwitansi');
-  const nama = $('nama'), alamat = $('alamat'), nowa = $('nowa'), catatan = $('catatan'), total = $('total');
-  const saveBtn = $('saveBtn'), resetBtn = $('resetBtn'), saveMsg = $('saveMsg'), offlineMsg = $('offlineMsg');
-  const previewArea = $('previewArea'), previewBox = $('previewBox'), waBtn = $('waBtn'), copyBtn = $('copyBtn');
-  const namaSuggest = $('namaSuggest'), catSuggest = $('catatanSuggest');
-
-  // ---------- Local storage helpers ----------
-  function getDraft(){ try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}'); } catch(e){ return {}; } }
-  function setDraft(obj){ localStorage.setItem(DRAFT_KEY, JSON.stringify(obj||{})); }
-  function getQueue(){ try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch(e){ return []; } }
-  function setQueue(q){ localStorage.setItem(QUEUE_KEY, JSON.stringify(q||[])); }
-  function pushQueue(item){ const q = getQueue(); q.push(item); setQueue(q); backupAll(); }
-  function removeQueueByClient(clientId){ let q = getQueue(); q = q.filter(x => x.clientId !== clientId); setQueue(q); backupAll(); }
-
-  function getSuggest(key){ try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; } }
-  function pushSuggest(key, val, limit=80){
-    if(!val) return;
-    try{
-      const list = getSuggest(key);
-      const lower = val.toString().trim();
-      if(!lower) return;
-      const idx = list.indexOf(lower);
-      if(idx !== -1) list.splice(idx, 1);
-      list.unshift(lower);
-      if(list.length > limit) list.length = limit;
-      localStorage.setItem(key, JSON.stringify(list));
-    }catch(e){}
-  }
-
-  // backup both draft and pending periodically
-  function backupAll(){
-    try {
-      const payload = { time: nowISO(), draft: getDraft(), pending: getQueue() };
-      localStorage.setItem(BACKUP_KEY, JSON.stringify(payload));
-    } catch(e){ console.warn('backup failed', e); }
-  }
-  setInterval(backupAll, 60000);
-  window.addEventListener('beforeunload', backupAll);
-
-  // ---------- Auto-save (unlimited) ----------
-  function autoSaveField(field, key){
-    field.addEventListener('input', ()=>{
-      const draft = getDraft();
-      draft[key] = field.value;
-      setDraft(draft);
-    }, {passive:true});
-  }
-  autoSaveField(nama,'nama'); autoSaveField(alamat,'alamat'); autoSaveField(nowa,'nowa'); autoSaveField(catatan,'catatan'); autoSaveField(total,'total');
-
-  // ---------- Suggest setup ----------
-  function setupSuggest(field, storageKey, container){
-    field.addEventListener('input', ()=>{
-      const val = field.value.trim().toLowerCase();
-      container.innerHTML = '';
-      if(!val){ container.style.display='none'; return; }
-      const list = getSuggest(storageKey);
-      const matches = list.filter(x => x.toLowerCase().includes(val)).slice(0,30);
-      if(matches.length===0){ container.style.display='none'; return; }
-      matches.forEach(m => {
-        const it = document.createElement('div');
-        it.className = 'suggest-item';
-        it.textContent = m;
-        it.addEventListener('click', ()=>{ field.value = m; container.style.display='none'; field.focus(); });
-        container.appendChild(it);
-      });
-      container.style.display = 'block';
-    }, {passive:true});
-    document.addEventListener('click', e=>{ if(e.target !== field) container.style.display='none'; });
-  }
-  setupSuggest(nama, SUGGEST_NAME_KEY, namaSuggest);
-  setupSuggest(catatan, SUGGEST_CAT_KEY, catSuggest);
-
-  // ---------- Preview builder ----------
-  function buildPreviewObj(d){
-    return {
-      noKwitansi: d.noKwitansi || '',
-      noUrut: d.noUrut || '',
-      nama: d.nama || '',
-      alamat: d.alamat || '',
-      nowa: d.nowa || '',
-      catatan: d.catatan || '',
-      total: fmtIDR(d.total || 0)
-    };
-  }
-  function buildPreviewText(d){
-    const p = buildPreviewObj(d);
+  function fmtCur(n){return Number(n||0).toLocaleString('id-ID');}
+  function sanitizePhone(input){let s=String(input||'').replace(/\s+/g,'').replace(/[^0-9+]/g,'');if(s.startsWith('0'))s='62'+s.slice(1);if(!s.startsWith('62'))s='62'+s;return s;}
+  function buildPreview(d){
     return [
       '   RUMAH NENEK LAUNDRY',
       'Jl. Mashudi No 10 - Cariu',
       'WA/DANA 0895-6223-09251 a.n. Tita Juarsih',
       '----------------------------------',
-      'No Struk   : ' + p.noKwitansi,
-      'No Urut    : ' + p.noUrut,
-      'Nama       : ' + p.nama,
-      p.alamat ? ('Alamat     : ' + p.alamat) : '',
-      p.nowa ? ('WA         : ' + p.nowa) : '',
-      p.catatan ? ('Keterangan : ' + p.catatan) : '',
+      'No Struk   : '+d.noKwitansi,
+      'No Urut    : '+d.noUrut,
+      'Nama       : '+d.nama,
+      d.alamat ? 'Alamat     : '+d.alamat : '',
+      d.nowa ? 'WA         : '+d.nowa : '',
+      d.catatan ? 'Keterangan : '+d.catatan : '',
       '----------------------------------',
-      'Total      : Rp ' + p.total,
-      '----------------------------------',
-      new Date().toLocaleString('id-ID')
+      'Total      : Rp '+fmtCur(d.total),
+      '----------------------------------'
     ].filter(Boolean).join('\n');
   }
 
-  // ---------- Network helpers ----------
-  async function tryFetchJSON(url, opts){
-    try {
-      const res = await fetchWithTimeout(url, opts);
-      const text = await res.text();
-      const j = safeJSON(text);
-      if(j !== null) return j;
-      const trimmed = text.trim();
-      if(trimmed.toUpperCase() === 'OK') return { status: 'success', message: 'OK' };
-      return { status: 'error', message: trimmed };
-    } catch(err){
-      throw err;
+  async function checkConnection(){
+    try{ await fetch(APPS_URL+'?ping=1',{method:'GET',cache:'no-store'}); return true; }
+    catch{ return false; }
+  }
+
+  async function sendPendingData(){
+    const pending = JSON.parse(localStorage.getItem('pendingData')||'[]');
+    if(pending.length===0) return;
+    for(const d of pending){
+      try{ await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(d)); }
+      catch(e){ return; }
     }
+    localStorage.removeItem('pendingData');
+    offlineMsg.style.display='none';
   }
 
-  // ---------- PIN handling (with lockout) ----------
-  let pinAttempts = Number(localStorage.getItem('rn_pin_attempts') || 0);
-  let pinLockUntil = Number(localStorage.getItem('rn_pin_lock_until') || 0);
-  function isPinLocked(){ const now = Date.now(); return pinLockUntil && now < pinLockUntil; }
-  function notePinAttempt(success){
-    if(success){ pinAttempts = 0; pinLockUntil = 0; localStorage.removeItem('rn_pin_attempts'); localStorage.removeItem('rn_pin_lock_until'); return; }
-    pinAttempts++; localStorage.setItem('rn_pin_attempts', String(pinAttempts));
-    if(pinAttempts >= PIN_MAX_TRIES){ pinLockUntil = Date.now() + (PIN_LOCK_SECONDS * 1000); localStorage.setItem('rn_pin_lock_until', String(pinLockUntil)); }
-  }
+  // PIN check
+  pinBtn.onclick = async ()=>{
+    pinMsg.textContent='Memeriksa PIN...';
+    const res = await fetch(APPS_URL+'?action=checkPIN&pin='+encodeURIComponent(pinInput.value)).then(r=>r.json());
+    if(res.status==='success'){
+      pinScreen.style.display='none';
+      mainScreen.style.display='block';
+      const d=await fetch(APPS_URL+'?action=getLast').then(r=>r.json());
+      noUrut.value=d.data.noUrut; noKwitansi.value=d.data.noKwitansi;
+      sendPendingData();
+    } else pinMsg.textContent='PIN salah. Coba lagi.';
+  };
 
-  // ---------- Load last (getLast) tolerant ----------
-  async function loadLast(){
-    try {
-      const j = await tryFetchJSON(APPS_URL + '?action=getLast');
-      let noUrut = '', noKwit = '';
-      if(j && j.data){
-        noUrut = j.data.noUrut || j.data.no_urut || j.data.noUrut || '';
-        noKwit = j.data.noKwitansi || j.data.noKwit || j.data.noKwitansi || j.data.noK || j.data.noStruk || j.data.noStruk || '';
-      } else {
-        noUrut = j.noUrut || j.no || j.next || '';
-        noKwit = j.noKwitansi || j.noKwit || j.noK || j.noStruk || '';
-      }
-      if(noUrut) noUrutEl.value = noUrut;
-      if(noKwit) noKwitEl.value = noKwit;
-    } catch(e){
-      console.warn('loadLast failed', e);
-    }
-  }
+  // Save
+  saveBtn.onclick = async ()=>{
+    if(!confirm('Simpan data transaksi ini?')) return;
+    const data = {noUrut:noUrut.value,nama:nama.value,alamat:alamat.value,nowa:nowa.value,catatan:catatan.value,total:total.value,noKwitansi:noKwitansi.value};
+    if(!data.nama||!data.total){saveMsg.textContent='Nama dan total wajib diisi.';return;}
+    previewBox.textContent=buildPreview(data); previewArea.style.display='block';
+    saveMsg.textContent='Menyimpan...';
 
-  // ---------- Send pending queue robust (alerts on success/fail) ----------
-  let sending = false;
-  async function processQueue(){
-    if(sending) return;
-    const queue = getQueue();
-    if(!queue || !queue.length) { offlineMsg.style.display='none'; return; }
-    if(!navigator.onLine){ offlineMsg.style.display='block'; offlineMsg.textContent = '⚠ Offline — menunggu koneksi'; return; }
-
-    sending = true;
-    offlineMsg.style.display='block';
-    offlineMsg.textContent = '⏳ Mengirim ' + queue.length + ' item...';
-
-    for(const item of queue.slice()){
-      try {
-        const params = new URLSearchParams({ action: 'saveData', clientId: item.clientId });
-        Object.entries(item.payload || {}).forEach(([k,v]) => params.set(k, v));
-        const j = await tryFetchJSON(APPS_URL + '?' + params.toString());
-        if(j && (j.status === 'success' || (j.message && String(j.message).toLowerCase().includes('sukses') || String(j.message).toLowerCase().includes('ok')))){
-          removeQueueByClient(item.clientId);
-          // suggestions
-          pushSuggest(SUGGEST_NAME_KEY, item.payload.nama);
-          pushSuggest(SUGGEST_CAT_KEY, item.payload.catatan);
-          await loadLast();
-          alert('✅ Data berhasil tersinkron: ' + (item.payload.nama || '') );
-        } else {
-          item.tries = (item.tries||0) + 1;
-          if(item.tries > 6){
-            alert('❌ Item gagal validasi server: ' + (item.payload.nama||'') + '. Periksa server/format.');
-          } else {
-            await new Promise(r => setTimeout(r, 1000 * Math.min(8, item.tries)));
-          }
-        }
-      } catch(err){
-        console.warn('send pending failed', err);
-        alert('⚠ Gagal kirim — cek koneksi atau server. Menghentikan percobaan sekarang.');
-        break;
-      }
-    }
-
-    sending = false;
-    backupAll();
-  }
-
-  setInterval(()=>{ if(navigator.onLine) processQueue(); }, 25000);
-  window.addEventListener('online', processQueue);
-
-  // ---------- Save flow (idempotent clientId) ----------
-  saveBtn.addEventListener('click', async (e)=>{
-    e.preventDefault();
-    const valName = (nama.value||'').trim();
-    const valTotal = (total.value||'').toString().trim();
-    if(!valName || valName.length < 2){ saveMsg.textContent = 'Nama minimal 2 karakter.'; nama.focus(); return; }
-    if(!valTotal || isNaN(Number(valTotal)) || Number(valTotal) <= 0){ saveMsg.textContent = 'Total harus angka > 0.'; total.focus(); return; }
-    if(nowa.value && !isPhoneValidForWA(nowa.value)){ saveMsg.textContent = 'Nomor WA tidak valid (cek lagi atau kosongkan).'; nowa.focus(); return; }
-
-    const payload = {
-      noUrut: noUrutEl.value || '',
-      noKwitansi: noKwitEl.value || '',
-      nama: valName,
-      alamat: (alamat.value||'').trim(),
-      nowa: (nowa.value||'').trim(),
-      catatan: (catatan.value||'').trim(),
-      total: Number(valTotal),
-      ts: nowISO()
-    };
-
-    previewBox.textContent = buildPreviewText(payload);
-    previewArea.style.display = 'block';
-    saveMsg.textContent = 'Menyimpan...';
-
-    const clientId = uid();
-    const queueItem = { clientId, payload, tries: 0, ts: Date.now() };
-
-    if(navigator.onLine){
-      try {
-        const params = new URLSearchParams({ action: 'saveData', clientId });
-        Object.entries(payload).forEach(([k,v]) => params.set(k, v));
-        const j = await tryFetchJSON(APPS_URL + '?' + params.toString());
-        if(j && (j.status === 'success' || (j.message && (String(j.message).toLowerCase().includes('sukses') || String(j.message).toLowerCase().includes('ok'))))){
-          saveMsg.textContent = j.message || 'Data tersimpan online';
-          pushSuggest(SUGGEST_NAME_KEY, payload.nama);
-          pushSuggest(SUGGEST_CAT_KEY, payload.catatan);
-          await loadLast();
-          localStorage.removeItem(DRAFT_KEY);
-          backupAll();
-          alert('✅ Data tersimpan online: ' + payload.nama);
-          return;
-        } else {
-          pushQueue(queueItem);
-          saveMsg.textContent = j.message || 'Tersimpan lokal (server beri pesan).';
-          offlineMsg.style.display = 'block'; offlineMsg.textContent = '📦 Disimpan lokal — menunggu sinkron.';
-          alert('⚠ Server merespon error, data disimpan lokal.');
-          return;
-        }
-      } catch(err){
-        pushQueue(queueItem);
-        saveMsg.textContent = 'Offline atau timeout — data disimpan lokal.';
-        offlineMsg.style.display = 'block'; offlineMsg.textContent = '📦 Disimpan lokal — menunggu sinkron.';
-        alert('⚠ Offline / timeout — data disimpan lokal.');
-        return;
-      }
+    const online = await checkConnection();
+    if(!online){
+      const pending = JSON.parse(localStorage.getItem('pendingData')||'[]');
+      pending.push(data);
+      localStorage.setItem('pendingData',JSON.stringify(pending));
+      offlineMsg.style.display='block';
+      offlineMsg.textContent='📦 Disimpan lokal — menunggu koneksi internet.';
+      saveMsg.textContent='Tersimpan lokal sementara.';
     } else {
-      pushQueue(queueItem);
-      saveMsg.textContent = 'Offline — data disimpan lokal.';
-      offlineMsg.style.display = 'block'; offlineMsg.textContent = '📦 Disimpan lokal — menunggu sinkron.';
-      alert('📦 Offline — data disimpan lokal.');
-      return;
+      const r = await fetch(APPS_URL+'?action=saveData&'+new URLSearchParams(data)).then(r=>r.json());
+      saveMsg.textContent=r.message;
+      offlineMsg.style.display='none';
     }
-  }, {passive:false});
+  };
 
-  // ---------- Reset ----------
-  resetBtn.addEventListener('click', ()=>{
-    if(!confirm('Kosongkan semua kolom?')) return;
-    [nama, alamat, nowa, catatan, total].forEach(i => i.value = '');
-    previewArea.style.display = 'none';
-    saveMsg.textContent = '';
-    setDraft({});
-  });
+  resetBtn.onclick=()=>{ if(confirm('Kosongkan semua kolom?')) [nama,alamat,nowa,catatan,total].forEach(e=>e.value=''); };
+  waBtn.onclick=()=>{const text=encodeURIComponent(previewBox.textContent);const phone=sanitizePhone(nowa.value);window.open('https://wa.me/'+phone+'?text='+text,'_blank');};
+  copyBtn.onclick=()=>{navigator.clipboard.writeText(previewBox.textContent);alert('Disalin ke clipboard');};
 
-  // ---------- WA & Copy ----------
-  waBtn.addEventListener('click', ()=>{
-    const txt = previewBox.textContent || '';
-    if(!txt){ alert('Tidak ada struk untuk dibagikan.'); return; }
-    if(!isPhoneValidForWA(nowa.value)){ alert('Nomor WA tidak valid.'); return; }
-    const phone = sanitizePhoneRaw(nowa.value);
-    window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(txt), '_blank');
-  });
-  copyBtn.addEventListener('click', ()=>{
-    const txt = previewBox.textContent || '';
-    if(!txt){ alert('Tidak ada struk untuk disalin.'); return; }
-    navigator.clipboard.writeText(txt).then(()=>{ alert('Struk disalin ke clipboard.'); });
-  });
+  // Search
+  searchBtn.onclick=async ()=>{
+    searchMsg.textContent='Mencari...';
+    const q=searchInput.value.trim();
+    const res=await fetch(APPS_URL+'?action=searchStruk&q='+encodeURIComponent(q)).then(r=>r.json());
+    results.innerHTML=''; searchMsg.textContent=res.data.length+' hasil ditemukan';
+    res.data.forEach(r=>{
+      const div=document.createElement('div'); div.className='result-card';
+      const prev=buildPreview({noKwitansi:r.No_Struk,noUrut:r.No,nama:r.Nama,alamat:r.Alamat,nowa:r.No_WA,catatan:r.Keterangan,total:r.Total});
+      div.innerHTML=`<b>${r.Nama}</b><br>No: ${r.No} | ${r.No_Struk}<br>Total: Rp ${fmtCur(r.Total)}<br>
+      <div class='actions'>
+      <button onclick="window.open('https://wa.me/${sanitizePhone(r.No_WA)}?text='+encodeURIComponent('${prev}'),'_blank')">Bagikan WA</button>
+      <button class='danger' onclick="if(confirm('Hapus struk ini?'))fetch('${APPS_URL}?action=deleteRow&no=${r.No}').then(r=>r.text()).then(alert)">Hapus</button>
+      <button onclick="navigator.clipboard.writeText(\`${prev}\`)">Copy</button>
+      </div>`;
+      results.appendChild(div);
+    });
+  };
 
-  // ---------- PIN button & ping ----------
-  pingBtn.addEventListener('click', async ()=>{
-    try {
-      const j = await tryFetchJSON(APPS_URL + '?action=ping');
-      if(j && (j.status === 'ok' || j.time || j.status === 'success')) alert('Server terhubung');
-      else alert('Server merespon: ' + (j.message || JSON.stringify(j)));
-    } catch(e){ alert('Server tidak merespon'); }
-  });
+  // Export CSV
+  exportBtn.onclick=()=>{window.open(APPS_URL+'?action=exportCSV&sheet=Struk','_blank');};
 
-  pinBtn.addEventListener('click', async ()=>{
-    if(isPinLocked()){
-      const until = Number(localStorage.getItem('rn_pin_lock_until')||0);
-      const remain = Math.ceil((until - Date.now()) / 1000);
-      alert('Terkunci karena percobaan PIN salah. Coba lagi dalam ' + remain + ' detik.');
-      return;
-    }
-    const pin = (pinInput.value||'').toString().trim();
-    if(!pin){ alert('Masukkan PIN.'); return; }
-    pinMsg.textContent = 'Memeriksa PIN...';
-    try {
-      const j = await tryFetchJSON(APPS_URL + '?action=checkPIN&pin=' + encodeURIComponent(pin));
-      if(j && (j.status === 'success' || (j.message && String(j.message).toLowerCase().includes('ok')))){
-        notePinAttempt(true);
-        pinMsg.textContent = 'PIN valid — memuat nomor...';
-        pinScreen.style.display = 'none';
-        mainScreen.style.display = 'block';
-        const draft = getDraft();
-        if(Object.keys(draft).length){
-          if(draft.nama) nama.value = draft.nama;
-          if(draft.alamat) alamat.value = draft.alamat;
-          if(draft.nowa) nowa.value = draft.nowa;
-          if(draft.catatan) catatan.value = draft.catatan;
-          if(draft.total) total.v
+  // Jika online kembali, kirim data tertunda
+  window.addEventListener('online', sendPendingData);
+})();
+</script>
+</body>
+</html>
