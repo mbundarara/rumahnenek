@@ -239,4 +239,212 @@
   }
 
   // ---------- Network helpers ----------
-  async function tryFetchJSON(url
+  async function tryFetchJSON(url, opts){
+    try {
+      const res = await fetchWithTimeout(url, opts);
+      const text = await res.text();
+      const j = safeJSON(text);
+      if(j !== null) return j;
+      const trimmed = text.trim();
+      if(trimmed.toUpperCase() === 'OK') return { status: 'success', message: 'OK' };
+      return { status: 'error', message: trimmed };
+    } catch(err){
+      throw err;
+    }
+  }
+
+  // ---------- PIN handling (with lockout) ----------
+  let pinAttempts = Number(localStorage.getItem('rn_pin_attempts') || 0);
+  let pinLockUntil = Number(localStorage.getItem('rn_pin_lock_until') || 0);
+  function isPinLocked(){ const now = Date.now(); return pinLockUntil && now < pinLockUntil; }
+  function notePinAttempt(success){
+    if(success){ pinAttempts = 0; pinLockUntil = 0; localStorage.removeItem('rn_pin_attempts'); localStorage.removeItem('rn_pin_lock_until'); return; }
+    pinAttempts++; localStorage.setItem('rn_pin_attempts', String(pinAttempts));
+    if(pinAttempts >= PIN_MAX_TRIES){ pinLockUntil = Date.now() + (PIN_LOCK_SECONDS * 1000); localStorage.setItem('rn_pin_lock_until', String(pinLockUntil)); }
+  }
+
+  // ---------- Load last (getLast) tolerant ----------
+  async function loadLast(){
+    try {
+      const j = await tryFetchJSON(APPS_URL + '?action=getLast');
+      let noUrut = '', noKwit = '';
+      if(j && j.data){
+        noUrut = j.data.noUrut || j.data.no_urut || j.data.noUrut || '';
+        noKwit = j.data.noKwitansi || j.data.noKwit || j.data.noKwitansi || j.data.noK || j.data.noStruk || j.data.noStruk || '';
+      } else {
+        noUrut = j.noUrut || j.no || j.next || '';
+        noKwit = j.noKwitansi || j.noKwit || j.noK || j.noStruk || '';
+      }
+      if(noUrut) noUrutEl.value = noUrut;
+      if(noKwit) noKwitEl.value = noKwit;
+    } catch(e){
+      console.warn('loadLast failed', e);
+    }
+  }
+
+  // ---------- Send pending queue robust (alerts on success/fail) ----------
+  let sending = false;
+  async function processQueue(){
+    if(sending) return;
+    const queue = getQueue();
+    if(!queue || !queue.length) { offlineMsg.style.display='none'; return; }
+    if(!navigator.onLine){ offlineMsg.style.display='block'; offlineMsg.textContent = '⚠ Offline — menunggu koneksi'; return; }
+
+    sending = true;
+    offlineMsg.style.display='block';
+    offlineMsg.textContent = '⏳ Mengirim ' + queue.length + ' item...';
+
+    for(const item of queue.slice()){
+      try {
+        const params = new URLSearchParams({ action: 'saveData', clientId: item.clientId });
+        Object.entries(item.payload || {}).forEach(([k,v]) => params.set(k, v));
+        const j = await tryFetchJSON(APPS_URL + '?' + params.toString());
+        if(j && (j.status === 'success' || (j.message && String(j.message).toLowerCase().includes('sukses') || String(j.message).toLowerCase().includes('ok')))){
+          removeQueueByClient(item.clientId);
+          // suggestions
+          pushSuggest(SUGGEST_NAME_KEY, item.payload.nama);
+          pushSuggest(SUGGEST_CAT_KEY, item.payload.catatan);
+          await loadLast();
+          alert('✅ Data berhasil tersinkron: ' + (item.payload.nama || '') );
+        } else {
+          item.tries = (item.tries||0) + 1;
+          if(item.tries > 6){
+            alert('❌ Item gagal validasi server: ' + (item.payload.nama||'') + '. Periksa server/format.');
+          } else {
+            await new Promise(r => setTimeout(r, 1000 * Math.min(8, item.tries)));
+          }
+        }
+      } catch(err){
+        console.warn('send pending failed', err);
+        alert('⚠ Gagal kirim — cek koneksi atau server. Menghentikan percobaan sekarang.');
+        break;
+      }
+    }
+
+    sending = false;
+    backupAll();
+  }
+
+  setInterval(()=>{ if(navigator.onLine) processQueue(); }, 25000);
+  window.addEventListener('online', processQueue);
+
+  // ---------- Save flow (idempotent clientId) ----------
+  saveBtn.addEventListener('click', async (e)=>{
+    e.preventDefault();
+    const valName = (nama.value||'').trim();
+    const valTotal = (total.value||'').toString().trim();
+    if(!valName || valName.length < 2){ saveMsg.textContent = 'Nama minimal 2 karakter.'; nama.focus(); return; }
+    if(!valTotal || isNaN(Number(valTotal)) || Number(valTotal) <= 0){ saveMsg.textContent = 'Total harus angka > 0.'; total.focus(); return; }
+    if(nowa.value && !isPhoneValidForWA(nowa.value)){ saveMsg.textContent = 'Nomor WA tidak valid (cek lagi atau kosongkan).'; nowa.focus(); return; }
+
+    const payload = {
+      noUrut: noUrutEl.value || '',
+      noKwitansi: noKwitEl.value || '',
+      nama: valName,
+      alamat: (alamat.value||'').trim(),
+      nowa: (nowa.value||'').trim(),
+      catatan: (catatan.value||'').trim(),
+      total: Number(valTotal),
+      ts: nowISO()
+    };
+
+    previewBox.textContent = buildPreviewText(payload);
+    previewArea.style.display = 'block';
+    saveMsg.textContent = 'Menyimpan...';
+
+    const clientId = uid();
+    const queueItem = { clientId, payload, tries: 0, ts: Date.now() };
+
+    if(navigator.onLine){
+      try {
+        const params = new URLSearchParams({ action: 'saveData', clientId });
+        Object.entries(payload).forEach(([k,v]) => params.set(k, v));
+        const j = await tryFetchJSON(APPS_URL + '?' + params.toString());
+        if(j && (j.status === 'success' || (j.message && (String(j.message).toLowerCase().includes('sukses') || String(j.message).toLowerCase().includes('ok'))))){
+          saveMsg.textContent = j.message || 'Data tersimpan online';
+          pushSuggest(SUGGEST_NAME_KEY, payload.nama);
+          pushSuggest(SUGGEST_CAT_KEY, payload.catatan);
+          await loadLast();
+          localStorage.removeItem(DRAFT_KEY);
+          backupAll();
+          alert('✅ Data tersimpan online: ' + payload.nama);
+          return;
+        } else {
+          pushQueue(queueItem);
+          saveMsg.textContent = j.message || 'Tersimpan lokal (server beri pesan).';
+          offlineMsg.style.display = 'block'; offlineMsg.textContent = '📦 Disimpan lokal — menunggu sinkron.';
+          alert('⚠ Server merespon error, data disimpan lokal.');
+          return;
+        }
+      } catch(err){
+        pushQueue(queueItem);
+        saveMsg.textContent = 'Offline atau timeout — data disimpan lokal.';
+        offlineMsg.style.display = 'block'; offlineMsg.textContent = '📦 Disimpan lokal — menunggu sinkron.';
+        alert('⚠ Offline / timeout — data disimpan lokal.');
+        return;
+      }
+    } else {
+      pushQueue(queueItem);
+      saveMsg.textContent = 'Offline — data disimpan lokal.';
+      offlineMsg.style.display = 'block'; offlineMsg.textContent = '📦 Disimpan lokal — menunggu sinkron.';
+      alert('📦 Offline — data disimpan lokal.');
+      return;
+    }
+  }, {passive:false});
+
+  // ---------- Reset ----------
+  resetBtn.addEventListener('click', ()=>{
+    if(!confirm('Kosongkan semua kolom?')) return;
+    [nama, alamat, nowa, catatan, total].forEach(i => i.value = '');
+    previewArea.style.display = 'none';
+    saveMsg.textContent = '';
+    setDraft({});
+  });
+
+  // ---------- WA & Copy ----------
+  waBtn.addEventListener('click', ()=>{
+    const txt = previewBox.textContent || '';
+    if(!txt){ alert('Tidak ada struk untuk dibagikan.'); return; }
+    if(!isPhoneValidForWA(nowa.value)){ alert('Nomor WA tidak valid.'); return; }
+    const phone = sanitizePhoneRaw(nowa.value);
+    window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(txt), '_blank');
+  });
+  copyBtn.addEventListener('click', ()=>{
+    const txt = previewBox.textContent || '';
+    if(!txt){ alert('Tidak ada struk untuk disalin.'); return; }
+    navigator.clipboard.writeText(txt).then(()=>{ alert('Struk disalin ke clipboard.'); });
+  });
+
+  // ---------- PIN button & ping ----------
+  pingBtn.addEventListener('click', async ()=>{
+    try {
+      const j = await tryFetchJSON(APPS_URL + '?action=ping');
+      if(j && (j.status === 'ok' || j.time || j.status === 'success')) alert('Server terhubung');
+      else alert('Server merespon: ' + (j.message || JSON.stringify(j)));
+    } catch(e){ alert('Server tidak merespon'); }
+  });
+
+  pinBtn.addEventListener('click', async ()=>{
+    if(isPinLocked()){
+      const until = Number(localStorage.getItem('rn_pin_lock_until')||0);
+      const remain = Math.ceil((until - Date.now()) / 1000);
+      alert('Terkunci karena percobaan PIN salah. Coba lagi dalam ' + remain + ' detik.');
+      return;
+    }
+    const pin = (pinInput.value||'').toString().trim();
+    if(!pin){ alert('Masukkan PIN.'); return; }
+    pinMsg.textContent = 'Memeriksa PIN...';
+    try {
+      const j = await tryFetchJSON(APPS_URL + '?action=checkPIN&pin=' + encodeURIComponent(pin));
+      if(j && (j.status === 'success' || (j.message && String(j.message).toLowerCase().includes('ok')))){
+        notePinAttempt(true);
+        pinMsg.textContent = 'PIN valid — memuat nomor...';
+        pinScreen.style.display = 'none';
+        mainScreen.style.display = 'block';
+        const draft = getDraft();
+        if(Object.keys(draft).length){
+          if(draft.nama) nama.value = draft.nama;
+          if(draft.alamat) alamat.value = draft.alamat;
+          if(draft.nowa) nowa.value = draft.nowa;
+          if(draft.catatan) catatan.value = draft.catatan;
+          if(draft.total) total.v
